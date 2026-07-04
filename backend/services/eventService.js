@@ -13,4 +13,16 @@ const createEvent = async (organizerId, data) => {
   return result.rows[0];
 };
 
-module.exports = { createEvent };
+const getOrganizerEvents = async (organizerId) => {
+  const result = await pool.query(
+    `SELECT id, organizer_id, title, description, location, event_date, banner_url, price_eth, quota, tickets_sold, status, created_at
+     FROM events
+     WHERE organizer_id = $1
+     ORDER BY event_date ASC`,
+    [organizerId]
+  );
+
+  return result.rows;
+};
+
+module.exports = { createEvent, getOrganizerEvents };
