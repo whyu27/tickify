@@ -88,12 +88,13 @@ AI Agent hanya diperbolehkan mengerjakan task yang terdapat pada dokumen ini. Se
 
 ## Frontend
 
+* [x] Frontend Authentication Foundation
 * [ ] Register Page
-* [ ] Login Page
-* [ ] Protected Route
-* [ ] Logout
+* [x] Login Page
+* [x] Protected Route
+* [x] Logout
 * [ ] Connect Wallet
-* [ ] Persist Login
+* [x] Persist Login
 
 ---
 
@@ -325,7 +326,7 @@ Aplikasi dianggap selesai apabila seluruh fitur berikut telah berhasil diimpleme
 ## Authentication
 
 * [ ] Register
-* [ ] Login
+* [x] Login
 * [ ] JWT Authentication
 
 ---
