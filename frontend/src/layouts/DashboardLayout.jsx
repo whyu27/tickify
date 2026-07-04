@@ -1,15 +1,16 @@
-import { Outlet } from 'react-router-dom';
+import { Outlet, Link, useLocation } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
 import { LayoutDashboard, Calendar, CheckSquare, User, LogOut } from 'lucide-react';
 
 const DashboardLayout = () => {
   const { user, logout } = useAuth();
+  const location = useLocation();
 
   const menuItems = [
-    { name: 'Dashboard', icon: LayoutDashboard, active: true },
-    { name: 'My Events', icon: Calendar, active: false },
-    { name: 'Verify Ticket', icon: CheckSquare, active: false },
-    { name: 'Profile', icon: User, active: false },
+    { name: 'Dashboard', path: '/dashboard/organizer', icon: LayoutDashboard, disabled: false },
+    { name: 'My Events', path: '/dashboard/organizer/events', icon: Calendar, disabled: false },
+    { name: 'Verify Ticket', path: '/dashboard/organizer/verify', icon: CheckSquare, disabled: true },
+    { name: 'Profile', path: '/dashboard/organizer/profile', icon: User, disabled: true },
   ];
 
   return (
@@ -28,19 +29,35 @@ const DashboardLayout = () => {
           <nav className="p-4 space-y-1">
             {menuItems.map((item) => {
               const Icon = item.icon;
+              const isActive = location.pathname === item.path || 
+                (item.path === '/dashboard/organizer/events' && location.pathname.startsWith('/dashboard/organizer/events'));
+
+              if (item.disabled) {
+                return (
+                  <button
+                    key={item.name}
+                    disabled
+                    className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl text-gray-400 dark:text-gray-500 cursor-not-allowed text-left bg-transparent"
+                  >
+                    <Icon className="w-5 h-5" />
+                    {item.name}
+                  </button>
+                );
+              }
+
               return (
-                <button
+                <Link
                   key={item.name}
+                  to={item.path}
                   className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 ${
-                    item.active
-                      ? 'bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 shadow-sm cursor-default'
-                      : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-zinc-700/50 hover:text-gray-950 dark:hover:text-zinc-50 cursor-not-allowed'
+                    isActive
+                      ? 'bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 shadow-sm font-bold'
+                      : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-zinc-700/50 hover:text-gray-950 dark:hover:text-zinc-50'
                   }`}
-                  disabled={!item.active}
                 >
                   <Icon className="w-5 h-5" />
                   {item.name}
-                </button>
+                </Link>
               );
             })}
           </nav>

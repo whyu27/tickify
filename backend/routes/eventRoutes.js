@@ -8,6 +8,7 @@ const router = express.Router();
 router.get('/', getAllEvents);
 router.post('/', authenticate, authorize('organizer'), create);
 router.get('/my-events', authenticate, authorize('organizer'), getOrganizerEvents);
+router.get('/organizer', authenticate, authorize('organizer'), getOrganizerEvents);
 router.get('/:id', getEventById);
 router.put('/:id', authenticate, authorize('organizer'), updateEvent);
 router.delete('/:id', authenticate, authorize('organizer'), deleteEvent);

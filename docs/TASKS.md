@@ -204,7 +204,7 @@ AI Agent hanya diperbolehkan mengerjakan task yang terdapat pada dokumen ini. Se
 * [x] Create Event
 * [x] Update Event
 * [x] Delete Event
-* [ ] Organizer Events
+* [x] Organizer Events
 
 ---
 
