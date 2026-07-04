@@ -101,7 +101,7 @@ AI Agent hanya diperbolehkan mengerjakan task yang terdapat pada dokumen ini. Se
 
 ## Event Management
 
-* [ ] Create Event
+* [x] Create Event
 * [ ] Get Organizer Events
 * [ ] Update Event
 * [ ] Delete Event
