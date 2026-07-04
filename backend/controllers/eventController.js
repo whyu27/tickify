@@ -1,4 +1,4 @@
-const { createEvent, getOrganizerEvents, getAllEvents, getEventById } = require('../services/eventService');
+const { createEvent, getOrganizerEvents, getAllEvents, getEventById, updateEvent } = require('../services/eventService');
 
 const create = async (req, res) => {
   try {
@@ -110,4 +110,73 @@ const getEventByIdHandler = async (req, res) => {
   }
 };
 
-module.exports = { create, getOrganizerEvents: getOrganizerEventsHandler, getAllEvents: getAllEventsHandler, getEventById: getEventByIdHandler };
+const updateEventHandler = async (req, res) => {
+  try {
+    const { title, description, location, event_date, banner_url, price_eth, quota } = req.body;
+
+    const errors = [];
+
+    if (!title || title.trim() === '') {
+      errors.push('Title is required');
+    }
+
+    if (!location || location.trim() === '') {
+      errors.push('Location is required');
+    }
+
+    if (!event_date || isNaN(new Date(event_date).getTime())) {
+      errors.push('Valid event date is required');
+    }
+
+    if (!price_eth || isNaN(Number(price_eth)) || Number(price_eth) <= 0) {
+      errors.push('Price must be a positive number');
+    }
+
+    if (!quota || !Number.isInteger(Number(quota)) || Number(quota) < 1) {
+      errors.push('Quota must be at least 1');
+    }
+
+    if (errors.length > 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Validation error',
+      });
+    }
+
+    const event = await updateEvent(req.params.id, req.user.id, {
+      title: title.trim(),
+      description: description || null,
+      location: location.trim(),
+      event_date,
+      banner_url: banner_url || null,
+      price_eth,
+      quota: Number(quota),
+    });
+
+    return res.status(200).json({
+      success: true,
+      data: event,
+    });
+  } catch (error) {
+    if (error.message === 'Event not found') {
+      return res.status(404).json({
+        success: false,
+        message: error.message,
+      });
+    }
+
+    if (error.message === 'Forbidden') {
+      return res.status(403).json({
+        success: false,
+        message: error.message,
+      });
+    }
+
+    return res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+    });
+  }
+};
+
+module.exports = { create, getOrganizerEvents: getOrganizerEventsHandler, getAllEvents: getAllEventsHandler, getEventById: getEventByIdHandler, updateEvent: updateEventHandler };

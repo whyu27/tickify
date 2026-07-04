@@ -103,7 +103,7 @@ AI Agent hanya diperbolehkan mengerjakan task yang terdapat pada dokumen ini. Se
 
 * [x] Create Event
 * [x] Get Organizer Events
-* [ ] Update Event
+* [x] Update Event
 * [ ] Delete Event
 
 ---
@@ -201,7 +201,7 @@ AI Agent hanya diperbolehkan mengerjakan task yang terdapat pada dokumen ini. Se
 * [x] Get Events
 * [x] Get Event Detail
 * [ ] Create Event
-* [ ] Update Event
+* [x] Update Event
 * [ ] Delete Event
 * [ ] Organizer Events
 

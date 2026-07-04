@@ -47,4 +47,32 @@ const getEventById = async (id) => {
   return result.rows[0] || null;
 };
 
-module.exports = { createEvent, getOrganizerEvents, getAllEvents, getEventById };
+const updateEvent = async (eventId, organizerId, data) => {
+  const event = await pool.query(
+    'SELECT organizer_id FROM events WHERE id = $1',
+    [eventId]
+  );
+
+  if (event.rows.length === 0) {
+    throw new Error('Event not found');
+  }
+
+  if (event.rows[0].organizer_id !== organizerId) {
+    throw new Error('Forbidden');
+  }
+
+  const { title, description, location, event_date, banner_url, price_eth, quota } = data;
+
+  const result = await pool.query(
+    `UPDATE events
+     SET title = $1, description = $2, location = $3, event_date = $4,
+         price_eth = $5, quota = $6, banner_url = $7, updated_at = NOW()
+     WHERE id = $8
+     RETURNING id, title, description, location, event_date, price_eth, quota, banner_url, status`,
+    [title, description || null, location, event_date, price_eth, quota, banner_url || null, eventId]
+  );
+
+  return result.rows[0];
+};
+
+module.exports = { createEvent, getOrganizerEvents, getAllEvents, getEventById, updateEvent };
