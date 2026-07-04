@@ -6,6 +6,7 @@ import DashboardLayout from '../layouts/DashboardLayout';
 import DashboardOrganizer from '../pages/Organizer/DashboardOrganizer';
 import CreateEventPage from '../pages/Organizer/CreateEventPage';
 import MyEventsPage from '../pages/Organizer/MyEventsPage';
+import EditEventPage from '../pages/Organizer/EditEventPage';
 
 // Simple placeholders as requested
 const Home = () => <div>Home Page (Placeholder)</div>;
@@ -30,6 +31,7 @@ const AppRoutes = () => {
           <Route path="/dashboard/organizer" element={<DashboardOrganizer />} />
           <Route path="/dashboard/organizer/events" element={<MyEventsPage />} />
           <Route path="/dashboard/organizer/events/create" element={<CreateEventPage />} />
+          <Route path="/dashboard/organizer/events/:id/edit" element={<EditEventPage />} />
         </Route>
       </Route>
 

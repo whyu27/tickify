@@ -190,17 +190,17 @@ const MyEventsPage = () => {
                   </div>
                 </div>
 
-                {/* Buttons (No Functionality Yet) */}
+                {/* Action Buttons */}
                 <div className="flex items-center gap-3 pt-2">
-                  <button
-                    disabled
-                    className="flex-1 px-4 py-2 border border-gray-200 dark:border-zinc-700 text-xs font-semibold rounded-xl text-gray-400 dark:text-gray-550 bg-gray-50 dark:bg-zinc-800/50 cursor-not-allowed text-center"
+                  <Link
+                    to={`/dashboard/organizer/events/${event.id}/edit`}
+                    className="flex-1 px-4 py-2 border border-purple-200 dark:border-purple-800/50 text-xs font-semibold rounded-xl text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/10 hover:bg-purple-100 dark:hover:bg-purple-900/20 transition-colors text-center"
                   >
                     Edit
-                  </button>
+                  </Link>
                   <button
                     disabled
-                    className="flex-1 px-4 py-2 border border-gray-200 dark:border-zinc-700 text-xs font-semibold rounded-xl text-gray-400 dark:text-gray-555 bg-gray-50 dark:bg-zinc-800/50 cursor-not-allowed text-center"
+                    className="flex-1 px-4 py-2 border border-gray-200 dark:border-zinc-700 text-xs font-semibold rounded-xl text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-zinc-800/50 cursor-not-allowed text-center"
                   >
                     Delete
                   </button>

@@ -112,6 +112,7 @@ AI Agent hanya diperbolehkan mengerjakan task yang terdapat pada dokumen ini. Se
 ## Dashboard
 
 * [x] Dashboard Organizer
+* [x] Update Event Frontend
 * [ ] Event Statistics
 * [ ] Participant List
 
