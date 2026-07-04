@@ -78,11 +78,11 @@ AI Agent hanya diperbolehkan mengerjakan task yang terdapat pada dokumen ini. Se
 
 * [x] Register
 * [x] Login
-* [ ] JWT Authentication
-* [ ] Middleware Authentication
+* [x] JWT Authentication
+* [x] Middleware Authentication
 * [ ] Middleware Authorization
 * [ ] Update Wallet Address
-* [ ] Get Current User
+* [x] Get Current User
 
 ---
 
@@ -189,8 +189,8 @@ AI Agent hanya diperbolehkan mengerjakan task yang terdapat pada dokumen ini. Se
 
 ## Authentication API
 
-* [ ] Register
-* [ ] Login
+* [x] Register
+* [x] Login
 * [ ] Profile
 * [ ] Update Wallet
 

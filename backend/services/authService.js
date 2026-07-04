@@ -44,4 +44,17 @@ const loginUser = async (email, password) => {
   return userWithoutPassword;
 };
 
-module.exports = { registerUser, loginUser };
+const getUserById = async (id) => {
+  const result = await pool.query(
+    'SELECT id, name, email, role, wallet_address, created_at FROM users WHERE id = $1',
+    [id]
+  );
+
+  if (result.rows.length === 0) {
+    throw new Error('User not found');
+  }
+
+  return result.rows[0];
+};
+
+module.exports = { registerUser, loginUser, getUserById };
