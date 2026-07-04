@@ -75,4 +75,21 @@ const updateEvent = async (eventId, organizerId, data) => {
   return result.rows[0];
 };
 
-module.exports = { createEvent, getOrganizerEvents, getAllEvents, getEventById, updateEvent };
+const deleteEvent = async (eventId, organizerId) => {
+  const event = await pool.query(
+    'SELECT organizer_id FROM events WHERE id = $1',
+    [eventId]
+  );
+
+  if (event.rows.length === 0) {
+    throw new Error('Event not found');
+  }
+
+  if (event.rows[0].organizer_id !== organizerId) {
+    throw new Error('Forbidden');
+  }
+
+  await pool.query('DELETE FROM events WHERE id = $1', [eventId]);
+};
+
+module.exports = { createEvent, getOrganizerEvents, getAllEvents, getEventById, updateEvent, deleteEvent };

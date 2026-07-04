@@ -1,4 +1,4 @@
-const { createEvent, getOrganizerEvents, getAllEvents, getEventById, updateEvent } = require('../services/eventService');
+const { createEvent, getOrganizerEvents, getAllEvents, getEventById, updateEvent, deleteEvent } = require('../services/eventService');
 
 const create = async (req, res) => {
   try {
@@ -179,4 +179,34 @@ const updateEventHandler = async (req, res) => {
   }
 };
 
-module.exports = { create, getOrganizerEvents: getOrganizerEventsHandler, getAllEvents: getAllEventsHandler, getEventById: getEventByIdHandler, updateEvent: updateEventHandler };
+const deleteEventHandler = async (req, res) => {
+  try {
+    await deleteEvent(req.params.id, req.user.id);
+
+    return res.status(200).json({
+      success: true,
+      message: 'Event deleted successfully',
+    });
+  } catch (error) {
+    if (error.message === 'Event not found') {
+      return res.status(404).json({
+        success: false,
+        message: error.message,
+      });
+    }
+
+    if (error.message === 'Forbidden') {
+      return res.status(403).json({
+        success: false,
+        message: error.message,
+      });
+    }
+
+    return res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+    });
+  }
+};
+
+module.exports = { create, getOrganizerEvents: getOrganizerEventsHandler, getAllEvents: getAllEventsHandler, getEventById: getEventByIdHandler, updateEvent: updateEventHandler, deleteEvent: deleteEventHandler };

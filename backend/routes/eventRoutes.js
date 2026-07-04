@@ -1,5 +1,5 @@
 const express = require('express');
-const { create, getOrganizerEvents, getAllEvents, getEventById, updateEvent } = require('../controllers/eventController');
+const { create, getOrganizerEvents, getAllEvents, getEventById, updateEvent, deleteEvent } = require('../controllers/eventController');
 const { authenticate } = require('../middleware/authMiddleware');
 const { authorize } = require('../middleware/roleMiddleware');
 
@@ -10,5 +10,6 @@ router.post('/', authenticate, authorize('organizer'), create);
 router.get('/my-events', authenticate, authorize('organizer'), getOrganizerEvents);
 router.get('/:id', getEventById);
 router.put('/:id', authenticate, authorize('organizer'), updateEvent);
+router.delete('/:id', authenticate, authorize('organizer'), deleteEvent);
 
 module.exports = router;
