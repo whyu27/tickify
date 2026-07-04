@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
-const { registerUser, loginUser, getUserById } = require('../services/authService');
+const { ethers } = require('ethers');
+const { registerUser, loginUser, getUserById, updateWalletAddress } = require('../services/authService');
 
 const register = async (req, res) => {
   try {
@@ -140,4 +141,43 @@ const participantOnly = (req, res) => {
   });
 };
 
-module.exports = { register, login, getProfile, organizerOnly, participantOnly };
+const updateWallet = async (req, res) => {
+  try {
+    const { walletAddress } = req.body;
+
+    if (!walletAddress) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid wallet address',
+      });
+    }
+
+    if (!ethers.isAddress(walletAddress)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid wallet address',
+      });
+    }
+
+    const result = await updateWalletAddress(req.user.id, walletAddress);
+
+    return res.status(200).json({
+      success: true,
+      data: result,
+    });
+  } catch (error) {
+    if (error.message === 'Wallet already linked to another account') {
+      return res.status(409).json({
+        success: false,
+        message: error.message,
+      });
+    }
+
+    return res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+    });
+  }
+};
+
+module.exports = { register, login, getProfile, organizerOnly, participantOnly, updateWallet };

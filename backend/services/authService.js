@@ -57,4 +57,24 @@ const getUserById = async (id) => {
   return result.rows[0];
 };
 
-module.exports = { registerUser, loginUser, getUserById };
+const updateWalletAddress = async (userId, walletAddress) => {
+  const existingWallet = await pool.query(
+    'SELECT id FROM users WHERE wallet_address = $1 AND id != $2',
+    [walletAddress, userId]
+  );
+
+  if (existingWallet.rows.length > 0) {
+    throw new Error('Wallet already linked to another account');
+  }
+
+  const result = await pool.query(
+    `UPDATE users SET wallet_address = $1, updated_at = NOW()
+     WHERE id = $2
+     RETURNING wallet_address`,
+    [walletAddress, userId]
+  );
+
+  return result.rows[0];
+};
+
+module.exports = { registerUser, loginUser, getUserById, updateWalletAddress };

@@ -81,7 +81,7 @@ AI Agent hanya diperbolehkan mengerjakan task yang terdapat pada dokumen ini. Se
 * [x] JWT Authentication
 * [x] Middleware Authentication
 * [x] Middleware Authorization
-* [ ] Update Wallet Address
+* [x] Update Wallet Address
 * [x] Get Current User
 
 ---
