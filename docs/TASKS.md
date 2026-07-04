@@ -198,7 +198,7 @@ AI Agent hanya diperbolehkan mengerjakan task yang terdapat pada dokumen ini. Se
 
 ## Event API
 
-* [ ] Get Events
+* [x] Get Events
 * [ ] Get Event Detail
 * [ ] Create Event
 * [ ] Update Event

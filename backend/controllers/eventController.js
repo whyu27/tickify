@@ -1,4 +1,4 @@
-const { createEvent, getOrganizerEvents } = require('../services/eventService');
+const { createEvent, getOrganizerEvents, getAllEvents } = require('../services/eventService');
 
 const create = async (req, res) => {
   try {
@@ -71,4 +71,20 @@ const getOrganizerEventsHandler = async (req, res) => {
   }
 };
 
-module.exports = { create, getOrganizerEvents: getOrganizerEventsHandler };
+const getAllEventsHandler = async (req, res) => {
+  try {
+    const events = await getAllEvents();
+
+    return res.status(200).json({
+      success: true,
+      data: events,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+    });
+  }
+};
+
+module.exports = { create, getOrganizerEvents: getOrganizerEventsHandler, getAllEvents: getAllEventsHandler };
