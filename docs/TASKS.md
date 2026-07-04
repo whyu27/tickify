@@ -130,9 +130,10 @@ AI Agent hanya diperbolehkan mengerjakan task yang terdapat pada dokumen ini. Se
 
 ## Event
 
-* [ ] Landing Page
+* [x] Landing Page
 * [ ] Event List
-* [ ] Event Detail
+* [x] Event Detail
+* [x] Participant Dashboard
 
 ---
 
@@ -334,7 +335,7 @@ Aplikasi dianggap selesai apabila seluruh fitur berikut telah berhasil diimpleme
 
 ## Organizer
 
-* [ ] CRUD Event
+* [x] CRUD Event
 * [ ] Dashboard
 * [ ] Verify Ticket
 

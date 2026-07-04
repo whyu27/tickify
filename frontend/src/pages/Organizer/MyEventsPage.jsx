@@ -7,6 +7,10 @@ const MyEventsPage = () => {
   const [events, setEvents] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState('');
+  const [eventToDelete, setEventToDelete] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState('');
+  const [notification, setNotification] = useState('');
 
   const fetchEvents = async () => {
     setIsLoading(true);
@@ -24,6 +28,31 @@ const MyEventsPage = () => {
       setErrorMsg(msg);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!eventToDelete) return;
+    setIsDeleting(true);
+    setDeleteError('');
+    try {
+      const response = await api.delete(`/events/${eventToDelete.id}`);
+      if (response.data && response.data.success) {
+        setNotification('Event berhasil dihapus.');
+        setEventToDelete(null);
+        fetchEvents();
+        setTimeout(() => {
+          setNotification('');
+        }, 3000);
+      } else {
+        setDeleteError(response.data?.message || 'Gagal menghapus event.');
+      }
+    } catch (error) {
+      console.error('Delete event error:', error);
+      const msg = error.response?.data?.message || 'Terjadi kesalahan pada server saat menghapus event';
+      setDeleteError(msg);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -68,6 +97,22 @@ const MyEventsPage = () => {
           </Link>
         )}
       </div>
+
+      {/* Success Notification */}
+      {notification && (
+        <div className="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 text-emerald-850 dark:text-emerald-400 p-4 rounded-xl flex items-center justify-between shadow-sm">
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></div>
+            <span className="text-sm font-semibold">{notification}</span>
+          </div>
+          <button
+            onClick={() => setNotification('')}
+            className="text-emerald-650 hover:text-emerald-800 dark:text-emerald-400 dark:hover:text-emerald-350 text-xs font-bold"
+          >
+            Close
+          </button>
+        </div>
+      )}
 
       {/* Loading state */}
       {isLoading && (
@@ -142,11 +187,10 @@ const MyEventsPage = () => {
                 {/* Status Badge */}
                 <div className="absolute top-4 right-4">
                   <span
-                    className={`inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${
-                      event.status === 'published'
+                    className={`inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${event.status === 'published'
                         ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-400'
                         : 'bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-400'
-                    }`}
+                      }`}
                   >
                     {event.status || 'draft'}
                   </span>
@@ -159,7 +203,7 @@ const MyEventsPage = () => {
                   <h3 className="font-extrabold text-lg text-gray-900 dark:text-white line-clamp-1">
                     {event.title}
                   </h3>
-                  
+
                   {/* Location & Date */}
                   <div className="space-y-1.5">
                     <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
@@ -199,8 +243,11 @@ const MyEventsPage = () => {
                     Edit
                   </Link>
                   <button
-                    disabled
-                    className="flex-1 px-4 py-2 border border-gray-200 dark:border-zinc-700 text-xs font-semibold rounded-xl text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-zinc-800/50 cursor-not-allowed text-center"
+                    onClick={() => {
+                      setEventToDelete(event);
+                      setDeleteError('');
+                    }}
+                    className="flex-1 px-4 py-2 border border-red-200 dark:border-red-800/50 text-xs font-semibold rounded-xl text-red-650 dark:text-red-400 bg-red-50 dark:bg-red-900/10 hover:bg-red-100 dark:hover:bg-red-900/20 transition-colors text-center"
                   >
                     Delete
                   </button>
@@ -208,6 +255,60 @@ const MyEventsPage = () => {
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {eventToDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="bg-white dark:bg-zinc-800 rounded-2xl max-w-md w-full border border-gray-200 dark:border-zinc-700 p-6 shadow-xl space-y-6">
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 rounded-full bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 flex items-center justify-center flex-shrink-0">
+                <AlertCircle className="w-6 h-6 text-red-650 dark:text-red-400" />
+              </div>
+              <div className="space-y-1">
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white">Delete Event</h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  Are you sure you want to delete <strong className="text-gray-900 dark:text-white">"{eventToDelete.title}"</strong>? This action cannot be undone.
+                </p>
+              </div>
+            </div>
+
+            {deleteError && (
+              <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 p-3 rounded-xl text-xs">
+                {deleteError}
+              </div>
+            )}
+
+            <div className="flex items-center gap-3 justify-end">
+              <button
+                type="button"
+                disabled={isDeleting}
+                onClick={() => {
+                  setEventToDelete(null);
+                  setDeleteError('');
+                }}
+                className="px-4 py-2 border border-gray-300 dark:border-zinc-650 rounded-xl text-sm font-semibold text-gray-700 dark:text-gray-350 hover:bg-gray-50 dark:hover:bg-zinc-700/50 disabled:opacity-50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={isDeleting}
+                onClick={handleConfirmDelete}
+                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl text-sm font-semibold shadow-md disabled:opacity-50 transition-colors flex items-center gap-2"
+              >
+                {isDeleting ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    <span>Deleting...</span>
+                  </>
+                ) : (
+                  <span>Delete</span>
+                )}
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
