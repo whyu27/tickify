@@ -36,4 +36,15 @@ const getAllEvents = async () => {
   return result.rows;
 };
 
-module.exports = { createEvent, getOrganizerEvents, getAllEvents };
+const getEventById = async (id) => {
+  const result = await pool.query(
+    `SELECT id, title, description, location, event_date, price_eth, quota, banner_url, status, created_at
+     FROM events
+     WHERE id = $1`,
+    [id]
+  );
+
+  return result.rows[0] || null;
+};
+
+module.exports = { createEvent, getOrganizerEvents, getAllEvents, getEventById };
