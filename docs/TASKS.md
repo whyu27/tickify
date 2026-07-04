@@ -89,7 +89,7 @@ AI Agent hanya diperbolehkan mengerjakan task yang terdapat pada dokumen ini. Se
 ## Frontend
 
 * [x] Frontend Authentication Foundation
-* [ ] Register Page
+* [x] Register Page
 * [x] Login Page
 * [x] Protected Route
 * [x] Logout
@@ -111,7 +111,7 @@ AI Agent hanya diperbolehkan mengerjakan task yang terdapat pada dokumen ini. Se
 
 ## Dashboard
 
-* [ ] Dashboard Organizer
+* [x] Dashboard Organizer
 * [ ] Event Statistics
 * [ ] Participant List
 
@@ -201,7 +201,7 @@ AI Agent hanya diperbolehkan mengerjakan task yang terdapat pada dokumen ini. Se
 
 * [x] Get Events
 * [x] Get Event Detail
-* [ ] Create Event
+* [x] Create Event
 * [x] Update Event
 * [x] Delete Event
 * [ ] Organizer Events
@@ -325,7 +325,7 @@ Aplikasi dianggap selesai apabila seluruh fitur berikut telah berhasil diimpleme
 
 ## Authentication
 
-* [ ] Register
+* [x] Register
 * [x] Login
 * [ ] JWT Authentication
 
