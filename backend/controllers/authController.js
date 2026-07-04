@@ -94,6 +94,8 @@ const login = async (req, res) => {
       });
     }
 
+    console.error(error);
+
     return res.status(500).json({
       success: false,
       message: 'Internal server error',
@@ -124,4 +126,18 @@ const getProfile = async (req, res) => {
   }
 };
 
-module.exports = { register, login, getProfile };
+const organizerOnly = (req, res) => {
+  return res.status(200).json({
+    success: true,
+    message: 'Organizer access granted',
+  });
+};
+
+const participantOnly = (req, res) => {
+  return res.status(200).json({
+    success: true,
+    message: 'Participant access granted',
+  });
+};
+
+module.exports = { register, login, getProfile, organizerOnly, participantOnly };
