@@ -11,6 +11,7 @@ import PublicLayout from '../layouts/PublicLayout';
 import LandingPage from '../pages/Public/LandingPage';
 import EventDetailPage from '../pages/Public/EventDetailPage';
 import ParticipantDashboard from '../pages/Participant/ParticipantDashboard';
+import ProfilePage from '../pages/ProfilePage';
 
 // Simple placeholders as requested
 const Dashboard = () => <div>Dashboard Page (Placeholder)</div>;
@@ -29,6 +30,9 @@ const AppRoutes = () => {
       {/* General Protected Routes */}
       <Route element={<ProtectedRoute />}>
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route element={<DashboardLayout />}>
+          <Route path="/dashboard/profile" element={<ProfilePage />} />
+        </Route>
       </Route>
 
       {/* Organizer Protected Routes */}

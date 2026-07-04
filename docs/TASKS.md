@@ -155,7 +155,7 @@ AI Agent hanya diperbolehkan mengerjakan task yang terdapat pada dokumen ini. Se
 
 ## Profile
 
-* [ ] Profile Page
+* [x] Profile Page
 * [ ] Edit Profile
 * [ ] Wallet Information
 
@@ -194,7 +194,7 @@ AI Agent hanya diperbolehkan mengerjakan task yang terdapat pada dokumen ini. Se
 
 * [x] Register
 * [x] Login
-* [ ] Profile
+* [x] Profile
 * [ ] Update Wallet
 
 ---

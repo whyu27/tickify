@@ -10,14 +10,14 @@ const DashboardLayout = () => {
     { name: 'Dashboard', path: '/dashboard/organizer', icon: LayoutDashboard, disabled: false },
     { name: 'My Events', path: '/dashboard/organizer/events', icon: Calendar, disabled: false },
     { name: 'Verify Ticket', path: '/dashboard/organizer/verify', icon: CheckSquare, disabled: true },
-    { name: 'Profile', path: '/dashboard/organizer/profile', icon: User, disabled: true },
+    { name: 'Profile', path: '/dashboard/profile', icon: User, disabled: false },
   ];
 
   const participantMenu = [
     { name: 'Dashboard', path: '/dashboard/participant', icon: LayoutDashboard, disabled: false },
     { name: 'Browse Events', path: '/', icon: Calendar, disabled: false },
     { name: 'My Tickets', path: '/dashboard/participant/tickets', icon: Ticket, disabled: true },
-    { name: 'Profile', path: '/dashboard/participant/profile', icon: User, disabled: true },
+    { name: 'Profile', path: '/dashboard/profile', icon: User, disabled: false },
   ];
 
   const menuItems = user?.role === 'participant' ? participantMenu : organizerMenu;
