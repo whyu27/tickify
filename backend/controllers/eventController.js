@@ -2,7 +2,7 @@ const { createEvent, getOrganizerEvents, getAllEvents, getEventById, updateEvent
 
 const create = async (req, res) => {
   try {
-    const { title, description, location, event_date, banner_url, price_eth, quota } = req.body;
+    const { title, description, location, event_date, price_eth, quota } = req.body;
 
     const errors = [];
 
@@ -33,12 +33,15 @@ const create = async (req, res) => {
       });
     }
 
+    // Get banner path from uploaded file
+    const bannerUrl = req.file ? `/uploads/events/${req.file.filename}` : null;
+
     const event = await createEvent(req.user.id, {
       title: title.trim(),
       description: description || null,
       location: location.trim(),
       event_date,
-      banner_url: banner_url || null,
+      banner_url: bannerUrl,
       price_eth,
       quota: Number(quota),
     });
@@ -112,7 +115,7 @@ const getEventByIdHandler = async (req, res) => {
 
 const updateEventHandler = async (req, res) => {
   try {
-    const { title, description, location, event_date, banner_url, price_eth, quota } = req.body;
+    const { title, description, location, event_date, price_eth, quota } = req.body;
 
     const errors = [];
 
@@ -143,15 +146,24 @@ const updateEventHandler = async (req, res) => {
       });
     }
 
-    const event = await updateEvent(req.params.id, req.user.id, {
+    // Get banner path from uploaded file, or keep existing if no new file
+    const bannerUrl = req.file ? `/uploads/events/${req.file.filename}` : undefined;
+
+    const eventData = {
       title: title.trim(),
       description: description || null,
       location: location.trim(),
       event_date,
-      banner_url: banner_url || null,
       price_eth,
       quota: Number(quota),
-    });
+    };
+
+    // Only update banner_url if a new file was uploaded
+    if (bannerUrl !== undefined) {
+      eventData.banner_url = bannerUrl;
+    }
+
+    const event = await updateEvent(req.params.id, req.user.id, eventData);
 
     return res.status(200).json({
       success: true,

@@ -7,7 +7,7 @@ const DashboardLayout = () => {
   const location = useLocation();
 
   const organizerMenu = [
-    { name: 'Dashboard', path: '/dashboard/organizer', icon: LayoutDashboard, disabled: false },
+    { name: 'Dashboard', path: '/dashboard/organizer/home', icon: LayoutDashboard, disabled: false },
     { name: 'My Events', path: '/dashboard/organizer/events', icon: Calendar, disabled: false },
     { name: 'Verify Ticket', path: '/dashboard/organizer/verify', icon: CheckSquare, disabled: true },
     { name: 'Profile', path: '/dashboard/profile', icon: User, disabled: false },
@@ -39,7 +39,8 @@ const DashboardLayout = () => {
             {menuItems.map((item) => {
               const Icon = item.icon;
               const isActive = location.pathname === item.path || 
-                (item.path === '/dashboard/organizer/events' && location.pathname.startsWith('/dashboard/organizer/events'));
+                (item.path === '/dashboard/organizer/events' && location.pathname.startsWith('/dashboard/organizer/events')) ||
+                (item.path === '/dashboard/organizer/home' && location.pathname === '/dashboard/organizer');
 
               if (item.disabled) {
                 return (

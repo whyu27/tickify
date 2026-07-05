@@ -1,7 +1,10 @@
-import { Calendar, MapPin, Ticket } from 'lucide-react';
+import { Calendar, MapPin, Ticket, Edit, Trash2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { getImageUrl } from '../../utils/imageHelper';
 
-const ParticipantEventCard = ({ event }) => {
+const OrganizerEventCard = ({ event, onDelete }) => {
+  const navigate = useNavigate();
+
   const formatDate = (dateStr) => {
     const date = new Date(dateStr);
     return date.toLocaleDateString('en-US', {
@@ -11,9 +14,14 @@ const ParticipantEventCard = ({ event }) => {
     });
   };
 
-  const handleBuyTicket = () => {
-    // UI only - no blockchain logic yet
-    console.log('Buy ticket for event:', event.id);
+  const handleEdit = () => {
+    navigate(`/dashboard/organizer/events/edit/${event.id}`);
+  };
+
+  const handleDelete = () => {
+    if (window.confirm(`Are you sure you want to delete "${event.title}"?`)) {
+      onDelete(event.id);
+    }
   };
 
   return (
@@ -31,6 +39,19 @@ const ParticipantEventCard = ({ event }) => {
             No Banner
           </div>
         )}
+        
+        {/* Status Badge */}
+        <div className="absolute top-3 right-3">
+          <span className={`px-3 py-1 text-xs font-semibold rounded-full ${
+            event.status === 'published' 
+              ? 'bg-[#22C55E] text-black' 
+              : event.status === 'draft'
+              ? 'bg-[#FACC15] text-black'
+              : 'bg-[#777777] text-white'
+          }`}>
+            {event.status ? event.status.charAt(0).toUpperCase() + event.status.slice(1) : 'Draft'}
+          </span>
+        </div>
       </div>
 
       {/* Content */}
@@ -39,11 +60,6 @@ const ParticipantEventCard = ({ event }) => {
         <h3 className="text-xl font-bold text-white line-clamp-1 group-hover:text-[#A0A0A0] transition-colors duration-200">
           {event.title}
         </h3>
-
-        {/* Organizer */}
-        {event.organizer_name && (
-          <p className="text-sm text-[#777777]">by {event.organizer_name}</p>
-        )}
 
         {/* Location & Date */}
         <div className="space-y-2">
@@ -67,21 +83,31 @@ const ParticipantEventCard = ({ event }) => {
             </div>
           </div>
           <div className="text-right">
-            <p className="text-xs text-[#777777] uppercase tracking-wider mb-1">Available</p>
-            <span className="text-lg font-bold text-white">{event.quota - (event.tickets_sold || 0)}</span>
+            <p className="text-xs text-[#777777] uppercase tracking-wider mb-1">Sold</p>
+            <span className="text-lg font-bold text-white">{event.tickets_sold || 0}/{event.quota}</span>
           </div>
         </div>
 
-        {/* CTA */}
-        <button 
-          onClick={handleBuyTicket}
-          className="w-full px-6 py-3 text-sm font-semibold text-black bg-white rounded-xl hover:bg-[#EAEAEA] transition-all duration-200"
-        >
-          Buy Ticket
-        </button>
+        {/* Action Buttons */}
+        <div className="grid grid-cols-2 gap-3 pt-2">
+          <button 
+            onClick={handleEdit}
+            className="flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold text-white bg-transparent border border-white/12 rounded-xl hover:border-white/25 hover:bg-white/5 transition-all duration-200"
+          >
+            <Edit className="w-4 h-4" strokeWidth={1.5} />
+            Edit
+          </button>
+          <button 
+            onClick={handleDelete}
+            className="flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold text-[#EF4444] bg-transparent border border-[#EF4444]/20 rounded-xl hover:border-[#EF4444]/40 hover:bg-[#EF4444]/5 transition-all duration-200"
+          >
+            <Trash2 className="w-4 h-4" strokeWidth={1.5} />
+            Delete
+          </button>
+        </div>
       </div>
     </div>
   );
 };
 
-export default ParticipantEventCard;
+export default OrganizerEventCard;

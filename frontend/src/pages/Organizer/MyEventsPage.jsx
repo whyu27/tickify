@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../../api/axios';
 import { Plus, Calendar, MapPin, Ticket, AlertCircle } from 'lucide-react';
+import { getImageUrl } from '../../utils/imageHelper';
 
 const MyEventsPage = () => {
   const [events, setEvents] = useState([]);
@@ -175,7 +176,7 @@ const MyEventsPage = () => {
               <div className="relative">
                 {event.banner_url ? (
                   <img
-                    src={event.banner_url}
+                    src={getImageUrl(event.banner_url)}
                     alt={event.title}
                     className="w-full h-48 object-cover"
                   />

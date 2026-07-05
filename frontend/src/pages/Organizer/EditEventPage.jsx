@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import api from '../../api/axios';
 import { ArrowLeft } from 'lucide-react';
+import ImageUpload from '../../components/ImageUpload';
+import { getImageUrl } from '../../utils/imageHelper';
 
 const EditEventPage = () => {
   const { id } = useParams();
@@ -15,8 +17,10 @@ const EditEventPage = () => {
     eventDate: '',
     priceEth: '',
     quota: '',
-    bannerUrl: '',
   });
+
+  const [existingBannerUrl, setExistingBannerUrl] = useState('');
+  const [bannerFile, setBannerFile] = useState(null);
 
   // UI States
   const [errors, setErrors] = useState({});
@@ -56,8 +60,8 @@ const EditEventPage = () => {
             eventDate: parseDateToYYYYMMDD(event.event_date),
             priceEth: event.price_eth || '',
             quota: event.quota || '',
-            bannerUrl: event.banner_url || '',
           });
+          setExistingBannerUrl(event.banner_url || '');
         } else {
           setBackendError(response.data?.message || 'Gagal mengambil data event.');
         }
@@ -90,7 +94,7 @@ const EditEventPage = () => {
 
   const validateForm = () => {
     const tempErrors = {};
-    const { title, description, location, eventDate, priceEth, quota, bannerUrl } = formData;
+    const { title, description, location, eventDate, priceEth, quota } = formData;
 
     if (!title.trim()) tempErrors.title = 'Event Title wajib diisi';
     if (!description.trim()) tempErrors.description = 'Description wajib diisi';
@@ -125,8 +129,6 @@ const EditEventPage = () => {
       }
     }
 
-    if (!bannerUrl.trim()) tempErrors.bannerUrl = 'Banner URL wajib diisi';
-
     setErrors(tempErrors);
     return Object.keys(tempErrors).length === 0;
   };
@@ -141,14 +143,23 @@ const EditEventPage = () => {
     setIsSubmitting(true);
 
     try {
-      const response = await api.put(`/events/${id}`, {
-        title: formData.title.trim(),
-        description: formData.description.trim(),
-        location: formData.location.trim(),
-        event_date: formData.eventDate,
-        price_eth: Number(formData.priceEth),
-        quota: Number(formData.quota),
-        banner_url: formData.bannerUrl.trim(),
+      const formDataToSend = new FormData();
+      formDataToSend.append('title', formData.title.trim());
+      formDataToSend.append('description', formData.description.trim());
+      formDataToSend.append('location', formData.location.trim());
+      formDataToSend.append('event_date', formData.eventDate);
+      formDataToSend.append('price_eth', Number(formData.priceEth));
+      formDataToSend.append('quota', Number(formData.quota));
+      
+      // Only append banner if a new file is selected
+      if (bannerFile) {
+        formDataToSend.append('banner', bannerFile);
+      }
+
+      const response = await api.put(`/events/${id}`, formDataToSend, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
       });
 
       if (response.data && response.data.success) {
@@ -328,23 +339,34 @@ const EditEventPage = () => {
                   {errors.quota && <p className="mt-1 text-xs text-red-500">{errors.quota}</p>}
                 </div>
 
-                {/* Banner URL */}
+                {/* Banner Image Upload */}
                 <div className="md:col-span-2">
-                  <label htmlFor="bannerUrl" className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1.5">
-                    Banner URL
+                  <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1.5">
+                    Event Banner
                   </label>
-                  <input
-                    type="text"
-                    id="bannerUrl"
-                    name="bannerUrl"
-                    value={formData.bannerUrl}
-                    onChange={handleChange}
-                    disabled={isSubmitting}
-                    className={`w-full px-4 py-2.5 rounded-xl border bg-transparent text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all ${
-                      errors.bannerUrl ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : 'border-gray-300 dark:border-zinc-700'
-                    }`}
+                  
+                  {/* Show existing banner if no new file selected */}
+                  {existingBannerUrl && !bannerFile && (
+                    <div className="mb-4 rounded-xl overflow-hidden border border-gray-200 dark:border-zinc-700">
+                      <img
+                        src={getImageUrl(existingBannerUrl)}
+                        alt="Current Banner"
+                        className="w-full h-64 object-cover"
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                        }}
+                      />
+                      <div className="p-3 bg-gray-50 dark:bg-zinc-800/50 text-xs text-gray-600 dark:text-gray-400">
+                        Current banner. Upload a new image to replace it.
+                      </div>
+                    </div>
+                  )}
+                  
+                  <ImageUpload
+                    value={bannerFile}
+                    onChange={setBannerFile}
+                    error={errors.banner}
                   />
-                  {errors.bannerUrl && <p className="mt-1 text-xs text-red-500">{errors.bannerUrl}</p>}
                 </div>
 
               </div>

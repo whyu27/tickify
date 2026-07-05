@@ -1,4 +1,5 @@
 import { Calendar, MapPin, Ticket } from 'lucide-react';
+import { getImageUrl } from '../../utils/imageHelper';
 
 const EventCard = ({ event }) => {
   const formatDate = (dateStr) => {
@@ -16,7 +17,7 @@ const EventCard = ({ event }) => {
       <div className="relative h-48 overflow-hidden bg-[#0D0D0D]">
         {event.banner_url ? (
           <img
-            src={event.banner_url}
+            src={getImageUrl(event.banner_url)}
             alt={event.title}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           />

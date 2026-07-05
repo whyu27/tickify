@@ -1,9 +1,10 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import ProtectedRoute from './ProtectedRoute';
 import LoginPage from '../pages/Auth/LoginPage';
 import RegisterPage from '../pages/Auth/RegisterPage';
 import DashboardLayout from '../layouts/DashboardLayout';
 import DashboardOrganizer from '../pages/Organizer/DashboardOrganizer';
+import OrganizerHome from '../pages/Organizer/OrganizerHome';
 import CreateEventPage from '../pages/Organizer/CreateEventPage';
 import MyEventsPage from '../pages/Organizer/MyEventsPage';
 import EditEventPage from '../pages/Organizer/EditEventPage';
@@ -38,10 +39,11 @@ const AppRoutes = () => {
 
       {/* Organizer Protected Routes */}
       <Route element={<ProtectedRoute allowedRoles={['organizer']} />}>
+        <Route path="/dashboard/organizer/home" element={<OrganizerHome />} />
+        <Route path="/dashboard/organizer/events/create" element={<CreateEventPage />} />
         <Route element={<DashboardLayout />}>
-          <Route path="/dashboard/organizer" element={<DashboardOrganizer />} />
+          <Route path="/dashboard/organizer" element={<Navigate to="/dashboard/organizer/home" replace />} />
           <Route path="/dashboard/organizer/events" element={<MyEventsPage />} />
-          <Route path="/dashboard/organizer/events/create" element={<CreateEventPage />} />
           <Route path="/dashboard/organizer/events/:id/edit" element={<EditEventPage />} />
         </Route>
       </Route>

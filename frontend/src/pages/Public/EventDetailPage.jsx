@@ -3,6 +3,7 @@ import { useParams, useNavigate, useLocation, Link } from 'react-router-dom';
 import api from '../../api/axios';
 import useAuth from '../../hooks/useAuth';
 import { Calendar, MapPin, Ticket, Users, AlertCircle, ArrowLeft, Info } from 'lucide-react';
+import { getImageUrl } from '../../utils/imageHelper';
 
 const EventDetailPage = () => {
   const { id } = useParams();
@@ -130,7 +131,7 @@ const EventDetailPage = () => {
             <div className="relative rounded-3xl overflow-hidden shadow-md border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-850">
               {event.banner_url ? (
                 <img
-                  src={event.banner_url}
+                  src={getImageUrl(event.banner_url)}
                   alt={event.title}
                   className="w-full max-h-[400px] object-cover"
                 />

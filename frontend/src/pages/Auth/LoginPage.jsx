@@ -50,7 +50,7 @@ const LoginPage = () => {
 
         // Redirect based on role
         if (user.role === 'organizer') {
-          navigate('/dashboard/organizer');
+          navigate('/dashboard/organizer/home');
         } else if (user.role === 'participant') {
           navigate('/participant/home');
         } else {

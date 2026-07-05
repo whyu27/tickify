@@ -254,6 +254,24 @@ Description
 
 Membuat event baru.
 
+Content-Type
+
+```text
+multipart/form-data
+```
+
+Body
+
+```text
+title: string (required)
+description: string
+location: string (required)
+event_date: string (required, ISO date)
+price_eth: number (required)
+quota: integer (required)
+banner: file (optional, jpg/jpeg/png/webp, max 5MB)
+```
+
 ---
 
 ## Update Event
@@ -273,6 +291,26 @@ Organizer
 Description
 
 Mengubah informasi event.
+
+Content-Type
+
+```text
+multipart/form-data
+```
+
+Body
+
+```text
+title: string (required)
+description: string
+location: string (required)
+event_date: string (required, ISO date)
+price_eth: number (required)
+quota: integer (required)
+banner: file (optional, jpg/jpeg/png/webp, max 5MB)
+```
+
+Note: If banner file is not provided, existing banner will be preserved.
 
 ---
 
@@ -528,6 +566,8 @@ Dapat mengakses:
 * Tanggal event wajib diisi.
 * Harga tiket harus lebih dari 0.
 * Kuota minimal 1.
+* Banner harus berupa file gambar (jpg, jpeg, png, webp).
+* Ukuran banner maksimal 5 MB.
 
 ---
 
