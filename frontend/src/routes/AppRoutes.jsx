@@ -6,7 +6,6 @@ import DashboardLayout from '../layouts/DashboardLayout';
 import DashboardOrganizer from '../pages/Organizer/DashboardOrganizer';
 import OrganizerHome from '../pages/Organizer/OrganizerHome';
 import CreateEventPage from '../pages/Organizer/CreateEventPage';
-import MyEventsPage from '../pages/Organizer/MyEventsPage';
 import EditEventPage from '../pages/Organizer/EditEventPage';
 import ValidatorPage from '../pages/Organizer/ValidatorPage';
 import PublicLayout from '../layouts/PublicLayout';
@@ -46,7 +45,6 @@ const AppRoutes = () => {
         <Route path="/dashboard/organizer/validator" element={<ValidatorPage />} />
         <Route element={<DashboardLayout />}>
           <Route path="/dashboard/organizer" element={<Navigate to="/dashboard/organizer/home" replace />} />
-          <Route path="/dashboard/organizer/events" element={<MyEventsPage />} />
         </Route>
       </Route>
 

@@ -1,4 +1,4 @@
-const { createEvent, getOrganizerEvents, getAllEvents, getEventById, updateEvent, deleteEvent } = require('../services/eventService');
+const { createEvent, getOrganizerEvents, getAllEvents, getEventById, updateEvent, deleteEvent, updateEventStatus } = require('../services/eventService');
 
 const create = async (req, res) => {
   try {
@@ -221,4 +221,51 @@ const deleteEventHandler = async (req, res) => {
   }
 };
 
-module.exports = { create, getOrganizerEvents: getOrganizerEventsHandler, getAllEvents: getAllEventsHandler, getEventById: getEventByIdHandler, updateEvent: updateEventHandler, deleteEvent: deleteEventHandler };
+const updateStatusHandler = async (req, res) => {
+  try {
+    const { status } = req.body;
+
+    if (!status) {
+      return res.status(400).json({
+        success: false,
+        message: 'Status is required',
+      });
+    }
+
+    const event = await updateEventStatus(req.params.id, req.user.id, status);
+
+    return res.status(200).json({
+      success: true,
+      data: event,
+      message: `Event status updated to ${status}`,
+    });
+  } catch (error) {
+    if (error.message === 'Event not found') {
+      return res.status(404).json({
+        success: false,
+        message: error.message,
+      });
+    }
+
+    if (error.message === 'Forbidden') {
+      return res.status(403).json({
+        success: false,
+        message: error.message,
+      });
+    }
+
+    if (error.message === 'Invalid status') {
+      return res.status(400).json({
+        success: false,
+        message: error.message,
+      });
+    }
+
+    return res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+    });
+  }
+};
+
+module.exports = { create, getOrganizerEvents: getOrganizerEventsHandler, getAllEvents: getAllEventsHandler, getEventById: getEventByIdHandler, updateEvent: updateEventHandler, deleteEvent: deleteEventHandler, updateStatus: updateStatusHandler };

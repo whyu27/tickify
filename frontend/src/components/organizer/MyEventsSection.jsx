@@ -3,7 +3,7 @@ import { Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import OrganizerEventCard from './OrganizerEventCard';
 
-const MyEventsSection = ({ events, onDeleteEvent, loading, error }) => {
+const MyEventsSection = ({ events, onDeleteEvent, onStatusChange, loading, error }) => {
   const navigate = useNavigate();
 
   const handleCreateEvent = () => {
@@ -78,6 +78,7 @@ const MyEventsSection = ({ events, onDeleteEvent, loading, error }) => {
                 key={event.id} 
                 event={event} 
                 onDelete={onDeleteEvent}
+                onStatusChange={onStatusChange}
               />
             ))}
           </div>

@@ -5,8 +5,11 @@ const Navbar = () => {
     <nav className="sticky top-0 z-50 w-full h-[72px] bg-[#0A0A0A]/80 backdrop-blur-md border-b border-white/8">
       <div className="max-w-[1280px] mx-auto px-6 h-full relative flex items-center justify-between">
         {/* Logo */}
-        <Link to="/" className="text-2xl font-bold text-white tracking-tight z-10">
-          Tickify
+        <Link to="/" className="flex items-center gap-2 z-10">
+          <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
+            <span className="text-black font-black text-lg">T</span>
+          </div>
+          <span className="text-xl font-bold text-white">Tickify</span>
         </Link>
 
         {/* Desktop Navigation - Centered Absolutely */}

@@ -16,6 +16,7 @@ const OrganizerHome = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isUpgrading, setIsUpgrading] = useState(false);
+  const [toast, setToast] = useState({ message: '', type: 'success', show: false });
 
   useEffect(() => {
     fetchOrganizerData();
@@ -52,13 +53,52 @@ const OrganizerHome = () => {
       
       if (response.data.success) {
         setEvents(events.filter(event => event.id !== eventId));
+        showToast('Event deleted successfully', 'success');
       } else {
-        alert(response.data.message || 'Failed to delete event.');
+        showToast(response.data.message || 'Failed to delete event.', 'error');
       }
     } catch (err) {
       console.error('Delete event error:', err);
-      alert(err.response?.data?.message || 'Failed to delete event.');
+      showToast(err.response?.data?.message || 'Failed to delete event.', 'error');
     }
+  };
+
+  const handleStatusChange = async (eventId, newStatus) => {
+    try {
+      const response = await api.patch(`/events/${eventId}/status`, { status: newStatus });
+      
+      if (response.data.success) {
+        // Update the event in the list
+        setEvents(events.map(event => 
+          event.id === eventId 
+            ? { ...event, status: newStatus }
+            : event
+        ));
+        
+        const statusMessages = {
+          published: 'Event published successfully',
+          closed: 'Event sales closed successfully',
+          draft: 'Event moved to draft'
+        };
+        
+        showToast(statusMessages[newStatus] || 'Event status updated', 'success');
+        return true;
+      } else {
+        showToast(response.data.message || 'Failed to update event status.', 'error');
+        return false;
+      }
+    } catch (err) {
+      console.error('Update status error:', err);
+      showToast(err.response?.data?.message || 'Failed to update event status.', 'error');
+      return false;
+    }
+  };
+
+  const showToast = (message, type = 'success') => {
+    setToast({ message, type, show: true });
+    setTimeout(() => {
+      setToast({ message: '', type: 'success', show: false });
+    }, 3000);
   };
 
   const handleUpgrade = async () => {
@@ -68,14 +108,14 @@ const OrganizerHome = () => {
       
       if (response.data && response.data.success) {
         setSubscription(response.data.data);
-        alert('Successfully upgraded to Pro Plan!');
+        showToast('Successfully upgraded to Pro Plan!', 'success');
         fetchOrganizerData();
       } else {
-        alert(response.data?.message || 'Failed to upgrade subscription.');
+        showToast(response.data?.message || 'Failed to upgrade subscription.', 'error');
       }
     } catch (err) {
       console.error('Upgrade subscription error:', err);
-      alert(err.response?.data?.message || 'Failed to upgrade subscription.');
+      showToast(err.response?.data?.message || 'Failed to upgrade subscription.', 'error');
     } finally {
       setIsUpgrading(false);
     }
@@ -105,9 +145,23 @@ const OrganizerHome = () => {
       <MyEventsSection 
         events={events}
         onDeleteEvent={handleDeleteEvent}
+        onStatusChange={handleStatusChange}
         loading={loading}
         error={error}
       />
+
+      {/* Toast Notification */}
+      {toast.show && (
+        <div className="fixed bottom-8 right-8 z-50 animate-fade-in">
+          <div className={`px-6 py-4 rounded-xl shadow-lg border ${
+            toast.type === 'success' 
+              ? 'bg-[#22C55E]/10 border-[#22C55E]/20 text-[#22C55E]'
+              : 'bg-[#EF4444]/10 border-[#EF4444]/20 text-[#EF4444]'
+          }`}>
+            <p className="text-sm font-semibold">{toast.message}</p>
+          </div>
+        </div>
+      )}
 
       {/* FAQ Section */}
       <FAQSection />

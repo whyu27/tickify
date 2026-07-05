@@ -1,5 +1,5 @@
 const express = require('express');
-const { create, getOrganizerEvents, getAllEvents, getEventById, updateEvent, deleteEvent } = require('../controllers/eventController');
+const { create, getOrganizerEvents, getAllEvents, getEventById, updateEvent, deleteEvent, updateStatus } = require('../controllers/eventController');
 const { authenticate } = require('../middleware/authMiddleware');
 const { authorize } = require('../middleware/roleMiddleware');
 const { checkFreePlanLimit } = require('../middleware/subscriptionMiddleware');
@@ -13,6 +13,7 @@ router.get('/my-events', authenticate, authorize('organizer'), getOrganizerEvent
 router.get('/organizer', authenticate, authorize('organizer'), getOrganizerEvents);
 router.get('/:id', getEventById);
 router.put('/:id', authenticate, authorize('organizer'), upload.single('banner'), updateEvent);
+router.patch('/:id/status', authenticate, authorize('organizer'), updateStatus);
 router.delete('/:id', authenticate, authorize('organizer'), deleteEvent);
 
 module.exports = router;

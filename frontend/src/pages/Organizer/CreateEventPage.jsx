@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import api from '../../api/axios';
 import { ArrowLeft, Upload, Image as ImageIcon } from 'lucide-react';
 import OrganizerNavbar from '../../components/organizer/OrganizerNavbar';
@@ -7,6 +7,8 @@ import ImageUpload from '../../components/ImageUpload';
 
 const CreateEventPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const duplicateData = location.state?.duplicateData;
 
   // Form states
   const [formData, setFormData] = useState({
@@ -17,6 +19,20 @@ const CreateEventPage = () => {
     priceEth: '',
     quota: '',
   });
+
+  // Load duplicate data if available
+  useEffect(() => {
+    if (duplicateData) {
+      setFormData({
+        title: duplicateData.title || '',
+        description: duplicateData.description || '',
+        location: duplicateData.location || '',
+        eventDate: '',
+        priceEth: duplicateData.priceEth || '',
+        quota: duplicateData.quota || '',
+      });
+    }
+  }, [duplicateData]);
 
   const [bannerFile, setBannerFile] = useState(null);
 
@@ -114,8 +130,8 @@ const CreateEventPage = () => {
       if (response.data && response.data.success) {
         setSuccessMessage('Event berhasil dibuat!');
         alert('Event berhasil dibuat!'); // Tampilkan notifikasi sederhana
-        // Redirect to /dashboard/organizer/events
-        navigate('/dashboard/organizer/events');
+        // Redirect to /dashboard/organizer/home
+        navigate('/dashboard/organizer/home');
       } else {
         setBackendError(response.data?.message || 'Gagal membuat event.');
       }
@@ -140,10 +156,10 @@ const CreateEventPage = () => {
           {/* Page Header */}
           <div className="flex flex-col items-center text-center mb-12">
             <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              Create Event
+              {duplicateData ? 'Duplicate Event' : 'Create Event'}
             </h1>
             <p className="max-w-2xl text-base text-[#A0A0A0]">
-              Publish a new blockchain event on Tickify.
+              {duplicateData ? 'Create a new event based on an existing one.' : 'Publish a new blockchain event on Tickify.'}
             </p>
           </div>
 

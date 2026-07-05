@@ -166,7 +166,7 @@ const EditEventPage = () => {
       if (response.data && response.data.success) {
         setSuccessMessage('Event berhasil diperbarui!');
         alert('Event berhasil diperbarui!');
-        navigate('/dashboard/organizer/events');
+        navigate('/dashboard/organizer/home');
       } else {
         setBackendError(response.data?.message || 'Gagal memperbarui event.');
       }

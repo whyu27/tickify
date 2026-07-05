@@ -1,9 +1,11 @@
-import { Calendar, MapPin, Ticket, Edit, Trash2 } from 'lucide-react';
+import { Calendar, MapPin, Ticket, Edit, Trash2, Eye, CheckCircle, XCircle, Copy } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { getImageUrl } from '../../utils/imageHelper';
+import { useState } from 'react';
 
-const OrganizerEventCard = ({ event, onDelete }) => {
+const OrganizerEventCard = ({ event, onDelete, onStatusChange }) => {
   const navigate = useNavigate();
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const formatDate = (dateStr) => {
     const date = new Date(dateStr);
@@ -21,6 +23,122 @@ const OrganizerEventCard = ({ event, onDelete }) => {
   const handleDelete = () => {
     if (window.confirm(`Are you sure you want to delete "${event.title}"?`)) {
       onDelete(event.id);
+    }
+  };
+
+  const handlePublish = async () => {
+    if (window.confirm(`Publish "${event.title}"? It will be visible to all users.`)) {
+      setIsProcessing(true);
+      await onStatusChange(event.id, 'published');
+      setIsProcessing(false);
+    }
+  };
+
+  const handleCloseSales = async () => {
+    if (window.confirm(`Close sales for "${event.title}"? Users will no longer be able to purchase tickets.`)) {
+      setIsProcessing(true);
+      await onStatusChange(event.id, 'closed');
+      setIsProcessing(false);
+    }
+  };
+
+  const handleView = () => {
+    navigate(`/events/${event.id}`);
+  };
+
+  const handleDuplicate = () => {
+    // Navigate to create page with event data
+    navigate('/dashboard/organizer/events/create', { 
+      state: { 
+        duplicateData: {
+          title: `${event.title} (Copy)`,
+          description: event.description,
+          location: event.location,
+          priceEth: event.price_eth,
+          quota: event.quota,
+        }
+      }
+    });
+  };
+
+  const renderActionButtons = () => {
+    const status = event.status || 'draft';
+
+    if (status === 'draft') {
+      return (
+        <>
+          <button 
+            onClick={handleEdit}
+            disabled={isProcessing}
+            className="flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold text-white bg-transparent border border-white/12 rounded-xl hover:border-white/25 hover:bg-white/5 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <Edit className="w-4 h-4" strokeWidth={1.5} />
+            Edit
+          </button>
+          <button 
+            onClick={handlePublish}
+            disabled={isProcessing}
+            className="flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold text-black bg-[#22C55E] rounded-xl hover:bg-[#22C55E]/90 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <CheckCircle className="w-4 h-4" strokeWidth={1.5} />
+            Publish
+          </button>
+          <button 
+            onClick={handleDelete}
+            disabled={isProcessing}
+            className="flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold text-[#EF4444] bg-transparent border border-[#EF4444]/20 rounded-xl hover:border-[#EF4444]/40 hover:bg-[#EF4444]/5 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <Trash2 className="w-4 h-4" strokeWidth={1.5} />
+            Delete
+          </button>
+        </>
+      );
+    }
+
+    if (status === 'published') {
+      return (
+        <>
+          <button 
+            onClick={handleEdit}
+            disabled={isProcessing}
+            className="flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold text-white bg-transparent border border-white/12 rounded-xl hover:border-white/25 hover:bg-white/5 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <Edit className="w-4 h-4" strokeWidth={1.5} />
+            Edit
+          </button>
+          <button 
+            onClick={handleCloseSales}
+            disabled={isProcessing}
+            className="flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold text-[#EF4444] bg-transparent border border-[#EF4444]/20 rounded-xl hover:border-[#EF4444]/40 hover:bg-[#EF4444]/5 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <XCircle className="w-4 h-4" strokeWidth={1.5} />
+            Close Sales
+          </button>
+        </>
+      );
+    }
+
+    if (status === 'closed') {
+      return (
+        <>
+          <button 
+            onClick={handleView}
+            disabled={isProcessing}
+            className="flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold text-white bg-transparent border border-white/12 rounded-xl hover:border-white/25 hover:bg-white/5 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <Eye className="w-4 h-4" strokeWidth={1.5} />
+            View
+          </button>
+          <button 
+            onClick={handleDuplicate}
+            disabled={isProcessing}
+            className="flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold text-white bg-transparent border border-white/12 rounded-xl hover:border-white/25 hover:bg-white/5 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <Copy className="w-4 h-4" strokeWidth={1.5} />
+            Duplicate
+          </button>
+        </>
+      );
     }
   };
 
@@ -42,12 +160,12 @@ const OrganizerEventCard = ({ event, onDelete }) => {
         
         {/* Status Badge */}
         <div className="absolute top-3 right-3">
-          <span className={`px-3 py-1 text-xs font-semibold rounded-full ${
+          <span className={`px-3 py-1.5 text-xs font-semibold rounded-full ${
             event.status === 'published' 
               ? 'bg-[#22C55E] text-black' 
-              : event.status === 'draft'
-              ? 'bg-[#FACC15] text-black'
-              : 'bg-[#777777] text-white'
+              : event.status === 'closed'
+              ? 'bg-[#EF4444] text-white'
+              : 'bg-[#FACC15] text-black'
           }`}>
             {event.status ? event.status.charAt(0).toUpperCase() + event.status.slice(1) : 'Draft'}
           </span>
@@ -89,21 +207,8 @@ const OrganizerEventCard = ({ event, onDelete }) => {
         </div>
 
         {/* Action Buttons */}
-        <div className="grid grid-cols-2 gap-3 pt-2">
-          <button 
-            onClick={handleEdit}
-            className="flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold text-white bg-transparent border border-white/12 rounded-xl hover:border-white/25 hover:bg-white/5 transition-all duration-200"
-          >
-            <Edit className="w-4 h-4" strokeWidth={1.5} />
-            Edit
-          </button>
-          <button 
-            onClick={handleDelete}
-            className="flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold text-[#EF4444] bg-transparent border border-[#EF4444]/20 rounded-xl hover:border-[#EF4444]/40 hover:bg-[#EF4444]/5 transition-all duration-200"
-          >
-            <Trash2 className="w-4 h-4" strokeWidth={1.5} />
-            Delete
-          </button>
+        <div className={`grid gap-3 pt-2 ${event.status === 'draft' ? 'grid-cols-3' : 'grid-cols-2'}`}>
+          {renderActionButtons()}
         </div>
       </div>
     </div>

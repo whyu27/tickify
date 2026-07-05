@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Wallet } from 'lucide-react';
+import { Menu, X, Wallet, LogOut } from 'lucide-react';
 import useAuth from '../../hooks/useAuth';
 
 const OrganizerNavbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const location = useLocation();
 
   const navLinks = [
@@ -29,7 +29,7 @@ const OrganizerNavbar = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-8">
+          <div className="hidden md:flex items-center gap-8 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
             {navLinks.map((link) => (
               <Link
                 key={link.path}
@@ -46,20 +46,21 @@ const OrganizerNavbar = () => {
           </div>
 
           {/* Desktop Actions */}
-          <div className="hidden md:flex items-center gap-4">
+          <div className="hidden md:flex items-center gap-4 z-10">
             {/* Connect Wallet Button */}
             <button className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-transparent border border-white/12 rounded-xl hover:border-white/25 hover:bg-white/5 transition-all duration-200">
               <Wallet className="w-4 h-4" strokeWidth={1.5} />
               <span>Connect Wallet</span>
             </button>
 
-            {/* Profile Link */}
-            <Link
-              to="/dashboard/organizer/profile"
-              className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-black bg-white rounded-xl hover:bg-[#EAEAEA] transition-all duration-200"
+            {/* Logout Button */}
+            <button
+              onClick={logout}
+              className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-transparent border border-white/12 rounded-xl hover:border-white/25 hover:bg-white/5 transition-all duration-200"
             >
-              Profile
-            </Link>
+              <LogOut className="w-4 h-4" strokeWidth={1.5} />
+              <span>Logout</span>
+            </button>
           </div>
 
           {/* Mobile Menu Button */}
@@ -99,13 +100,16 @@ const OrganizerNavbar = () => {
                 <span>Connect Wallet</span>
               </button>
               
-              <Link
-                to="/dashboard/organizer/profile"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="block w-full text-center px-4 py-2 text-sm font-semibold text-black bg-white rounded-xl hover:bg-[#EAEAEA] transition-all duration-200"
+              <button
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  logout();
+                }}
+                className="w-full flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-transparent border border-white/12 rounded-xl hover:border-white/25 hover:bg-white/5 transition-all duration-200"
               >
-                Profile
-              </Link>
+                <LogOut className="w-4 h-4" strokeWidth={1.5} />
+                <span>Logout</span>
+              </button>
             </div>
           </div>
         )}
