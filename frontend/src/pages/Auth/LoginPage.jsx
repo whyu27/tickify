@@ -52,7 +52,7 @@ const LoginPage = () => {
         if (user.role === 'organizer') {
           navigate('/dashboard/organizer');
         } else if (user.role === 'participant') {
-          navigate('/dashboard/participant');
+          navigate('/participant/home');
         } else {
           navigate('/dashboard');
         }

@@ -14,10 +14,10 @@ const DashboardLayout = () => {
   ];
 
   const participantMenu = [
-    { name: 'Dashboard', path: '/dashboard/participant', icon: LayoutDashboard, disabled: false },
+    { name: 'Home', path: '/participant/home', icon: LayoutDashboard, disabled: false },
     { name: 'Browse Events', path: '/', icon: Calendar, disabled: false },
-    { name: 'My Tickets', path: '/dashboard/participant/tickets', icon: Ticket, disabled: true },
-    { name: 'Profile', path: '/dashboard/profile', icon: User, disabled: false },
+    { name: 'My Tickets', path: '/participant/tickets', icon: Ticket, disabled: false },
+    { name: 'Profile', path: '/participant/profile', icon: User, disabled: false },
   ];
 
   const menuItems = user?.role === 'participant' ? participantMenu : organizerMenu;

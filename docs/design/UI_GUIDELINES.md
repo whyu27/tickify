@@ -333,7 +333,7 @@ Card Padding
 
 Desktop
 
->1024px
+1024px
 
 Tablet
 

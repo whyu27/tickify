@@ -10,7 +10,8 @@ import EditEventPage from '../pages/Organizer/EditEventPage';
 import PublicLayout from '../layouts/PublicLayout';
 import LandingPage from '../pages/Public/LandingPage';
 import EventDetailPage from '../pages/Public/EventDetailPage';
-import ParticipantDashboard from '../pages/Participant/ParticipantDashboard';
+import ParticipantHome from '../pages/Participant/ParticipantHome';
+import MyTickets from '../pages/Participant/MyTickets';
 import ProfilePage from '../pages/ProfilePage';
 
 // Simple placeholders as requested
@@ -47,9 +48,9 @@ const AppRoutes = () => {
 
       {/* Participant Protected Routes */}
       <Route element={<ProtectedRoute allowedRoles={['participant']} />}>
-        <Route element={<DashboardLayout />}>
-          <Route path="/dashboard/participant" element={<ParticipantDashboard />} />
-        </Route>
+        <Route path="/participant/home" element={<ParticipantHome />} />
+        <Route path="/participant/tickets" element={<MyTickets />} />
+        <Route path="/participant/profile" element={<ProfilePage />} />
       </Route>
     </Routes>
   );
