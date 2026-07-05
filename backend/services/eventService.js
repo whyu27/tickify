@@ -27,10 +27,11 @@ const getOrganizerEvents = async (organizerId) => {
 
 const getAllEvents = async () => {
   const result = await pool.query(
-    `SELECT id, title, description, location, event_date, price_eth, quota, banner_url, status
-     FROM events
-     WHERE status = 'published'
-     ORDER BY event_date ASC`
+    `SELECT e.id, e.title, e.description, e.location, e.event_date, e.price_eth, e.quota, e.tickets_sold, e.banner_url, e.status, u.name AS organizer_name
+     FROM events e
+     JOIN users u ON e.organizer_id = u.id
+     WHERE e.status = 'published'
+     ORDER BY e.event_date ASC`
   );
 
   return result.rows;
