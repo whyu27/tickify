@@ -69,35 +69,44 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-zinc-900 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8 bg-white dark:bg-zinc-800 p-8 rounded-2xl shadow-xl border border-gray-100 dark:border-zinc-700">
+    <div className="min-h-screen flex items-center justify-center bg-[#0A0A0A] py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+      {/* Background Glow Effects */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-white/5 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-white/3 rounded-full blur-3xl"></div>
+      </div>
+
+      <div className="relative z-10 max-w-md w-full space-y-6 bg-[#161616] p-8 rounded-2xl border border-white/8 shadow-sm">
         
         {/* Brand Logo & Welcome */}
         <div className="text-center">
           <div className="flex justify-center items-center gap-2 mb-2">
-            <span className="text-3xl font-extrabold tracking-tight text-purple-600 dark:text-purple-400">
-              🎟️ Tickify
+            <span className="text-3xl font-bold tracking-tight text-white">
+              Tickify
             </span>
           </div>
-          <h2 className="mt-4 text-2xl font-bold text-gray-900 dark:text-white">
+          <h2 className="mt-4 text-2xl font-bold text-white">
             Welcome Back
           </h2>
+          <p className="mt-2 text-sm text-[#A0A0A0]">
+            Login to access your account
+          </p>
         </div>
 
         {/* Backend Error Alert */}
         {backendError && (
-          <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 p-3 rounded-lg text-sm text-center">
+          <div className="bg-[#EF4444]/10 border border-[#EF4444]/30 text-[#EF4444] p-3 rounded-xl text-sm text-center">
             {backendError}
           </div>
         )}
 
         {/* Form */}
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit} noValidate>
+        <form className="mt-6 space-y-5" onSubmit={handleSubmit} noValidate>
           <div className="space-y-4">
             
             {/* Email Field */}
             <div>
-              <label htmlFor="email-address" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
+              <label htmlFor="email-address" className="block text-sm font-medium text-white mb-2">
                 Email
               </label>
               <input
@@ -108,19 +117,19 @@ const LoginPage = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={isLoading}
-                className={`appearance-none block w-full px-3 py-2 border rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm bg-transparent text-gray-900 dark:text-white ${
-                  errors.email ? 'border-red-500' : 'border-gray-300 dark:border-zinc-600'
+                className={`appearance-none block w-full h-12 px-4 py-3 border rounded-xl placeholder-[#777777] focus:outline-none focus:border-white/25 text-base bg-transparent text-white transition-all duration-200 ${
+                  errors.email ? 'border-[#EF4444]' : 'border-white/8 hover:border-white/15'
                 }`}
                 placeholder="you@example.com"
               />
               {errors.email && (
-                <p className="mt-1 text-xs text-red-500">{errors.email}</p>
+                <p className="mt-2 text-xs text-[#EF4444]">{errors.email}</p>
               )}
             </div>
 
             {/* Password Field */}
             <div>
-              <label htmlFor="password" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
+              <label htmlFor="password" className="block text-sm font-medium text-white mb-2">
                 Password
               </label>
               <input
@@ -131,23 +140,23 @@ const LoginPage = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={isLoading}
-                className={`appearance-none block w-full px-3 py-2 border rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm bg-transparent text-gray-900 dark:text-white ${
-                  errors.password ? 'border-red-500' : 'border-gray-300 dark:border-zinc-600'
+                className={`appearance-none block w-full h-12 px-4 py-3 border rounded-xl placeholder-[#777777] focus:outline-none focus:border-white/25 text-base bg-transparent text-white transition-all duration-200 ${
+                  errors.password ? 'border-[#EF4444]' : 'border-white/8 hover:border-white/15'
                 }`}
                 placeholder="••••••••"
               />
               {errors.password && (
-                <p className="mt-1 text-xs text-red-500">{errors.password}</p>
+                <p className="mt-2 text-xs text-[#EF4444]">{errors.password}</p>
               )}
             </div>
           </div>
 
           {/* Submit Button */}
-          <div>
+          <div className="pt-2">
             <button
               type="submit"
               disabled={isLoading}
-              className={`group relative w-full flex justify-center py-2.5 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-colors ${
+              className={`group relative w-full flex justify-center h-12 px-4 py-3 border border-transparent text-base font-semibold rounded-xl text-black bg-white hover:bg-[#EAEAEA] focus:outline-none transition-all duration-200 hover:scale-[1.02] ${
                 isLoading ? 'opacity-50 cursor-not-allowed' : ''
               }`}
             >
@@ -157,9 +166,9 @@ const LoginPage = () => {
         </form>
 
         {/* Footer/Navigation link */}
-        <div className="text-center text-sm text-gray-600 dark:text-gray-400 mt-4">
+        <div className="text-center text-sm text-[#A0A0A0] mt-6">
           Belum punya akun?{' '}
-          <Link to="/register" className="font-semibold text-purple-600 hover:text-purple-500 dark:text-purple-400 dark:hover:text-purple-300">
+          <Link to="/register" className="font-semibold text-white hover:text-[#EAEAEA] transition-colors duration-200">
             Register
           </Link>
         </div>
