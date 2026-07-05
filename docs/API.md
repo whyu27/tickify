@@ -118,6 +118,70 @@ Mengambil informasi akun yang sedang login.
 
 ---
 
+# Subscription
+
+## Get Current Subscription
+
+**GET**
+
+```text
+/subscription
+```
+
+Authentication Required
+
+Role
+
+Organizer
+
+Description
+
+Mengambil informasi subscription organizer yang sedang login.
+
+Response
+
+```json
+{
+  "success": true,
+  "data": {
+    "plan": "free",
+    "status": "active",
+    "endDate": null
+  }
+}
+```
+
+---
+
+## Upgrade Subscription
+
+**PUT**
+
+```text
+/subscription/upgrade
+```
+
+Authentication Required
+
+Role
+
+Organizer
+
+Description
+
+Mengubah paket subscription organizer dari **Free** menjadi **Pro**.
+
+Response
+
+```json
+{
+  "success": true,
+  "message": "Subscription upgraded successfully"
+}
+```
+
+---
+
 ## Connect Wallet
 
 **PUT**
@@ -375,6 +439,8 @@ Endpoint berikut memerlukan JWT:
 
 * GET /auth/profile
 * PUT /auth/wallet
+* GET /subscription
+* PUT /subscription/upgrade
 * POST /events
 * PUT /events/:id
 * DELETE /events/:id
@@ -392,6 +458,8 @@ Endpoint berikut memerlukan JWT:
 
 Dapat mengakses:
 
+* View Subscription
+* Upgrade Subscription
 * Create Event
 * Update Event
 * Delete Event

@@ -2,11 +2,12 @@ const express = require('express');
 const { create, getOrganizerEvents, getAllEvents, getEventById, updateEvent, deleteEvent } = require('../controllers/eventController');
 const { authenticate } = require('../middleware/authMiddleware');
 const { authorize } = require('../middleware/roleMiddleware');
+const { checkFreePlanLimit } = require('../middleware/subscriptionMiddleware');
 
 const router = express.Router();
 
 router.get('/', getAllEvents);
-router.post('/', authenticate, authorize('organizer'), create);
+router.post('/', authenticate, authorize('organizer'), checkFreePlanLimit, create);
 router.get('/my-events', authenticate, authorize('organizer'), getOrganizerEvents);
 router.get('/organizer', authenticate, authorize('organizer'), getOrganizerEvents);
 router.get('/:id', getEventById);

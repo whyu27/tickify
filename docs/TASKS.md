@@ -161,7 +161,40 @@ AI Agent hanya diperbolehkan mengerjakan task yang terdapat pada dokumen ini. Se
 
 ---
 
-# Phase 6 — Smart Contract
+# Phase 6 — SaaS Subscription
+
+## Database
+
+* [x] Subscription Migration
+* [x] Update Users Table
+
+---
+
+## Backend
+
+* [x] Get Current Subscription
+* [x] Upgrade Subscription
+* [x] Subscription Middleware
+* [x] Event Limit Validation
+
+---
+
+## Frontend
+
+* [ ] Subscription Page
+* [ ] Current Plan Card
+* [ ] Upgrade Plan Button
+* [ ] Subscription Status
+
+---
+
+## Testing
+
+* [x] Free Plan Limitation
+* [x] Pro Plan Unlimited
+* [x] Upgrade Subscription
+
+# Phase 7 — Smart Contract
 
 ## Development
 
@@ -188,7 +221,7 @@ AI Agent hanya diperbolehkan mengerjakan task yang terdapat pada dokumen ini. Se
 
 ---
 
-# Phase 7 — REST API
+# Phase 8 — REST API
 
 ## Authentication API
 
@@ -224,7 +257,7 @@ AI Agent hanya diperbolehkan mengerjakan task yang terdapat pada dokumen ini. Se
 
 ---
 
-# Phase 8 — UI & UX
+# Phase 9 — UI & UX
 
 ## Components
 
@@ -255,7 +288,7 @@ AI Agent hanya diperbolehkan mengerjakan task yang terdapat pada dokumen ini. Se
 
 ---
 
-# Phase 9 — Testing
+# Phase 10 — Testing
 
 ## Backend
 
@@ -284,7 +317,7 @@ AI Agent hanya diperbolehkan mengerjakan task yang terdapat pada dokumen ini. Se
 
 ---
 
-# Phase 10 — Finalization
+# Phase 11 — Finalization
 
 ## Performance
 

@@ -72,7 +72,61 @@ Keduanya saling melengkapi dan memiliki fungsi yang berbeda.
 
 ---
 
-# 4. Organizer Workflow
+# 4. Subscription Workflow
+
+Hanya **Organizer** yang menggunakan sistem subscription.
+
+Organizer baru akan mendapatkan **Free Plan** secara otomatis.
+
+Participant tidak menggunakan subscription.
+
+```text
+Register Organizer
+        │
+        ▼
+Free Plan
+        │
+        ▼
+Dashboard Organizer
+        │
+        ▼
+Create Event
+        │
+        ▼
+Check Subscription
+        │
+   ┌────┴────┐
+   ▼         ▼
+ Free       Pro
+   │         │
+Check Limit  Unlimited
+   │
+ ┌─┴──────────────┐
+ ▼                ▼
+Limit Belum     Limit Tercapai
+Tercapai             │
+   │                 ▼
+Create Event    Upgrade Plan
+                      │
+                      ▼
+                 Subscription Pro
+                      │
+                      ▼
+                Unlimited Event
+```
+
+### Business Logic
+
+* Subscription hanya berlaku untuk Organizer.
+* Organizer baru menggunakan **Free Plan** secara default.
+* Free Plan dibatasi maksimal **2 event aktif**.
+* Pro Plan tidak memiliki batasan jumlah event.
+* Sistem akan memeriksa subscription sebelum organizer membuat event.
+* Jika batas Free Plan telah tercapai, organizer harus melakukan upgrade ke Pro untuk membuat event baru.
+
+---
+
+# 5. Organizer Workflow
 
 ```text id="0jvmoq"
 Login
@@ -101,7 +155,7 @@ Business Logic
 
 ---
 
-# 5. Participant Workflow
+# 6. Participant Workflow
 
 ```text id="zlcjlwm"
 Login
@@ -140,7 +194,7 @@ Business Logic
 
 ---
 
-# 6. Ticket Purchase Workflow
+# 7. Ticket Purchase Workflow
 
 ```text id="04tg22"
 Participant
@@ -187,7 +241,7 @@ Off-Chain:
 
 ---
 
-# 7. My Tickets Workflow
+# 8. My Tickets Workflow
 
 ```text id="c71kij"
 Dashboard
@@ -212,7 +266,7 @@ QR Code digunakan sebagai identitas tiket saat proses check-in.
 
 ---
 
-# 8. Ticket Verification Workflow
+# 9. Ticket Verification Workflow
 
 ```text id="zv8mqq"
 Organizer
@@ -260,7 +314,7 @@ Apabila status tiket telah digunakan (`isUsed = true`), sistem harus menolak pro
 
 ---
 
-# 9. Data Responsibility
+# 10. Data Responsibility
 
 ## PostgreSQL (Off-Chain)
 
@@ -290,7 +344,7 @@ Blockchain menjadi sumber kebenaran (source of truth) untuk kepemilikan tiket.
 
 ---
 
-# 10. Communication Flow
+# 11. Communication Flow
 
 ```text id="i1s1gt"
                  User
@@ -315,10 +369,12 @@ Backend tidak menangani transaksi blockchain secara langsung, tetapi menerima da
 
 ---
 
-# 11. Business Rules
+# 12. Business Rules
 
 * Setiap akun hanya memiliki satu role.
 * Wallet hanya dapat dikaitkan dengan satu akun.
+* Organizer baru secara default menggunakan Free Plan.
+* Organizer dengan Free Plan hanya dapat memiliki maksimal 2 event aktif.
 * Participant harus login sebelum membeli tiket.
 * Wallet harus terhubung sebelum melakukan transaksi blockchain.
 * Event harus dipublikasikan sebelum dapat dibeli.
@@ -328,7 +384,7 @@ Backend tidak menangani transaksi blockchain secara langsung, tetapi menerima da
 
 ---
 
-# 12. Error Scenarios
+# 13. Error Scenarios
 
 ## Wallet belum terhubung
 
@@ -372,7 +428,7 @@ Tampilkan status "Ticket Already Used" dan tolak proses verifikasi.
 
 ---
 
-# 13. Workflow Principles
+# 14. Workflow Principles
 
 Seluruh proses pada Tickify mengikuti prinsip berikut.
 

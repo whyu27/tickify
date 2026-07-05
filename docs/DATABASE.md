@@ -34,16 +34,26 @@ Users (Participant)
 
 Menyimpan seluruh akun pengguna.
 
-| Column         | Type         | Constraint       | Description                 |
-| -------------- | ------------ | ---------------- | --------------------------- |
-| id             | SERIAL       | PRIMARY KEY      | User ID                     |
-| name           | VARCHAR(255) | NOT NULL         | Nama pengguna               |
-| email          | VARCHAR(255) | UNIQUE, NOT NULL | Email pengguna              |
-| password       | VARCHAR(255) | NOT NULL         | Password yang telah di-hash |
-| role           | VARCHAR(20)  | NOT NULL         | organizer / participant     |
-| wallet_address | VARCHAR(255) | UNIQUE           | Alamat MetaMask             |
-| created_at     | TIMESTAMP    | DEFAULT NOW()    | Waktu dibuat                |
-| updated_at     | TIMESTAMP    | DEFAULT NOW()    | Waktu diperbarui            |
+| Column                | Type         | Constraint            | Description                                             |
+| --------------------- | ------------ | --------------------- | ------------------------------------------------------- |
+| id                    | SERIAL       | PRIMARY KEY           | User ID                                                 |
+| name                  | VARCHAR(255) | NOT NULL              | Nama pengguna                                           |
+| email                 | VARCHAR(255) | UNIQUE, NOT NULL      | Email pengguna                                          |
+| password              | VARCHAR(255) | NOT NULL              | Password yang telah di-hash                             |
+| role                  | VARCHAR(20)  | NOT NULL              | organizer / participant                                 |
+| wallet_address        | VARCHAR(255) | UNIQUE                | Alamat MetaMask                                         |
+| subscription_plan     | VARCHAR(20)  | DEFAULT 'free'        | Paket langganan (free / pro) untuk organizer            |
+| subscription_status   | VARCHAR(20)  | DEFAULT 'active'      | Status langganan (active / expired / cancelled)         |
+| subscription_end_date | TIMESTAMP    | NULL                  | Tanggal berakhir langganan (NULL untuk Free Plan)       |
+| created_at            | TIMESTAMP    | DEFAULT NOW()         | Waktu dibuat                                            |
+| updated_at            | TIMESTAMP    | DEFAULT NOW()         | Waktu diperbarui                                        |
+
+**Catatan**
+
+ - Fitur subscription hanya berlaku untuk **Organizer**.
+ - User dengan role **Participant** tidak menggunakan subscription sehingga kolom subscription diabaikan.
+ - Organizer baru secara default memiliki `subscription_plan = 'free'`.
+ - Free Plan dibatasi maksimal **2 event aktif**, sedangkan Pro Plan tidak memiliki batasan jumlah event.
 
 ---
 
