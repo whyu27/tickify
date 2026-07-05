@@ -8,6 +8,7 @@ import OrganizerHome from '../pages/Organizer/OrganizerHome';
 import CreateEventPage from '../pages/Organizer/CreateEventPage';
 import MyEventsPage from '../pages/Organizer/MyEventsPage';
 import EditEventPage from '../pages/Organizer/EditEventPage';
+import ValidatorPage from '../pages/Organizer/ValidatorPage';
 import PublicLayout from '../layouts/PublicLayout';
 import LandingPage from '../pages/Public/LandingPage';
 import EventDetailPage from '../pages/Public/EventDetailPage';
@@ -41,10 +42,11 @@ const AppRoutes = () => {
       <Route element={<ProtectedRoute allowedRoles={['organizer']} />}>
         <Route path="/dashboard/organizer/home" element={<OrganizerHome />} />
         <Route path="/dashboard/organizer/events/create" element={<CreateEventPage />} />
+        <Route path="/dashboard/organizer/events/edit/:id" element={<EditEventPage />} />
+        <Route path="/dashboard/organizer/validator" element={<ValidatorPage />} />
         <Route element={<DashboardLayout />}>
           <Route path="/dashboard/organizer" element={<Navigate to="/dashboard/organizer/home" replace />} />
           <Route path="/dashboard/organizer/events" element={<MyEventsPage />} />
-          <Route path="/dashboard/organizer/events/:id/edit" element={<EditEventPage />} />
         </Route>
       </Route>
 
