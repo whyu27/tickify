@@ -1,11 +1,14 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Wallet, LogOut } from 'lucide-react';
+import { Menu, X, Wallet, LogOut, ChevronDown, RefreshCw } from 'lucide-react';
 import useAuth from '../../hooks/useAuth';
+import useWeb3 from '../../hooks/useWeb3';
 
 const OrganizerNavbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isWalletDropdownOpen, setIsWalletDropdownOpen] = useState(false);
   const { user, logout } = useAuth();
+  const { wallet, connectWallet, disconnectWallet, switchWallet, connectionStatus } = useWeb3();
   const location = useLocation();
 
   const navLinks = [
@@ -48,10 +51,58 @@ const OrganizerNavbar = () => {
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center gap-4 z-10">
             {/* Connect Wallet Button */}
-            <button className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-transparent border border-white/12 rounded-xl hover:border-white/25 hover:bg-white/5 transition-all duration-200">
-              <Wallet className="w-4 h-4" strokeWidth={1.5} />
-              <span>Connect Wallet</span>
-            </button>
+            {wallet ? (
+              <div className="relative">
+                <button
+                  onClick={() => setIsWalletDropdownOpen(!isWalletDropdownOpen)}
+                  className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-white/5 border border-white/12 rounded-xl hover:border-white/25 hover:bg-white/10 transition-all duration-200"
+                >
+                  <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                  <span className="font-mono text-xs">{`${wallet.slice(0, 6)}...${wallet.slice(-4)}`}</span>
+                  <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isWalletDropdownOpen ? 'rotate-180' : ''}`} strokeWidth={1.5} />
+                </button>
+
+                {isWalletDropdownOpen && (
+                  <>
+                    <div 
+                      className="fixed inset-0 z-10" 
+                      onClick={() => setIsWalletDropdownOpen(false)}
+                    />
+                    <div className="absolute right-0 mt-2 w-48 bg-[#0D0D0D] border border-white/10 rounded-xl p-1.5 shadow-2xl z-20 animate-in fade-in slide-in-from-top-2 duration-150">
+                      <button
+                        onClick={async () => {
+                          setIsWalletDropdownOpen(false);
+                          await switchWallet();
+                        }}
+                        className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-[#A0A0A0] hover:text-white hover:bg-white/5 rounded-lg text-left transition-colors"
+                      >
+                        <RefreshCw className="w-4 h-4" strokeWidth={1.5} />
+                        Switch Wallet
+                      </button>
+                      <button
+                        onClick={() => {
+                          setIsWalletDropdownOpen(false);
+                          disconnectWallet();
+                        }}
+                        className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg text-left transition-colors border-t border-white/5 mt-1 pt-2"
+                      >
+                        <LogOut className="w-4 h-4" strokeWidth={1.5} />
+                        Disconnect
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
+            ) : (
+              <button
+                onClick={connectWallet}
+                disabled={connectionStatus === 'connecting'}
+                className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-transparent border border-white/12 rounded-xl hover:border-white/25 hover:bg-white/5 transition-all duration-200 disabled:opacity-50"
+              >
+                <Wallet className="w-4 h-4" strokeWidth={1.5} />
+                <span>{connectionStatus === 'connecting' ? 'Connecting...' : 'Connect Wallet'}</span>
+              </button>
+            )}
 
             {/* Logout Button */}
             <button
@@ -95,10 +146,46 @@ const OrganizerNavbar = () => {
             ))}
             
             <div className="pt-4 border-t border-white/8 space-y-3">
-              <button className="w-full flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-transparent border border-white/12 rounded-xl hover:border-white/25 hover:bg-white/5 transition-all duration-200">
-                <Wallet className="w-4 h-4" strokeWidth={1.5} />
-                <span>Connect Wallet</span>
-              </button>
+              {wallet ? (
+                <div className="space-y-2 px-4">
+                  <div className="flex items-center gap-2 px-3 py-2 text-sm text-white bg-white/5 border border-white/12 rounded-xl">
+                    <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                    <span className="font-mono text-xs truncate flex-1">{wallet}</span>
+                  </div>
+                  <button
+                    onClick={async () => {
+                      setIsMobileMenuOpen(false);
+                      await switchWallet();
+                    }}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold text-[#A0A0A0] bg-transparent border border-white/12 rounded-xl hover:text-white hover:border-white/25 transition-all"
+                  >
+                    <RefreshCw className="w-4 h-4 animate-spin-hover" strokeWidth={1.5} />
+                    <span>Switch Wallet</span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      disconnectWallet();
+                    }}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold text-red-400 bg-transparent border border-red-500/20 rounded-xl hover:text-red-300 hover:border-red-500/40 transition-all"
+                  >
+                    <LogOut className="w-4 h-4" strokeWidth={1.5} />
+                    <span>Disconnect Wallet</span>
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    connectWallet();
+                  }}
+                  disabled={connectionStatus === 'connecting'}
+                  className="w-full flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-transparent border border-white/12 rounded-xl hover:border-white/25 hover:bg-white/5 transition-all duration-200 disabled:opacity-50"
+                >
+                  <Wallet className="w-4 h-4" strokeWidth={1.5} />
+                  <span>{connectionStatus === 'connecting' ? 'Connecting...' : 'Connect Wallet'}</span>
+                </button>
+              )}
               
               <button
                 onClick={() => {
