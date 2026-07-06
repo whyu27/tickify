@@ -58,14 +58,14 @@ const MyEventsSection = ({ events, onDeleteEvent, onStatusChange, loading, error
         {!loading && !error && events.length === 0 && (
           <div className="text-center py-16">
             <p className="text-[#777777] text-lg mb-6">
-              You haven't created any events yet.
+              No events yet.
             </p>
             <button
               onClick={handleCreateEvent}
               className="inline-flex items-center gap-2 px-6 py-3 text-base font-semibold text-black bg-white rounded-xl hover:bg-[#EAEAEA] transition-all duration-200 hover:scale-105"
             >
               <Plus className="w-5 h-5" strokeWidth={2} />
-              Create Your First Event
+              Create Event
             </button>
           </div>
         )}

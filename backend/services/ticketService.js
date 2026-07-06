@@ -117,7 +117,64 @@ const checkInTicket = async (ticketIdOnChain, organizerId) => {
   }
 };
 
+/**
+ * Get all tickets purchased by a participant
+ * @param {number} participantId - The participant's user ID
+ * @returns {Array<Object>} List of purchased tickets with event details
+ */
+const getParticipantTickets = async (participantId) => {
+  try {
+    const query = `
+      SELECT 
+        t.id,
+        t.ticket_id_onchain,
+        t.event_id,
+        t.participant_id,
+        t.owner_wallet,
+        t.transaction_hash,
+        t.status,
+        t.used_at,
+        t.created_at,
+        e.title AS event_title,
+        e.location AS event_location,
+        e.event_date AS event_date,
+        e.banner_url AS event_banner_url,
+        e.price_eth AS event_price_eth
+      FROM tickets t
+      JOIN events e ON t.event_id = e.id
+      WHERE t.participant_id = $1
+      ORDER BY t.created_at DESC
+    `;
+
+    const result = await pool.query(query, [participantId]);
+
+    return result.rows.map(row => ({
+      id: row.id,
+      ticket_id_onchain: Number(row.ticket_id_onchain),
+      event_id: row.event_id,
+      participant_id: row.participant_id,
+      owner_wallet: row.owner_wallet,
+      transaction_hash: row.transaction_hash,
+      status: row.status,
+      used_at: row.used_at,
+      created_at: row.created_at,
+      event: {
+        id: row.event_id,
+        title: row.event_title,
+        location: row.event_location,
+        event_date: row.event_date,
+        banner_url: row.event_banner_url,
+        price_eth: row.event_price_eth
+      }
+    }));
+  } catch (error) {
+    console.error('Error in getParticipantTickets service:', error);
+    throw error;
+  }
+};
+
 module.exports = {
   verifyTicket,
   checkInTicket,
+  getParticipantTickets,
 };

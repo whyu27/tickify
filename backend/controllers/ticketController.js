@@ -1,4 +1,4 @@
-const { verifyTicket, checkInTicket } = require('../services/ticketService');
+const { verifyTicket, checkInTicket, getParticipantTickets } = require('../services/ticketService');
 
 const verify = async (req, res) => {
   try {
@@ -96,4 +96,22 @@ const checkIn = async (req, res) => {
   }
 };
 
-module.exports = { verify, checkIn };
+const getMyTickets = async (req, res) => {
+  try {
+    const participantId = req.user.id;
+    const tickets = await getParticipantTickets(participantId);
+
+    return res.status(200).json({
+      success: true,
+      data: tickets,
+    });
+  } catch (error) {
+    console.error('Get my tickets error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to retrieve tickets',
+    });
+  }
+};
+
+module.exports = { verify, checkIn, getMyTickets };
