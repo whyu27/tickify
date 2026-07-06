@@ -471,6 +471,37 @@ Response
 
 ---
 
+# Categories
+
+## Get All Categories
+
+**GET**
+
+```text
+/categories
+```
+
+Description
+
+Mengambil seluruh kategori event yang tersedia.
+
+Response
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": 1,
+      "name": "Concert",
+      "slug": "concert"
+    }
+  ]
+}
+```
+
+---
+
 # Statistics
 
 ## Get Platform Statistics

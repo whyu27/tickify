@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { Check, X } from 'lucide-react';
 import { subscriptionPlans } from '../../data/subscriptions';
 
@@ -57,15 +58,16 @@ const SubscriptionSection = () => {
               </ul>
 
               {/* CTA */}
-              <button
-                className={`w-full px-6 py-3 text-sm font-semibold rounded-xl transition-all duration-200 ${
+              <Link
+                to="/register?role=organizer"
+                className={`w-full text-center block px-6 py-3 text-sm font-semibold rounded-xl transition-all duration-200 ${
                   plan.highlighted
                     ? 'bg-white text-black hover:bg-[#EAEAEA]'
                     : 'bg-transparent text-white border border-white/12 hover:border-white/25'
                 }`}
               >
                 {plan.cta}
-              </button>
+              </Link>
             </div>
           ))}
         </div>

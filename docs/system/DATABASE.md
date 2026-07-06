@@ -57,6 +57,18 @@ Menyimpan seluruh akun pengguna.
 
 ---
 
+# Table : categories
+
+Menyimpan kategori-kategori event.
+
+| Column | Type         | Constraint        | Description             |
+| ------ | ------------ | ----------------- | ----------------------- |
+| id     | SERIAL       | PRIMARY KEY       | Category ID             |
+| name   | VARCHAR(255) | UNIQUE, NOT NULL  | Nama kategori           |
+| slug   | VARCHAR(255) | UNIQUE, NOT NULL  | Slug URL kategori       |
+
+---
+
 # Table : events
 
 Menyimpan seluruh event.
@@ -74,6 +86,7 @@ Menyimpan seluruh event.
 | quota        | INTEGER      | NOT NULL        | Jumlah tiket               |
 | tickets_sold | INTEGER      | DEFAULT 0       | Tiket yang telah terjual   |
 | status       | VARCHAR(20)  | DEFAULT 'draft' | draft / published / closed |
+| category_id  | INTEGER      | FK → categories(id) | Kategori terkait       |
 | created_at   | TIMESTAMP    | DEFAULT NOW()   | Waktu dibuat               |
 | updated_at   | TIMESTAMP    | DEFAULT NOW()   | Waktu diperbarui           |
 

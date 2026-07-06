@@ -1,51 +1,84 @@
 const { pool } = require('../config/database');
 
 const createEvent = async (organizerId, data) => {
-  const { title, description, location, event_date, banner_url, price_eth, quota } = data;
+  const { title, description, location, event_date, banner_url, price_eth, quota, category_id } = data;
 
   const result = await pool.query(
-    `INSERT INTO events (organizer_id, title, description, location, event_date, banner_url, price_eth, quota)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-     RETURNING id, organizer_id, title, description, location, event_date, banner_url, price_eth, quota, tickets_sold, status, created_at`,
-    [organizerId, title, description, location, event_date, banner_url || null, price_eth, quota]
+    `INSERT INTO events (organizer_id, title, description, location, event_date, banner_url, price_eth, quota, category_id)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+     RETURNING id`,
+    [organizerId, title, description, location, event_date, banner_url || null, price_eth, quota, category_id || null]
   );
 
-  return result.rows[0];
+  return getEventById(result.rows[0].id);
 };
 
 const getOrganizerEvents = async (organizerId) => {
   const result = await pool.query(
-    `SELECT id, organizer_id, title, description, location, event_date, banner_url, price_eth, quota, tickets_sold, status, created_at
-     FROM events
-     WHERE organizer_id = $1
-     ORDER BY event_date ASC`,
+    `SELECT e.id, e.organizer_id, e.title, e.description, e.location, e.event_date, e.banner_url, e.price_eth, e.quota, e.tickets_sold, e.status, e.created_at, e.category_id,
+            c.name AS category_name, c.slug AS category_slug
+     FROM events e
+     LEFT JOIN categories c ON e.category_id = c.id
+     WHERE e.organizer_id = $1
+     ORDER BY e.event_date ASC`,
     [organizerId]
   );
 
-  return result.rows;
+  return result.rows.map(row => ({
+    ...row,
+    category: row.category_id ? {
+      id: row.category_id,
+      name: row.category_name,
+      slug: row.category_slug
+    } : null
+  }));
 };
 
 const getAllEvents = async () => {
   const result = await pool.query(
-    `SELECT e.id, e.title, e.description, e.location, e.event_date, e.price_eth, e.quota, e.tickets_sold, e.banner_url, e.status, u.name AS organizer_name
+    `SELECT e.id, e.title, e.description, e.location, e.event_date, e.price_eth, e.quota, e.tickets_sold, e.banner_url, e.status, e.category_id,
+            u.name AS organizer_name,
+            c.name AS category_name, c.slug AS category_slug
      FROM events e
      JOIN users u ON e.organizer_id = u.id
+     LEFT JOIN categories c ON e.category_id = c.id
      WHERE e.status = 'published'
      ORDER BY e.event_date ASC`
   );
 
-  return result.rows;
+  return result.rows.map(row => ({
+    ...row,
+    category: row.category_id ? {
+      id: row.category_id,
+      name: row.category_name,
+      slug: row.category_slug
+    } : null
+  }));
 };
 
 const getEventById = async (id) => {
   const result = await pool.query(
-    `SELECT id, title, description, location, event_date, price_eth, quota, banner_url, status, created_at
-     FROM events
-     WHERE id = $1`,
+    `SELECT e.id, e.title, e.description, e.location, e.event_date, e.price_eth, e.quota, e.tickets_sold, e.banner_url, e.status, e.created_at, e.category_id,
+            u.name AS organizer_name,
+            c.name AS category_name, c.slug AS category_slug
+     FROM events e
+     JOIN users u ON e.organizer_id = u.id
+     LEFT JOIN categories c ON e.category_id = c.id
+     WHERE e.id = $1`,
     [id]
   );
 
-  return result.rows[0] || null;
+  const row = result.rows[0];
+  if (!row) return null;
+
+  return {
+    ...row,
+    category: row.category_id ? {
+      id: row.category_id,
+      name: row.category_name,
+      slug: row.category_slug
+    } : null
+  };
 };
 
 const updateEvent = async (eventId, organizerId, data) => {
@@ -62,14 +95,12 @@ const updateEvent = async (eventId, organizerId, data) => {
     throw new Error('Forbidden');
   }
 
-  const { title, description, location, event_date, banner_url, price_eth, quota } = data;
+  const { title, description, location, event_date, banner_url, price_eth, quota, category_id } = data;
 
-  // Build SET clause dynamically based on provided fields
   const setClauses = [];
   const values = [];
   let paramIndex = 1;
 
-  // Always update these core fields
   setClauses.push(`title = $${paramIndex++}`);
   values.push(title);
 
@@ -88,27 +119,26 @@ const updateEvent = async (eventId, organizerId, data) => {
   setClauses.push(`quota = $${paramIndex++}`);
   values.push(quota);
 
-  // Only update banner_url if explicitly provided (even if null)
+  setClauses.push(`category_id = $${paramIndex++}`);
+  values.push(category_id || null);
+
   if (data.hasOwnProperty('banner_url')) {
     setClauses.push(`banner_url = $${paramIndex++}`);
     values.push(banner_url || null);
   }
 
   setClauses.push(`updated_at = NOW()`);
-
-  // Add eventId as the final parameter for WHERE clause
   values.push(eventId);
 
   const query = `
     UPDATE events
     SET ${setClauses.join(', ')}
     WHERE id = $${paramIndex}
-    RETURNING id, title, description, location, event_date, price_eth, quota, banner_url, status
   `;
 
-  const result = await pool.query(query, values);
+  await pool.query(query, values);
 
-  return result.rows[0];
+  return getEventById(eventId);
 };
 
 const deleteEvent = async (eventId, organizerId) => {
@@ -141,13 +171,11 @@ const countActiveEvents = async (organizerId) => {
 };
 
 const updateEventStatus = async (eventId, organizerId, status) => {
-  // Validate status
   const validStatuses = ['draft', 'published', 'closed'];
   if (!validStatuses.includes(status)) {
     throw new Error('Invalid status');
   }
 
-  // Check if event exists and belongs to organizer
   const event = await pool.query(
     'SELECT organizer_id, status FROM events WHERE id = $1',
     [eventId]
@@ -161,16 +189,14 @@ const updateEventStatus = async (eventId, organizerId, status) => {
     throw new Error('Forbidden');
   }
 
-  // Update status
-  const result = await pool.query(
+  await pool.query(
     `UPDATE events
      SET status = $1, updated_at = NOW()
-     WHERE id = $2
-     RETURNING id, title, description, location, event_date, price_eth, quota, banner_url, status, tickets_sold, created_at, updated_at`,
+     WHERE id = $2`,
     [status, eventId]
   );
 
-  return result.rows[0];
+  return getEventById(eventId);
 };
 
 module.exports = { createEvent, getOrganizerEvents, getAllEvents, getEventById, updateEvent, deleteEvent, countActiveEvents, updateEventStatus };

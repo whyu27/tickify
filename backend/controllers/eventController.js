@@ -2,7 +2,7 @@ const { createEvent, getOrganizerEvents, getAllEvents, getEventById, updateEvent
 
 const create = async (req, res) => {
   try {
-    const { title, description, location, event_date, price_eth, quota } = req.body;
+    const { title, description, location, event_date, price_eth, quota, category_id } = req.body;
 
     const errors = [];
 
@@ -26,6 +26,10 @@ const create = async (req, res) => {
       errors.push('Quota must be at least 1');
     }
 
+    if (!category_id) {
+      errors.push('Category is required');
+    }
+
     if (errors.length > 0) {
       return res.status(400).json({
         success: false,
@@ -44,6 +48,7 @@ const create = async (req, res) => {
       banner_url: bannerUrl,
       price_eth,
       quota: Number(quota),
+      category_id: Number(category_id),
     });
 
     return res.status(201).json({
@@ -51,6 +56,7 @@ const create = async (req, res) => {
       data: event,
     });
   } catch (error) {
+    console.error('Create event error:', error);
     return res.status(500).json({
       success: false,
       message: 'Internal server error',
@@ -115,7 +121,7 @@ const getEventByIdHandler = async (req, res) => {
 
 const updateEventHandler = async (req, res) => {
   try {
-    const { title, description, location, event_date, price_eth, quota } = req.body;
+    const { title, description, location, event_date, price_eth, quota, category_id } = req.body;
 
     const errors = [];
 
@@ -139,6 +145,10 @@ const updateEventHandler = async (req, res) => {
       errors.push('Quota must be at least 1');
     }
 
+    if (!category_id) {
+      errors.push('Category is required');
+    }
+
     if (errors.length > 0) {
       return res.status(400).json({
         success: false,
@@ -156,6 +166,7 @@ const updateEventHandler = async (req, res) => {
       event_date,
       price_eth,
       quota: Number(quota),
+      category_id: Number(category_id),
     };
 
     // Only update banner_url if a new file was uploaded
@@ -170,6 +181,7 @@ const updateEventHandler = async (req, res) => {
       data: event,
     });
   } catch (error) {
+    console.error('Update event error:', error);
     if (error.message === 'Event not found') {
       return res.status(404).json({
         success: false,

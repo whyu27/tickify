@@ -18,7 +18,11 @@ const CreateEventPage = () => {
     eventDate: '',
     priceEth: '',
     quota: '',
+    categoryId: '',
   });
+
+  const [categories, setCategories] = useState([]);
+  const [categoriesLoading, setCategoriesLoading] = useState(true);
 
   // Load duplicate data if available
   useEffect(() => {
@@ -30,9 +34,28 @@ const CreateEventPage = () => {
         eventDate: '',
         priceEth: duplicateData.priceEth || '',
         quota: duplicateData.quota || '',
+        categoryId: duplicateData.categoryId || duplicateData.category_id || '',
       });
     }
   }, [duplicateData]);
+
+  // Fetch categories on mount
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        setCategoriesLoading(true);
+        const response = await api.get('/categories');
+        if (response.data && response.data.success) {
+          setCategories(response.data.data || []);
+        }
+      } catch (err) {
+        console.error('Failed to load categories', err);
+      } finally {
+        setCategoriesLoading(false);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   const [bannerFile, setBannerFile] = useState(null);
 
@@ -59,7 +82,7 @@ const CreateEventPage = () => {
 
   const validateForm = () => {
     const tempErrors = {};
-    const { title, description, location, eventDate, priceEth, quota } = formData;
+    const { title, description, location, eventDate, priceEth, quota, categoryId } = formData;
 
     if (!title.trim()) tempErrors.title = 'Event Title wajib diisi';
     if (!description.trim()) tempErrors.description = 'Description wajib diisi';
@@ -94,6 +117,10 @@ const CreateEventPage = () => {
       }
     }
 
+    if (!categoryId) {
+      tempErrors.categoryId = 'Category wajib dipilih';
+    }
+
     if (!bannerFile) tempErrors.banner = 'Banner image wajib diisi';
 
     setErrors(tempErrors);
@@ -117,6 +144,7 @@ const CreateEventPage = () => {
       formDataToSend.append('event_date', formData.eventDate);
       formDataToSend.append('price_eth', Number(formData.priceEth));
       formDataToSend.append('quota', Number(formData.quota));
+      formDataToSend.append('category_id', Number(formData.categoryId));
       if (bannerFile) {
         formDataToSend.append('banner', bannerFile);
       }
@@ -197,6 +225,33 @@ const CreateEventPage = () => {
                     }`}
                 />
                 {errors.title && <p className="mt-2 text-sm text-[#EF4444]">{errors.title}</p>}
+              </div>
+
+              {/* Category */}
+              <div>
+                <label htmlFor="categoryId" className="block text-sm font-semibold text-white mb-2">
+                  Category
+                </label>
+                <select
+                  id="categoryId"
+                  name="categoryId"
+                  value={formData.categoryId}
+                  onChange={handleChange}
+                  disabled={isLoading || categoriesLoading}
+                  className={`w-full h-12 px-4 rounded-xl border bg-[#161616] text-white focus:outline-none transition-all duration-200 ${
+                    errors.categoryId ? 'border-[#EF4444] focus:border-[#EF4444]' : 'border-white/8 focus:border-white/15'
+                  }`}
+                >
+                  <option value="" className="text-[#777777] bg-[#161616]">
+                    {categoriesLoading ? 'Loading categories...' : 'Select Category'}
+                  </option>
+                  {categories.map((category) => (
+                    <option key={category.id} value={category.id} className="text-white bg-[#161616]">
+                      {category.name}
+                    </option>
+                  ))}
+                </select>
+                {errors.categoryId && <p className="mt-2 text-sm text-[#EF4444]">{errors.categoryId}</p>}
               </div>
 
               {/* Description */}

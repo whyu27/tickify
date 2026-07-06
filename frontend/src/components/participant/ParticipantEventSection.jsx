@@ -1,25 +1,32 @@
 import { useState, useEffect } from 'react';
-import { eventCategories } from '../../data/events';
 import ParticipantEventCard from './ParticipantEventCard';
 import api from '../../api/axios';
 
 const ParticipantEventSection = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [events, setEvents] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchEvents = async () => {
+    const fetchData = async () => {
       try {
         setLoading(true);
         setError(null);
-        const response = await api.get('/events');
+        const [eventsRes, catsRes] = await Promise.all([
+          api.get('/events'),
+          api.get('/categories')
+        ]);
         
-        if (response.data.success) {
-          setEvents(response.data.data || []);
+        if (eventsRes.data.success) {
+          setEvents(eventsRes.data.data || []);
         } else {
           setError('Failed to load events');
+        }
+
+        if (catsRes.data && catsRes.data.success) {
+          setCategories(catsRes.data.data || []);
         }
       } catch (err) {
         setError(err.response?.data?.message || 'Failed to load events. Please try again later.');
@@ -28,12 +35,17 @@ const ParticipantEventSection = () => {
       }
     };
 
-    fetchEvents();
+    fetchData();
   }, []);
 
   const filteredEvents = selectedCategory === 'all'
     ? events
-    : events.filter(event => (event.category || '').toLowerCase() === selectedCategory);
+    : events.filter(event => (event.category_slug || event.category?.slug || '').toLowerCase() === selectedCategory);
+
+  const allCategories = [
+    { id: 'all', name: 'All', slug: 'all' },
+    ...categories
+  ];
 
   return (
     <section id="events" className="py-20 bg-[#0A0A0A]">
@@ -50,18 +62,18 @@ const ParticipantEventSection = () => {
 
         {/* Filter */}
         <div className="flex flex-wrap items-center justify-center gap-3 mb-12">
-          {eventCategories.map((category) => (
+          {allCategories.map((category) => (
             <button
               key={category.id}
-              onClick={() => setSelectedCategory(category.id)}
+              onClick={() => setSelectedCategory(category.slug)}
               disabled={loading}
               className={`px-6 py-2.5 text-sm font-semibold rounded-full transition-all duration-200 ${
-                selectedCategory === category.id
+                selectedCategory === category.slug
                   ? 'bg-white text-black'
                   : 'bg-transparent text-[#A0A0A0] border border-white/12 hover:border-white/25 hover:text-white'
               } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
-              {category.label}
+              {category.name}
             </button>
           ))}
         </div>

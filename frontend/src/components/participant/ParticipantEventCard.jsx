@@ -35,6 +35,13 @@ const ParticipantEventCard = ({ event }) => {
 
       {/* Content */}
       <div className="p-6 space-y-4">
+        {/* Category Badge */}
+        {event.category_name && (
+          <span className="inline-flex items-center px-2.5 py-1 text-xs font-semibold bg-white/5 border border-white/8 text-[#A0A0A0] rounded-full">
+            {event.category_name}
+          </span>
+        )}
+
         {/* Event Name */}
         <h3 className="text-xl font-bold text-white line-clamp-1 group-hover:text-[#A0A0A0] transition-colors duration-200">
           {event.title}

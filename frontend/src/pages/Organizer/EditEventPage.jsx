@@ -18,10 +18,14 @@ const EditEventPage = () => {
     eventDate: '',
     priceEth: '',
     quota: '',
+    categoryId: '',
   });
 
   const [existingBannerUrl, setExistingBannerUrl] = useState('');
   const [bannerFile, setBannerFile] = useState(null);
+
+  const [categories, setCategories] = useState([]);
+  const [categoriesLoading, setCategoriesLoading] = useState(true);
 
   // UI States
   const [errors, setErrors] = useState({});
@@ -45,6 +49,24 @@ const EditEventPage = () => {
     }
   };
 
+  // Fetch categories on mount
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        setCategoriesLoading(true);
+        const response = await api.get('/categories');
+        if (response.data && response.data.success) {
+          setCategories(response.data.data || []);
+        }
+      } catch (err) {
+        console.error('Failed to load categories', err);
+      } finally {
+        setCategoriesLoading(false);
+      }
+    };
+    fetchCategories();
+  }, []);
+
   // Fetch initial event data
   useEffect(() => {
     const fetchEvent = async () => {
@@ -61,6 +83,7 @@ const EditEventPage = () => {
             eventDate: parseDateToYYYYMMDD(event.event_date),
             priceEth: event.price_eth || '',
             quota: event.quota || '',
+            categoryId: event.category_id || event.category?.id || '',
           });
           setExistingBannerUrl(event.banner_url || '');
         } else {
@@ -95,7 +118,7 @@ const EditEventPage = () => {
 
   const validateForm = () => {
     const tempErrors = {};
-    const { title, description, location, eventDate, priceEth, quota } = formData;
+    const { title, description, location, eventDate, priceEth, quota, categoryId } = formData;
 
     if (!title.trim()) tempErrors.title = 'Event Title wajib diisi';
     if (!description.trim()) tempErrors.description = 'Description wajib diisi';
@@ -130,6 +153,10 @@ const EditEventPage = () => {
       }
     }
 
+    if (!categoryId) {
+      tempErrors.categoryId = 'Category wajib dipilih';
+    }
+
     setErrors(tempErrors);
     return Object.keys(tempErrors).length === 0;
   };
@@ -151,6 +178,7 @@ const EditEventPage = () => {
       formDataToSend.append('event_date', formData.eventDate);
       formDataToSend.append('price_eth', Number(formData.priceEth));
       formDataToSend.append('quota', Number(formData.quota));
+      formDataToSend.append('category_id', Number(formData.categoryId));
       
       // Only append banner if a new file is selected
       if (bannerFile) {
@@ -242,6 +270,33 @@ const EditEventPage = () => {
                       }`}
                     />
                     {errors.title && <p className="mt-2 text-sm text-[#EF4444]">{errors.title}</p>}
+                  </div>
+
+                  {/* Category */}
+                  <div>
+                    <label htmlFor="categoryId" className="block text-sm font-semibold text-white mb-2">
+                      Category
+                    </label>
+                    <select
+                      id="categoryId"
+                      name="categoryId"
+                      value={formData.categoryId}
+                      onChange={handleChange}
+                      disabled={isSubmitting || categoriesLoading}
+                      className={`w-full h-12 px-4 rounded-xl border bg-[#161616] text-white focus:outline-none transition-all duration-200 ${
+                        errors.categoryId ? 'border-[#EF4444] focus:border-[#EF4444]' : 'border-white/8 focus:border-white/15'
+                      }`}
+                    >
+                      <option value="" className="text-[#777777] bg-[#161616]">
+                        {categoriesLoading ? 'Loading categories...' : 'Select Category'}
+                      </option>
+                      {categories.map((category) => (
+                        <option key={category.id} value={category.id} className="text-white bg-[#161616]">
+                          {category.name}
+                        </option>
+                      ))}
+                    </select>
+                    {errors.categoryId && <p className="mt-2 text-sm text-[#EF4444]">{errors.categoryId}</p>}
                   </div>
 
                   {/* Description */}

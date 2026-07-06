@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { HashLink } from 'react-router-hash-link';
 
 const Navbar = () => {
   return (
@@ -14,18 +15,18 @@ const Navbar = () => {
 
         {/* Desktop Navigation - Centered Absolutely */}
         <div className="hidden md:flex items-center gap-8 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-          <a href="#home" className="text-[#A0A0A0] hover:text-white transition-colors duration-200 text-sm font-medium">
+          <HashLink smooth to="/#home" className="text-[#A0A0A0] hover:text-white transition-colors duration-200 text-sm font-medium">
             Home
-          </a>
-          <a href="#events" className="text-[#A0A0A0] hover:text-white transition-colors duration-200 text-sm font-medium">
+          </HashLink>
+          <HashLink smooth to="/#events" className="text-[#A0A0A0] hover:text-white transition-colors duration-200 text-sm font-medium">
             Events
-          </a>
-          <a href="#faq" className="text-[#A0A0A0] hover:text-white transition-colors duration-200 text-sm font-medium">
+          </HashLink>
+          <HashLink smooth to="/#faq" className="text-[#A0A0A0] hover:text-white transition-colors duration-200 text-sm font-medium">
             FAQ
-          </a>
-          <a href="#pricing" className="text-[#A0A0A0] hover:text-white transition-colors duration-200 text-sm font-medium">
+          </HashLink>
+          <HashLink smooth to="/#pricing" className="text-[#A0A0A0] hover:text-white transition-colors duration-200 text-sm font-medium">
             Pricing
-          </a>
+          </HashLink>
         </div>
 
         {/* Auth Buttons */}
