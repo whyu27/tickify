@@ -166,10 +166,10 @@ const ReportPage = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4 flex-grow">
                 {/* Tickets Sold Card */}
                 <div className="bg-[#161616] border border-white/8 rounded-2xl p-6 relative overflow-hidden flex flex-col justify-center min-h-[120px] hover:border-white/15 transition-all duration-200">
-                  <div className="absolute top-0 left-0 w-1.5 h-full bg-[#22C55E]"></div>
+                  <div className="absolute top-0 left-0 w-1.5 h-full bg-[#777777]"></div>
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-xs font-bold text-[#777777] uppercase tracking-wider">Tickets Sold</span>
-                    <Ticket className="w-5 h-5 text-[#22C55E]" strokeWidth={1.5} />
+                    <Ticket className="w-5 h-5 text-[#777777]" strokeWidth={1.5} />
                   </div>
                   <div className="flex items-baseline gap-1">
                     <span className="text-3xl font-extrabold text-white">{ticketsSold}</span>
@@ -179,10 +179,10 @@ const ReportPage = () => {
 
                 {/* Revenue Card */}
                 <div className="bg-[#161616] border border-white/8 rounded-2xl p-6 relative overflow-hidden flex flex-col justify-center min-h-[120px] hover:border-white/15 transition-all duration-200">
-                  <div className="absolute top-0 left-0 w-1.5 h-full bg-[#FACC15]"></div>
+                  <div className="absolute top-0 left-0 w-1.5 h-full bg-[#777777]"></div>
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-xs font-bold text-[#777777] uppercase tracking-wider">Revenue</span>
-                    <TrendingUp className="w-5 h-5 text-[#FACC15]" strokeWidth={1.5} />
+                    <TrendingUp className="w-5 h-5 text-[#777777]" strokeWidth={1.5} />
                   </div>
                   <div className="flex items-baseline gap-1">
                     <span className="text-3xl font-extrabold text-white">{totalRevenue} ETH</span>

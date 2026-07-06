@@ -4,7 +4,8 @@ const {
   getParticipantTickets,
   createPendingTicket,
   updateTicketSuccess,
-  updateTicketFailed
+  updateTicketFailed,
+  verifyTicketAndCheckIn
 } = require('../services/ticketService');
 const { getUserById } = require('../services/authService');
 const { getEventById } = require('../services/eventService');
@@ -32,14 +33,21 @@ const verify = async (req, res) => {
     }
 
     const organizerId = req.user.id;
-    const result = await verifyTicket(ticketIdOnChain, organizerId);
+    const result = await verifyTicketAndCheckIn(ticketIdNumber, organizerId);
 
-    return res.status(200).json({
-      success: true,
-      data: result,
-    });
+    return res.status(200).json(result);
   } catch (error) {
     console.error('Verify ticket error:', error);
+    
+    // Check for known errors and return with success: false and reason
+    const knownErrors = ['Ticket not found', 'Ticket cancelled', 'NFT not found', 'Owner mismatch'];
+    if (knownErrors.includes(error.message)) {
+      return res.status(200).json({
+        success: false,
+        reason: error.message
+      });
+    }
+
     return res.status(500).json({
       success: false,
       message: 'Failed to verify ticket',

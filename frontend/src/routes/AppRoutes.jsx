@@ -47,6 +47,7 @@ const AppRoutes = () => {
         <Route path="/dashboard/organizer/events/edit/:id" element={<EditEventPage />} />
         <Route path="/dashboard/organizer/reports/:eventId" element={<ReportPage />} />
         <Route path="/dashboard/organizer/validator" element={<ValidatorPage />} />
+        <Route path="/organizer/validator" element={<ValidatorPage />} />
         <Route element={<DashboardLayout />}>
           <Route path="/dashboard/organizer" element={<Navigate to="/dashboard/organizer/home" replace />} />
         </Route>

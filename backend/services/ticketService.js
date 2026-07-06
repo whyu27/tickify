@@ -1,4 +1,129 @@
 const { pool } = require('../config/database');
+const { getNFTOwner, checkInNFTOnChain } = require('./blockchain.service');
+
+/**
+ * Verify a ticket, validate it on blockchain, and check it in automatically if valid
+ * @param {string|number} ticketIdOnChain - The on-chain ticket ID (tokenId)
+ * @param {number} organizerId - The organizer's user ID
+ * @returns {Object} Verification and check-in result
+ */
+const verifyTicketAndCheckIn = async (ticketIdOnChain, organizerId) => {
+  try {
+    // 1. Cari ticket di database
+    const query = `
+      SELECT 
+        t.id,
+        t.token_id,
+        t.ticket_id_onchain,
+        t.status,
+        t.mint_status,
+        t.wallet_address,
+        t.owner_wallet,
+        t.used_at,
+        e.id as event_id,
+        e.title as event_name,
+        e.organizer_id
+      FROM tickets t
+      JOIN events e ON t.event_id = e.id
+      WHERE t.token_id = $1 OR t.ticket_id_onchain = $1
+    `;
+
+    const result = await pool.query(query, [ticketIdOnChain]);
+
+    // Jika tidak ada -> Ticket Not Found
+    if (result.rows.length === 0) {
+      throw new Error('Ticket not found');
+    }
+
+    const ticket = result.rows[0];
+
+    // 2. Validasi Database
+    // Pastikan status tidak FAILED
+    if (ticket.mint_status === 'FAILED') {
+      throw new Error('Ticket cancelled');
+    }
+
+    // Event sesuai (Organizer owns this event)
+    if (ticket.organizer_id !== organizerId) {
+      throw new Error('Ticket not found'); // Use 'Ticket not found' for unauthorized event
+    }
+
+    // Belum pernah digunakan. Jika ticket sudah digunakan -> Ticket Already Used
+    if (ticket.status === 'used') {
+      return {
+        success: true,
+        status: 'used',
+        usedAt: ticket.used_at,
+        ticket: {
+          ticketId: ticket.token_id || ticket.ticket_id_onchain,
+          eventName: ticket.event_name,
+          walletAddress: ticket.wallet_address || ticket.owner_wallet,
+        }
+      };
+    }
+
+    // 3. Validasi Blockchain
+    let nftOwner;
+    try {
+      nftOwner = await getNFTOwner(ticketIdOnChain);
+    } catch (error) {
+      console.error('Error fetching NFT owner from blockchain:', error);
+      // Jika token tidak ada -> NFT does not exist
+      throw new Error('NFT not found');
+    }
+
+    // owner sesuai dengan wallet_address di database
+    const dbWallet = (ticket.wallet_address || ticket.owner_wallet || '').toLowerCase();
+    if (!nftOwner || nftOwner.toLowerCase() !== dbWallet) {
+      throw new Error('Owner mismatch');
+    }
+
+    // 4. Check-in
+    // Jika smart contract sudah memiliki fungsi check-in, panggil juga fungsi tersebut.
+    let txHash = null;
+    try {
+      txHash = await checkInNFTOnChain(ticketIdOnChain);
+    } catch (error) {
+      console.error('Error calling checkIn on blockchain contract:', error);
+      // Proceed even if contract call reverts (e.g. already checked in on chain but not DB)
+    }
+
+    // Update database: ticket.status = USED, checked_in_at = current_timestamp (used_at)
+    const updateQuery = `
+      UPDATE tickets
+      SET 
+        status = 'used',
+        used_at = NOW(),
+        verified_by = $1
+      WHERE id = $2 AND status = 'active'
+      RETURNING *
+    `;
+    const updateResult = await pool.query(updateQuery, [organizerId, ticket.id]);
+
+    if (updateResult.rows.length === 0) {
+      throw new Error('Failed to update ticket status in database');
+    }
+
+    const updatedTicket = updateResult.rows[0];
+
+    return {
+      success: true,
+      status: 'valid',
+      ticket: {
+        ticketId: updatedTicket.token_id || updatedTicket.ticket_id_onchain,
+        eventName: ticket.event_name,
+        walletAddress: updatedTicket.wallet_address || updatedTicket.owner_wallet,
+        status: 'Active', // Rendered as Active in valid card
+        blockchainVerified: true,
+        checkInSuccessful: true,
+        txHash: txHash
+      }
+    };
+  } catch (error) {
+    console.error('Error in verifyTicketAndCheckIn service:', error);
+    throw error;
+  }
+};
 
 /**
  * Verify a ticket by ticketIdOnChain
@@ -248,4 +373,5 @@ module.exports = {
   createPendingTicket,
   updateTicketSuccess,
   updateTicketFailed,
+  verifyTicketAndCheckIn
 };

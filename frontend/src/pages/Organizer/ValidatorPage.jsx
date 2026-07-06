@@ -10,14 +10,23 @@ const ValidatorPage = () => {
   const [isVerifying, setIsVerifying] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
-  const [isCheckingIn, setIsCheckingIn] = useState(false);
 
   // Handle QR scan success
   const handleScanSuccess = (decodedText) => {
     console.log('QR Code scanned:', decodedText);
-    // Remove any '#' prefix if present and verify
-    const cleanTicketId = decodedText.replace('#', '').trim();
-    handleVerifyTicket(cleanTicketId);
+    let idToVerify = decodedText;
+    try {
+      const parsed = JSON.parse(decodedText);
+      if (parsed && (parsed.tokenId !== undefined || parsed.ticketId !== undefined)) {
+        idToVerify = parsed.tokenId || parsed.ticketId;
+      }
+    } catch (e) {
+      // Not a JSON string, fallback to cleaning up string
+      idToVerify = decodedText.replace('#', '').trim();
+    }
+    
+    // Automatically trigger verification with parsed ID
+    handleVerifyTicket(idToVerify);
   };
 
   // QR Scanner hook
@@ -25,7 +34,7 @@ const ValidatorPage = () => {
 
   // Verify ticket via API
   const handleVerifyTicket = async (ticketIdToVerify = null) => {
-    const idToVerify = ticketIdToVerify || ticketId.replace('#', '').trim();
+    const idToVerify = ticketIdToVerify !== null ? String(ticketIdToVerify).replace('#', '').trim() : ticketId.replace('#', '').trim();
 
     if (!idToVerify) {
       setErrorMessage('Please enter a ticket ID');
@@ -42,94 +51,64 @@ const ValidatorPage = () => {
         ticketIdOnChain: idToVerify,
       });
 
+      // Clear manual input on verification attempt
+      setTicketId('');
+
       if (response.data.success) {
-        setVerificationData(response.data.data);
-        setSuccessMessage('Ticket verified successfully');
+        setVerificationData(response.data);
+        if (response.data.status === 'valid') {
+          setSuccessMessage('Ticket verified and checked in successfully!');
+        } else if (response.data.status === 'used') {
+          setErrorMessage('Ticket already used');
+        }
       } else {
-        setErrorMessage(response.data.message || 'Failed to verify ticket');
+        // Failed database or blockchain verification
+        setVerificationData({
+          success: false,
+          reason: response.data.reason || 'Invalid Ticket'
+        });
+        setErrorMessage(response.data.reason || 'Invalid Ticket');
       }
     } catch (error) {
       console.error('Verification error:', error);
-      const msg = error.response?.data?.message || 'Failed to verify ticket. Please try again.';
+      const msg = error.response?.data?.reason || error.response?.data?.message || 'Failed to verify ticket. Please try again.';
+      setVerificationData({
+        success: false,
+        reason: msg
+      });
       setErrorMessage(msg);
     } finally {
       setIsVerifying(false);
     }
   };
 
-  // Check in ticket via API
-  const handleCheckIn = async () => {
-    if (!verificationData || verificationData.status !== 'active') {
-      return;
-    }
-
-    setIsCheckingIn(true);
-    setErrorMessage('');
-    setSuccessMessage('');
-
+  const formatWIBDate = (dateString) => {
+    if (!dateString) return '';
     try {
-      const response = await api.post('/tickets/check-in', {
-        ticketIdOnChain: verificationData.ticketId,
-      });
-
-      if (response.data.success) {
-        setSuccessMessage('Ticket checked in successfully!');
-        // Update verification data to reflect new status
-        setVerificationData({
-          ...verificationData,
-          status: 'used',
-        });
-      } else {
-        setErrorMessage(response.data.message || 'Failed to check in ticket');
-      }
-    } catch (error) {
-      console.error('Check-in error:', error);
-      const msg = error.response?.data?.message || 'Failed to check in ticket. Please try again.';
-      setErrorMessage(msg);
-    } finally {
-      setIsCheckingIn(false);
+      const date = new Date(dateString);
+      
+      const months = [
+        'January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'
+      ];
+      
+      const day = String(date.getDate()).padStart(2, '0');
+      const month = months[date.getMonth()];
+      const year = date.getFullYear();
+      const hours = String(date.getHours()).padStart(2, '0');
+      const minutes = String(date.getMinutes()).padStart(2, '0');
+      
+      return `${day} ${month} ${year} ${hours}:${minutes} WIB`;
+    } catch (err) {
+      return dateString;
     }
   };
 
-  const getStatusConfig = (status) => {
-    switch (status) {
-      case 'active':
-        return {
-          label: 'Active',
-          color: 'text-[#22C55E]',
-          bgColor: 'bg-[#22C55E]/10',
-          borderColor: 'border-[#22C55E]/20',
-          icon: CheckCircle2,
-        };
-      case 'used':
-        return {
-          label: 'Used',
-          color: 'text-[#FACC15]',
-          bgColor: 'bg-[#FACC15]/10',
-          borderColor: 'border-[#FACC15]/20',
-          icon: Clock,
-        };
-      case 'invalid':
-        return {
-          label: 'Invalid',
-          color: 'text-[#EF4444]',
-          bgColor: 'bg-[#EF4444]/10',
-          borderColor: 'border-[#EF4444]/20',
-          icon: XCircle,
-        };
-      default:
-        return {
-          label: 'Unknown',
-          color: 'text-[#777777]',
-          bgColor: 'bg-[#777777]/10',
-          borderColor: 'border-[#777777]/20',
-          icon: XCircle,
-        };
-    }
+  const formatWalletAddress = (addr) => {
+    if (!addr) return '';
+    if (addr.length <= 12) return addr;
+    return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
   };
-
-  const statusConfig = verificationData ? getStatusConfig(verificationData.status) : null;
-  const StatusIcon = statusConfig?.icon;
 
   return (
     <div className="min-h-screen bg-[#0A0A0A]">
@@ -148,26 +127,6 @@ const ValidatorPage = () => {
               Verify blockchain tickets quickly and securely.
             </p>
           </div>
-
-          {/* Global Error Message */}
-          {errorMessage && (
-            <div className="max-w-5xl mx-auto mb-6">
-              <div className="bg-[#EF4444]/10 border border-[#EF4444]/20 rounded-xl p-4 flex items-start gap-3">
-                <AlertCircle className="w-5 h-5 text-[#EF4444] flex-shrink-0 mt-0.5" strokeWidth={1.5} />
-                <p className="text-sm text-[#EF4444]">{errorMessage}</p>
-              </div>
-            </div>
-          )}
-
-          {/* Global Success Message */}
-          {successMessage && (
-            <div className="max-w-5xl mx-auto mb-6">
-              <div className="bg-[#22C55E]/10 border border-[#22C55E]/20 rounded-xl p-4 flex items-start gap-3">
-                <CheckCircle2 className="w-5 h-5 text-[#22C55E] flex-shrink-0 mt-0.5" strokeWidth={1.5} />
-                <p className="text-sm text-[#22C55E]">{successMessage}</p>
-              </div>
-            </div>
-          )}
 
           {/* Scanner Error Message */}
           {scannerError && (
@@ -248,7 +207,7 @@ const ValidatorPage = () => {
                       handleVerifyTicket();
                     }
                   }}
-                  placeholder="e.g. 12345"
+                  placeholder="e.g. 5"
                   disabled={isVerifying || isScanning}
                   className="w-full h-12 px-4 rounded-xl border border-white/8 bg-transparent text-white placeholder:text-[#777777] focus:outline-none focus:border-white/15 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                 />
@@ -263,7 +222,7 @@ const ValidatorPage = () => {
                 {isVerifying ? (
                   <span className="flex items-center justify-center gap-2">
                     <span className="inline-block w-4 h-4 border-2 border-black/20 border-t-black rounded-full animate-spin"></span>
-                    Verifying...
+                    Verifying ticket...
                   </span>
                 ) : (
                   'Verify Ticket'
@@ -279,86 +238,131 @@ const ValidatorPage = () => {
 
           {/* Verification Result Card */}
           {verificationData && (
-            <div className="max-w-5xl mx-auto">
-              <div className="bg-[#161616] border border-white/8 rounded-2xl p-8 hover:border-white/15 transition-all duration-200">
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-xl font-bold text-white">Verification Result</h2>
-                  <div
-                    className={`flex items-center gap-2 px-4 py-2 rounded-full ${statusConfig.bgColor} border ${statusConfig.borderColor}`}
-                  >
-                    <StatusIcon className={`w-4 h-4 ${statusConfig.color}`} strokeWidth={2} />
-                    <span className={`text-sm font-semibold ${statusConfig.color}`}>
-                      {statusConfig.label}
+            <div className="max-w-5xl mx-auto mt-8 animate-in fade-in slide-in-from-bottom-5 duration-300">
+              {verificationData.success && verificationData.status === 'valid' && (
+                /* VALID TICKET CARD */
+                <div className="bg-[#161616] border border-emerald-500/20 rounded-2xl p-8 hover:border-emerald-500/30 transition-all duration-200 shadow-[0_8px_30px_rgb(16,185,129,0.05)]">
+                  <div className="flex items-center gap-3 mb-6 pb-4 border-b border-white/5">
+                    <div className="w-10 h-10 bg-emerald-500/10 rounded-xl flex items-center justify-center border border-emerald-500/20">
+                      <CheckCircle2 className="w-5 h-5 text-emerald-500" strokeWidth={2} />
+                    </div>
+                    <div>
+                      <span className="text-xs font-semibold text-emerald-500 uppercase tracking-widest">Verification Result</span>
+                      <h2 className="text-xl font-bold text-white flex items-center gap-2 mt-0.5">
+                        ✅ VALID TICKET
+                      </h2>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <span className="text-xs text-[#777777] uppercase tracking-wider block">Event</span>
+                      <span className="text-base font-semibold text-white mt-1 block">
+                        {verificationData.ticket.eventName || 'N/A'}
+                      </span>
+                    </div>
+
+                    <div>
+                      <span className="text-xs text-[#777777] uppercase tracking-wider block">Ticket ID</span>
+                      <span className="text-base font-semibold text-white mt-1 block">
+                        #{verificationData.ticket.ticketId || 'N/A'}
+                      </span>
+                    </div>
+
+                    <div>
+                      <span className="text-xs text-[#777777] uppercase tracking-wider block">Owner Wallet</span>
+                      <span className="text-base font-mono text-white mt-1 block break-all">
+                        {formatWalletAddress(verificationData.ticket.walletAddress)}
+                      </span>
+                    </div>
+
+                    <div>
+                      <span className="text-xs text-[#777777] uppercase tracking-wider block">Status</span>
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 text-xs font-semibold rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 mt-2 font-mono">
+                        Active
+                      </span>
+                    </div>
+
+                    <div>
+                      <span className="text-xs text-[#777777] uppercase tracking-wider block">Blockchain</span>
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 text-xs font-semibold rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 mt-2">
+                        Verified
+                      </span>
+                    </div>
+
+                    <div>
+                      <span className="text-xs text-[#777777] uppercase tracking-wider block">Check In</span>
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 text-xs font-semibold rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 mt-2">
+                        Successful
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {verificationData.success && verificationData.status === 'used' && (
+                /* ALREADY USED CARD */
+                <div className="bg-[#161616] border border-yellow-500/20 rounded-2xl p-8 hover:border-yellow-500/30 transition-all duration-200 shadow-[0_8px_30px_rgb(234,179,8,0.05)]">
+                  <div className="flex items-center gap-3 mb-6 pb-4 border-b border-white/5">
+                    <div className="w-10 h-10 bg-yellow-500/10 rounded-xl flex items-center justify-center border border-yellow-500/20">
+                      <Clock className="w-5 h-5 text-yellow-500" strokeWidth={2} />
+                    </div>
+                    <div>
+                      <span className="text-xs font-semibold text-yellow-500 uppercase tracking-widest">Verification Result</span>
+                      <h2 className="text-xl font-bold text-white flex items-center gap-2 mt-0.5">
+                        ⚠ Ticket Already Used
+                      </h2>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <span className="text-xs text-[#777777] uppercase tracking-wider block">Event</span>
+                      <span className="text-base font-semibold text-white mt-1 block">
+                        {verificationData.ticket.eventName || 'N/A'}
+                      </span>
+                    </div>
+
+                    <div>
+                      <span className="text-xs text-[#777777] uppercase tracking-wider block">Ticket ID</span>
+                      <span className="text-base font-semibold text-white mt-1 block">
+                        #{verificationData.ticket.ticketId || 'N/A'}
+                      </span>
+                    </div>
+
+                    <div>
+                      <span className="text-xs text-[#777777] uppercase tracking-wider block">Checked in at</span>
+                      <span className="text-base font-semibold text-white mt-1 block">
+                        {formatWIBDate(verificationData.usedAt)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {!verificationData.success && (
+                /* INVALID TICKET CARD */
+                <div className="bg-[#161616] border border-red-500/20 rounded-2xl p-8 hover:border-red-500/30 transition-all duration-200 shadow-[0_8px_30px_rgb(239,68,68,0.05)]">
+                  <div className="flex items-center gap-3 mb-6 pb-4 border-b border-white/5">
+                    <div className="w-10 h-10 bg-red-500/10 rounded-xl flex items-center justify-center border border-red-500/20">
+                      <XCircle className="w-5 h-5 text-red-500" strokeWidth={2} />
+                    </div>
+                    <div>
+                      <span className="text-xs font-semibold text-red-500 uppercase tracking-widest">Verification Result</span>
+                      <h2 className="text-xl font-bold text-white flex items-center gap-2 mt-0.5">
+                        ❌ Invalid Ticket
+                      </h2>
+                    </div>
+                  </div>
+
+                  <div>
+                    <span className="text-xs text-[#777777] uppercase tracking-wider block">Reason</span>
+                    <span className="text-base font-semibold text-red-500 mt-1 block">
+                      {verificationData.reason || 'Invalid Ticket'}
                     </span>
                   </div>
                 </div>
-
-                {/* Result Details Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                  {/* Event Name */}
-                  <div>
-                    <label className="block text-sm font-medium text-[#777777] mb-2">
-                      Event Name
-                    </label>
-                    <p className="text-base font-semibold text-white">
-                      {verificationData.eventName || 'N/A'}
-                    </p>
-                  </div>
-
-                  {/* Wallet Address */}
-                  <div>
-                    <label className="block text-sm font-medium text-[#777777] mb-2">
-                      Wallet Address
-                    </label>
-                    <p className="text-base font-mono text-white break-all">
-                      {verificationData.walletAddress || 'N/A'}
-                    </p>
-                  </div>
-
-                  {/* NFT Ticket ID */}
-                  <div>
-                    <label className="block text-sm font-medium text-[#777777] mb-2">
-                      NFT Ticket ID
-                    </label>
-                    <p className="text-base font-semibold text-white">
-                      #{verificationData.ticketId}
-                    </p>
-                  </div>
-
-                  {/* Ticket Status */}
-                  <div>
-                    <label className="block text-sm font-medium text-[#777777] mb-2">
-                      Ticket Status
-                    </label>
-                    <p className={`text-base font-semibold ${statusConfig.color}`}>
-                      {statusConfig.label}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Check In Button */}
-                <div className="pt-6 border-t border-white/6">
-                  <button
-                    onClick={handleCheckIn}
-                    disabled={verificationData.status !== 'active' || isCheckingIn}
-                    className="w-full md:w-auto px-8 py-3 text-base font-semibold text-black bg-white rounded-xl hover:bg-[#EAEAEA] hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
-                  >
-                    {isCheckingIn ? (
-                      <span className="flex items-center justify-center gap-2">
-                        <span className="inline-block w-4 h-4 border-2 border-black/20 border-t-black rounded-full animate-spin"></span>
-                        Checking In...
-                      </span>
-                    ) : (
-                      'Check In'
-                    )}
-                  </button>
-                  {verificationData.status !== 'active' && (
-                    <p className="mt-3 text-sm text-[#777777]">
-                      Check-in is only available for active tickets
-                    </p>
-                  )}
-                </div>
-              </div>
+              )}
             </div>
           )}
         </div>

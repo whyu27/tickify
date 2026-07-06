@@ -15,7 +15,7 @@ const OrganizerNavbar = () => {
   const navLinks = [
     { name: 'Home', path: '/dashboard/organizer/home' },
     { name: 'Create Event', path: '/dashboard/organizer/events/create' },
-    { name: 'Validator', path: '/dashboard/organizer/validator' }
+    { name: 'Validator', path: '/organizer/validator' }
   ];
 
   const isActive = (path) => location.pathname === path;

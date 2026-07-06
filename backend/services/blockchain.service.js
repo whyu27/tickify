@@ -72,6 +72,60 @@ const mintTicket = async (walletAddress, ticketData) => {
   };
 };
 
+/**
+ * Get owner of an NFT ticket
+ * @param {string|number} tokenId - The on-chain ticket ID
+ * @returns {Promise<string>} Wallet address of the owner
+ */
+const getNFTOwner = async (tokenId) => {
+  const rpcUrl = process.env.RPC_URL;
+  const contractAddress = process.env.CONTRACT_ADDRESS;
+
+  if (!rpcUrl || !contractAddress) {
+    throw new Error('Blockchain configuration is missing in environment variables.');
+  }
+
+  const provider = new ethers.JsonRpcProvider(rpcUrl);
+  const contract = new ethers.Contract(contractAddress, abi, provider);
+
+  return await contract.ownerOf(tokenId);
+};
+
+/**
+ * Call check-in function on smart contract if not yet checked in
+ * @param {string|number} tokenId - The on-chain ticket ID
+ * @returns {Promise<string|null>} Transaction hash or null if already checked in
+ */
+const checkInNFTOnChain = async (tokenId) => {
+  const rpcUrl = process.env.RPC_URL;
+  const privateKey = process.env.PRIVATE_KEY;
+  const contractAddress = process.env.CONTRACT_ADDRESS;
+
+  if (!rpcUrl || !privateKey || !contractAddress) {
+    throw new Error('Blockchain configuration is missing in environment variables.');
+  }
+
+  const provider = new ethers.JsonRpcProvider(rpcUrl);
+  const wallet = new ethers.Wallet(privateKey, provider);
+  const contract = new ethers.Contract(contractAddress, abi, wallet);
+
+  // Check if already checked in to save gas/prevent revert
+  const alreadyCheckedIn = await contract.isCheckedIn(tokenId);
+  if (alreadyCheckedIn) {
+    console.log(`Token ID ${tokenId} is already checked in on-chain.`);
+    return null;
+  }
+
+  console.log(`Sending check-in transaction for Token ID: ${tokenId}`);
+  const tx = await contract.checkIn(tokenId);
+  console.log(`Check-in transaction sent. Hash: ${tx.hash}. Waiting for confirmation...`);
+  await tx.wait();
+  console.log(`Check-in transaction confirmed: ${tx.hash}`);
+  return tx.hash;
+};
+
 module.exports = {
-  mintTicket
+  mintTicket,
+  getNFTOwner,
+  checkInNFTOnChain
 };
