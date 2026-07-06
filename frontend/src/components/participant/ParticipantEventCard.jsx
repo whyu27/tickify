@@ -1,5 +1,6 @@
 import { Calendar, MapPin, Ticket } from 'lucide-react';
 import { getImageUrl } from '../../utils/imageHelper';
+import { Link } from 'react-router-dom';
 
 const ParticipantEventCard = ({ event }) => {
   const formatDate = (dateStr) => {
@@ -11,10 +12,7 @@ const ParticipantEventCard = ({ event }) => {
     });
   };
 
-  const handleBuyTicket = () => {
-    // UI only - no blockchain logic yet
-    console.log('Buy ticket for event:', event.id);
-  };
+
 
   return (
     <div className="bg-[#161616] border border-white/8 rounded-2xl overflow-hidden hover:border-white/15 hover:shadow-lg transition-all duration-300 group">
@@ -80,12 +78,12 @@ const ParticipantEventCard = ({ event }) => {
         </div>
 
         {/* CTA */}
-        <button 
-          onClick={handleBuyTicket}
-          className="w-full px-6 py-3 text-sm font-semibold text-black bg-white rounded-xl hover:bg-[#EAEAEA] transition-all duration-200"
+        <Link
+          to={`/participant/events/${event.id}`}
+          className="w-full text-center block px-6 py-3 text-sm font-semibold text-black bg-white rounded-xl hover:bg-[#EAEAEA] transition-all duration-200"
         >
-          Buy Ticket
-        </button>
+          View Details
+        </Link>
       </div>
     </div>
   );

@@ -142,7 +142,7 @@ const getParticipantTickets = async (participantId) => {
         e.price_eth AS event_price_eth
       FROM tickets t
       JOIN events e ON t.event_id = e.id
-      WHERE t.participant_id = $1
+      WHERE t.participant_id = $1 AND (t.mint_status IS NULL OR t.mint_status = 'SUCCESS')
       ORDER BY t.created_at DESC
     `;
 
@@ -150,7 +150,8 @@ const getParticipantTickets = async (participantId) => {
 
     return result.rows.map(row => ({
       id: row.id,
-      ticket_id_onchain: Number(row.ticket_id_onchain),
+      ticket_id_onchain: row.ticket_id_onchain ? Number(row.ticket_id_onchain) : null,
+      token_id: row.ticket_id_onchain ? Number(row.ticket_id_onchain) : null,
       event_id: row.event_id,
       participant_id: row.participant_id,
       owner_wallet: row.owner_wallet,
@@ -173,8 +174,78 @@ const getParticipantTickets = async (participantId) => {
   }
 };
 
+/**
+ * Create a pending ticket record
+ * @param {number} userId - The participant's user ID
+ * @param {number} eventId - The event ID
+ * @param {string} walletAddress - The owner's wallet address
+ * @returns {Promise<Object>} The created ticket record
+ */
+const createPendingTicket = async (userId, eventId, walletAddress) => {
+  try {
+    const result = await pool.query(
+      `INSERT INTO tickets (participant_id, user_id, event_id, owner_wallet, wallet_address, mint_status, status)
+       VALUES ($1, $1, $2, $3, $3, 'PENDING', 'active')
+       RETURNING *`,
+      [userId, eventId, walletAddress]
+    );
+    return result.rows[0];
+  } catch (error) {
+    console.error('Error in createPendingTicket service:', error);
+    throw error;
+  }
+};
+
+/**
+ * Update a ticket to SUCCESS status and save tokenId/txHash
+ * @param {number} ticketId - The database ticket record ID
+ * @param {string|number} tokenId - The on-chain minted token ID
+ * @param {string} txHash - The minting transaction hash
+ * @returns {Promise<Object>} The updated ticket record
+ */
+const updateTicketSuccess = async (ticketId, tokenId, txHash) => {
+  try {
+    const tokenIdBigInt = BigInt(tokenId);
+    const result = await pool.query(
+      `UPDATE tickets
+       SET ticket_id_onchain = $1, token_id = $1, transaction_hash = $2, mint_status = 'SUCCESS', minted_at = NOW()
+       WHERE id = $3
+       RETURNING *`,
+      [tokenIdBigInt, txHash, ticketId]
+    );
+    return result.rows[0];
+  } catch (error) {
+    console.error('Error in updateTicketSuccess service:', error);
+    throw error;
+  }
+};
+
+/**
+ * Update a ticket to FAILED status
+ * @param {number} ticketId - The database ticket record ID
+ * @returns {Promise<Object>} The updated ticket record
+ */
+const updateTicketFailed = async (ticketId) => {
+  try {
+    const result = await pool.query(
+      `UPDATE tickets
+       SET mint_status = 'FAILED'
+       WHERE id = $1
+       RETURNING *`,
+      [ticketId]
+    );
+    return result.rows[0];
+  } catch (error) {
+    console.error('Error in updateTicketFailed service:', error);
+    throw error;
+  }
+};
+
 module.exports = {
   verifyTicket,
   checkInTicket,
   getParticipantTickets,
+  createPendingTicket,
+  updateTicketSuccess,
+  updateTicketFailed,
 };

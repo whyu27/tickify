@@ -11,10 +11,12 @@ import ValidatorPage from '../pages/Organizer/ValidatorPage';
 import ReportPage from '../pages/Organizer/ReportPage';
 import PublicLayout from '../layouts/PublicLayout';
 import LandingPage from '../pages/Public/LandingPage';
-import EventDetailPage from '../pages/Public/EventDetailPage';
+import PublicEventDetailPage from '../pages/Public/PublicEventDetailPage';
 import ParticipantHome from '../pages/Participant/ParticipantHome';
 import MyTickets from '../pages/Participant/MyTickets';
+import TicketDetailPage from '../pages/Participant/TicketDetailPage';
 import ProfilePage from '../pages/ProfilePage';
+import ParticipantEventDetailPage from '../pages/Participant/ParticipantEventDetailPage';
 
 // Simple placeholders as requested
 const Dashboard = () => <div>Dashboard Page (Placeholder)</div>;
@@ -25,7 +27,7 @@ const AppRoutes = () => {
       {/* Public Routes */}
       <Route element={<PublicLayout />}>
         <Route path="/" element={<LandingPage />} />
-        <Route path="/events/:id" element={<EventDetailPage />} />
+        <Route path="/events/:id" element={<PublicEventDetailPage />} />
       </Route>
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
@@ -54,7 +56,9 @@ const AppRoutes = () => {
       <Route element={<ProtectedRoute allowedRoles={['participant']} />}>
         <Route path="/participant/home" element={<ParticipantHome />} />
         <Route path="/participant/tickets" element={<MyTickets />} />
+        <Route path="/participant/tickets/:ticketId" element={<TicketDetailPage />} />
         <Route path="/participant/profile" element={<ProfilePage />} />
+        <Route path="/participant/events/:id" element={<ParticipantEventDetailPage />} />
       </Route>
     </Routes>
   );
