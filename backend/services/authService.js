@@ -25,7 +25,7 @@ const registerUser = async (name, email, password, role) => {
 
 const loginUser = async (email, password) => {
   const result = await pool.query(
-    'SELECT id, name, email, password, role, created_at FROM users WHERE email = $1',
+    'SELECT id, name, email, password, role, wallet_address, created_at FROM users WHERE email = $1',
     [email]
   );
 

@@ -26,7 +26,6 @@ export const AuthProvider = ({ children }) => {
     setToken(null);
     setUserState(null);
     setIsAuthenticated(false);
-    window.location.href = '/login';
   };
 
   useEffect(() => {
