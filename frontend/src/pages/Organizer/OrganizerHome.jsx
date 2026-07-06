@@ -163,14 +163,15 @@ const OrganizerHome = () => {
         </div>
       )}
 
-      {/* FAQ Section */}
-      <FAQSection />
-
       {/* Subscription Section */}
       <OrganizerSubscriptionSection 
         currentPlan={subscriptionPlan}
         onUpgrade={handleUpgrade}
+        events={events}
       />
+
+      {/* FAQ Section */}
+      <FAQSection />
 
       {/* Footer */}
       <Footer />

@@ -8,6 +8,7 @@ import OrganizerHome from '../pages/Organizer/OrganizerHome';
 import CreateEventPage from '../pages/Organizer/CreateEventPage';
 import EditEventPage from '../pages/Organizer/EditEventPage';
 import ValidatorPage from '../pages/Organizer/ValidatorPage';
+import ReportPage from '../pages/Organizer/ReportPage';
 import PublicLayout from '../layouts/PublicLayout';
 import LandingPage from '../pages/Public/LandingPage';
 import EventDetailPage from '../pages/Public/EventDetailPage';
@@ -42,6 +43,7 @@ const AppRoutes = () => {
         <Route path="/dashboard/organizer/home" element={<OrganizerHome />} />
         <Route path="/dashboard/organizer/events/create" element={<CreateEventPage />} />
         <Route path="/dashboard/organizer/events/edit/:id" element={<EditEventPage />} />
+        <Route path="/dashboard/organizer/reports/:eventId" element={<ReportPage />} />
         <Route path="/dashboard/organizer/validator" element={<ValidatorPage />} />
         <Route element={<DashboardLayout />}>
           <Route path="/dashboard/organizer" element={<Navigate to="/dashboard/organizer/home" replace />} />

@@ -71,13 +71,28 @@ const getEventById = async (id) => {
   const row = result.rows[0];
   if (!row) return null;
 
+  // Fetch ticket status counts
+  const ticketsCountRes = await pool.query(
+    `SELECT 
+       COUNT(CASE WHEN status = 'used' THEN 1 END)::int AS checked_in,
+       COUNT(CASE WHEN status = 'active' THEN 1 END)::int AS active
+     FROM tickets
+     WHERE event_id = $1`,
+    [id]
+  );
+  
+  const checkedIn = ticketsCountRes.rows[0]?.checked_in || 0;
+  const pending = ticketsCountRes.rows[0]?.active || 0;
+
   return {
     ...row,
     category: row.category_id ? {
       id: row.category_id,
       name: row.category_name,
       slug: row.category_slug
-    } : null
+    } : null,
+    checked_in_tickets: checkedIn,
+    pending_tickets: pending
   };
 };
 

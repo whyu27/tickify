@@ -1,4 +1,4 @@
-import { Calendar, MapPin, Ticket, Edit, Trash2, Eye, CheckCircle, XCircle, Copy } from 'lucide-react';
+import { Calendar, MapPin, Ticket, Edit, Trash2, Eye, CheckCircle, XCircle, Copy, BarChart2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { getImageUrl } from '../../utils/imageHelper';
 import { useState } from 'react';
@@ -44,6 +44,10 @@ const OrganizerEventCard = ({ event, onDelete, onStatusChange }) => {
 
   const handleView = () => {
     navigate(`/events/${event.id}`);
+  };
+
+  const handleViewReport = () => {
+    navigate(`/dashboard/organizer/reports/${event.id}`);
   };
 
   const handleDuplicate = () => {
@@ -123,17 +127,17 @@ const OrganizerEventCard = ({ event, onDelete, onStatusChange }) => {
       return (
         <>
           <button 
-            onClick={handleView}
+            onClick={handleViewReport}
             disabled={isProcessing}
-            className="flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold text-white bg-transparent border border-white/12 rounded-xl hover:border-white/25 hover:bg-white/5 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold text-white bg-transparent border border-white/12 rounded-xl hover:border-white/25 hover:bg-white/5 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-center"
           >
-            <Eye className="w-4 h-4" strokeWidth={1.5} />
-            View
+            <BarChart2 className="w-4 h-4" strokeWidth={1.5} />
+            View Report
           </button>
           <button 
             onClick={handleDuplicate}
             disabled={isProcessing}
-            className="flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold text-white bg-transparent border border-white/12 rounded-xl hover:border-white/25 hover:bg-white/5 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold text-white bg-transparent border border-white/12 rounded-xl hover:border-white/25 hover:bg-white/5 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-center"
           >
             <Copy className="w-4 h-4" strokeWidth={1.5} />
             Duplicate
