@@ -1,11 +1,12 @@
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useLocation, useNavigate, Link } from 'react-router-dom';
 import useAuth from '../../hooks/useAuth';
 import api from '../../api/axios';
 
 const LoginPage = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   // Form states
   const [email, setEmail] = useState('');
@@ -48,8 +49,11 @@ const LoginPage = () => {
         // Save token and user details to Context
         login(token, user);
 
-        // Redirect based on role
-        if (user.role === 'organizer') {
+        // Redirect based on role and location state
+        const redirectTo = location.state?.redirectTo;
+        if (redirectTo && user.role === 'participant') {
+          navigate(redirectTo);
+        } else if (user.role === 'organizer') {
           navigate('/dashboard/organizer/home');
         } else if (user.role === 'participant') {
           navigate('/participant/home');
