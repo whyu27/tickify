@@ -9,7 +9,7 @@ const OrganizerNavbar = () => {
   const [isWalletDropdownOpen, setIsWalletDropdownOpen] = useState(false);
   const { user, logout } = useAuth();
   const { connectWallet, disconnectWallet, switchWallet, connectionStatus } = useWeb3();
-  const wallet = user?.wallet_address;
+  const wallet = (user?.wallet_address && user?.wallet_verified) ? user.wallet_address : null;
   const location = useLocation();
 
   const navLinks = [

@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const { ethers } = require('ethers');
-const { registerUser, loginUser, getUserById, updateWalletAddress } = require('../services/authService');
+const { registerUser, loginUser, getUserById, updateWalletAddress, generateAndStoreNonce } = require('../services/authService');
 
 const register = async (req, res) => {
   try {
@@ -141,30 +141,80 @@ const participantOnly = (req, res) => {
   });
 };
 
+const getWalletNonce = async (req, res) => {
+  try {
+    const nonce = await generateAndStoreNonce(req.user.id);
+    return res.status(200).json({
+      success: true,
+      nonce,
+    });
+  } catch (error) {
+    console.error('Error in getWalletNonce:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+    });
+  }
+};
+
 const updateWallet = async (req, res) => {
   try {
-    const walletAddress = req.body.walletAddress || req.body.wallet_address;
+    const { walletAddress, signature, nonce } = req.body;
 
-    if (!walletAddress) {
+    if (!walletAddress || !signature || !nonce) {
       return res.status(400).json({
         success: false,
-        message: 'Invalid wallet address',
+        message: 'walletAddress, signature, and nonce are required',
       });
     }
 
     if (!ethers.isAddress(walletAddress)) {
       return res.status(400).json({
         success: false,
-        message: 'Invalid wallet address',
+        message: 'Invalid wallet address format',
       });
     }
 
-    await updateWalletAddress(req.user.id, walletAddress);
+    // 1. Retrieve the stored nonce for the user
     const user = await getUserById(req.user.id);
+    if (!user.nonce || user.nonce !== nonce) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid or expired nonce',
+      });
+    }
+
+    // 2. Reconstruct the message exactly as signed by the frontend
+    const message = `Tickify Wallet Verification\n\nNonce:\n${nonce}`;
+
+    // 3. Verify signature
+    let recoveredAddress;
+    try {
+      recoveredAddress = ethers.verifyMessage(message, signature);
+    } catch (err) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid signature verification',
+      });
+    }
+
+    // 4. Ensure signer matches walletAddress
+    if (recoveredAddress.toLowerCase() !== walletAddress.toLowerCase()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Signature verification failed: signer address mismatch',
+      });
+    }
+
+    // 5. Update wallet address and set wallet_verified = true
+    await updateWalletAddress(req.user.id, walletAddress, true);
+
+    // 6. Get updated profile
+    const updatedUser = await getUserById(req.user.id);
 
     return res.status(200).json({
       success: true,
-      data: user,
+      data: updatedUser,
     });
   } catch (error) {
     if (error.message === 'Wallet already linked to another account') {
@@ -174,6 +224,7 @@ const updateWallet = async (req, res) => {
       });
     }
 
+    console.error('Error in updateWallet:', error);
     return res.status(500).json({
       success: false,
       message: 'Internal server error',
@@ -199,4 +250,4 @@ const disconnectWallet = async (req, res) => {
   }
 };
 
-module.exports = { register, login, getProfile, organizerOnly, participantOnly, updateWallet, disconnectWallet };
+module.exports = { register, login, getProfile, organizerOnly, participantOnly, updateWallet, disconnectWallet, getWalletNonce };

@@ -145,16 +145,16 @@ const ProfilePage = () => {
                   </div>
                   <div className="space-y-1 flex-grow min-w-0">
                     <p className="text-[10px] uppercase font-bold text-gray-400 dark:text-gray-500 tracking-wider">
-                      {user.wallet_address ? 'Wallet Address' : 'Status'}
+                      {(user.wallet_address && user.wallet_verified) ? 'Wallet Address' : 'Status'}
                     </p>
                     <p className="text-sm font-mono font-semibold text-gray-900 dark:text-zinc-200 break-all bg-gray-50 dark:bg-zinc-900/30 p-2 rounded-lg border border-gray-100 dark:border-zinc-700/50">
-                      {user.wallet_address || 'No wallet connected'}
+                      {(user.wallet_address && user.wallet_verified) ? user.wallet_address : 'No wallet connected'}
                     </p>
                   </div>
                 </div>
 
                 <div className="pt-2 flex flex-col sm:flex-row gap-3">
-                  {user.wallet_address ? (
+                  {(user.wallet_address && user.wallet_verified) ? (
                     <>
                       <button
                         onClick={switchWallet}

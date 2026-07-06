@@ -25,7 +25,7 @@ const registerUser = async (name, email, password, role) => {
 
 const loginUser = async (email, password) => {
   const result = await pool.query(
-    'SELECT id, name, email, password, role, wallet_address, created_at FROM users WHERE email = $1',
+    'SELECT id, name, email, password, role, wallet_address, wallet_verified, created_at FROM users WHERE email = $1',
     [email]
   );
 
@@ -46,7 +46,7 @@ const loginUser = async (email, password) => {
 
 const getUserById = async (id) => {
   const result = await pool.query(
-    'SELECT id, name, email, role, wallet_address, created_at FROM users WHERE id = $1',
+    'SELECT id, name, email, role, wallet_address, wallet_verified, nonce, created_at FROM users WHERE id = $1',
     [id]
   );
 
@@ -57,7 +57,17 @@ const getUserById = async (id) => {
   return result.rows[0];
 };
 
-const updateWalletAddress = async (userId, walletAddress) => {
+const updateWalletAddress = async (userId, walletAddress, verified = false) => {
+  if (walletAddress === null) {
+    const result = await pool.query(
+      `UPDATE users SET wallet_address = NULL, wallet_verified = FALSE, nonce = NULL, updated_at = NOW()
+       WHERE id = $1
+       RETURNING wallet_address, wallet_verified`,
+      [userId]
+    );
+    return result.rows[0];
+  }
+
   const existingWallet = await pool.query(
     'SELECT id FROM users WHERE wallet_address = $1 AND id != $2',
     [walletAddress, userId]
@@ -68,13 +78,23 @@ const updateWalletAddress = async (userId, walletAddress) => {
   }
 
   const result = await pool.query(
-    `UPDATE users SET wallet_address = $1, updated_at = NOW()
-     WHERE id = $2
-     RETURNING wallet_address`,
-    [walletAddress, userId]
+    `UPDATE users SET wallet_address = $1, wallet_verified = $2, nonce = NULL, updated_at = NOW()
+     WHERE id = $3
+     RETURNING wallet_address, wallet_verified`,
+    [walletAddress, verified, userId]
   );
 
   return result.rows[0];
 };
 
-module.exports = { registerUser, loginUser, getUserById, updateWalletAddress };
+const generateAndStoreNonce = async (userId) => {
+  const crypto = require('crypto');
+  const nonce = crypto.randomUUID();
+  await pool.query(
+    'UPDATE users SET nonce = $1 WHERE id = $2',
+    [nonce, userId]
+  );
+  return nonce;
+};
+
+module.exports = { registerUser, loginUser, getUserById, updateWalletAddress, generateAndStoreNonce };

@@ -24,13 +24,19 @@ export const Web3Provider = ({ children }) => {
     try {
       setConnectionStatus('connecting');
 
-      // Request permissions to force MetaMask to always show the account selector popup
+      // Step 1: Request nonce from backend
+      const nonceResponse = await api.get('/users/wallet/nonce');
+      if (!nonceResponse.data || !nonceResponse.data.nonce) {
+        throw new Error('Failed to get verification nonce');
+      }
+      const nonce = nonceResponse.data.nonce;
+
+      // Step 2: Request accounts with permissions to force MetaMask accounts pop-up
       await window.ethereum.request({
         method: 'wallet_requestPermissions',
         params: [{ eth_accounts: {} }],
       });
 
-      // Request accounts
       const accounts = await window.ethereum.request({
         method: 'eth_requestAccounts',
       });
@@ -38,15 +44,27 @@ export const Web3Provider = ({ children }) => {
       if (accounts && accounts.length > 0) {
         const address = accounts[0];
 
-        // Save wallet to backend
-        const response = await api.post('/users/connect-wallet', { walletAddress: address });
+        // Step 3: BrowserProvider & Signer
+        const tempProvider = new ethers.BrowserProvider(window.ethereum);
+        const tempSigner = await tempProvider.getSigner();
+
+        // Step 4: Construct verification message
+        const message = `Tickify Wallet Verification\n\nNonce:\n${nonce}`;
+
+        // Step 5: Sign the message
+        const signature = await tempSigner.signMessage(message);
+
+        // Step 6: Send verification to backend
+        const response = await api.post('/users/connect-wallet', {
+          walletAddress: address,
+          signature,
+          nonce
+        });
 
         if (response.data && response.data.success) {
           // Update the user profile in AuthContext
           setUser(response.data.data);
 
-          const tempProvider = new ethers.BrowserProvider(window.ethereum);
-          const tempSigner = await tempProvider.getSigner();
           const network = await tempProvider.getNetwork();
 
           setProvider(tempProvider);
@@ -62,11 +80,10 @@ export const Web3Provider = ({ children }) => {
       }
     } catch (error) {
       console.error('Error connecting to MetaMask:', error);
-      const errMsg = error.response?.data?.message || 'Error connecting to wallet';
+      const errMsg = error.response?.data?.message || error.message || 'Error connecting to wallet';
       alert(errMsg);
       
-      // Reset connection status if not previously connected
-      if (!user?.wallet_address) {
+      if (!user?.wallet_address || !user?.wallet_verified) {
         setConnectionStatus('disconnected');
       } else {
         setConnectionStatus('connected');
@@ -83,7 +100,27 @@ export const Web3Provider = ({ children }) => {
     try {
       setConnectionStatus('connecting');
 
-      // Request permissions again to force MetaMask to show account list
+      // Step 1: Disconnect current wallet on backend first
+      const disconnectResponse = await api.post('/users/disconnect-wallet');
+      if (!disconnectResponse.data || !disconnectResponse.data.success) {
+        throw new Error('Failed to disconnect current wallet');
+      }
+
+      // Reset local states first
+      setProvider(null);
+      setSigner(null);
+      setWallet(null);
+      setChainId(null);
+      setUser(disconnectResponse.data.data);
+
+      // Step 2: Request new nonce
+      const nonceResponse = await api.get('/users/wallet/nonce');
+      if (!nonceResponse.data || !nonceResponse.data.nonce) {
+        throw new Error('Failed to get verification nonce');
+      }
+      const nonce = nonceResponse.data.nonce;
+
+      // Step 3: Request permissions to let user choose/switch accounts in MetaMask
       await window.ethereum.request({
         method: 'wallet_requestPermissions',
         params: [{ eth_accounts: {} }],
@@ -96,15 +133,25 @@ export const Web3Provider = ({ children }) => {
       if (accounts && accounts.length > 0) {
         const address = accounts[0];
 
-        // Save new wallet address to backend
-        const response = await api.post('/users/connect-wallet', { walletAddress: address });
+        // Step 4: BrowserProvider & Signer
+        const tempProvider = new ethers.BrowserProvider(window.ethereum);
+        const tempSigner = await tempProvider.getSigner();
+
+        // Step 5: Construct verification message
+        const message = `Tickify Wallet Verification\n\nNonce:\n${nonce}`;
+
+        // Step 6: Sign the message
+        const signature = await tempSigner.signMessage(message);
+
+        // Step 7: Send verification to backend
+        const response = await api.post('/users/connect-wallet', {
+          walletAddress: address,
+          signature,
+          nonce
+        });
 
         if (response.data && response.data.success) {
-          // Update AuthContext user
           setUser(response.data.data);
-
-          const tempProvider = new ethers.BrowserProvider(window.ethereum);
-          const tempSigner = await tempProvider.getSigner();
           const network = await tempProvider.getNetwork();
 
           setProvider(tempProvider);
@@ -112,16 +159,22 @@ export const Web3Provider = ({ children }) => {
           setWallet(address);
           setChainId(Number(network.chainId));
           setConnectionStatus('connected');
+        } else {
+          setConnectionStatus('disconnected');
         }
       } else {
-        setConnectionStatus(user?.wallet_address ? 'connected' : 'disconnected');
+        setConnectionStatus('disconnected');
       }
     } catch (error) {
       console.error('Error switching wallet:', error);
-      const errMsg = error.response?.data?.message || 'Error switching wallet';
+      const errMsg = error.response?.data?.message || error.message || 'Error switching wallet';
       alert(errMsg);
       
-      setConnectionStatus(user?.wallet_address ? 'connected' : 'disconnected');
+      if (!user?.wallet_address || !user?.wallet_verified) {
+        setConnectionStatus('disconnected');
+      } else {
+        setConnectionStatus('connected');
+      }
     }
   };
 
@@ -144,30 +197,69 @@ export const Web3Provider = ({ children }) => {
     }
   };
 
-  // Event Listeners for MetaMask Changes - Syncs local web3 context but does NOT update database automatically
+  // Silent Initialization on Mount or User Change
+  useEffect(() => {
+    const initProvider = async () => {
+      if (typeof window !== 'undefined' && window.ethereum && user?.wallet_address && user?.wallet_verified) {
+        try {
+          const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+          if (accounts && accounts.length > 0 && accounts[0].toLowerCase() === user.wallet_address.toLowerCase()) {
+            const tempProvider = new ethers.BrowserProvider(window.ethereum);
+            const tempSigner = await tempProvider.getSigner();
+            const network = await tempProvider.getNetwork();
+
+            setProvider(tempProvider);
+            setSigner(tempSigner);
+            setWallet(accounts[0]);
+            setChainId(Number(network.chainId));
+            setConnectionStatus('connected');
+          } else {
+            setConnectionStatus('disconnected');
+          }
+        } catch (err) {
+          console.error('Silent initialization failed:', err);
+          setConnectionStatus('disconnected');
+        }
+      } else {
+        setConnectionStatus('disconnected');
+      }
+    };
+
+    initProvider();
+  }, [user]);
+
+  // Event Listeners for MetaMask Changes
   useEffect(() => {
     if (typeof window !== 'undefined' && window.ethereum) {
       const handleAccountsChanged = async (accounts) => {
-        if (accounts.length === 0) {
-          // If no accounts, clear local connection state but keep database wallet
+        if (accounts.length === 0 || !user?.wallet_address || !user?.wallet_verified) {
           setProvider(null);
           setSigner(null);
           setWallet(null);
           setChainId(null);
           setConnectionStatus('disconnected');
         } else {
-          try {
-            // Update provider, signer, and wallet address directly in local Web3Context
-            const tempProvider = new ethers.BrowserProvider(window.ethereum);
-            const tempSigner = await tempProvider.getSigner();
-            const address = await tempSigner.getAddress();
-            
-            setProvider(tempProvider);
-            setSigner(tempSigner);
-            setWallet(address);
-            setConnectionStatus('connected');
-          } catch (error) {
-            console.error('Error handling accountsChanged:', error);
+          const newAddress = accounts[0];
+          if (newAddress.toLowerCase() === user.wallet_address.toLowerCase()) {
+            try {
+              const tempProvider = new ethers.BrowserProvider(window.ethereum);
+              const tempSigner = await tempProvider.getSigner();
+              const network = await tempProvider.getNetwork();
+
+              setProvider(tempProvider);
+              setSigner(tempSigner);
+              setWallet(newAddress);
+              setChainId(Number(network.chainId));
+              setConnectionStatus('connected');
+            } catch (error) {
+              console.error('Error handling accountsChanged:', error);
+            }
+          } else {
+            // Mismatch: clear provider/signer to prevent wrong transaction signing
+            setProvider(null);
+            setSigner(null);
+            setWallet(null);
+            setConnectionStatus('disconnected');
           }
         }
       };
@@ -187,7 +279,7 @@ export const Web3Provider = ({ children }) => {
         }
       };
     }
-  }, []);
+  }, [user]);
 
   return (
     <Web3Context.Provider
