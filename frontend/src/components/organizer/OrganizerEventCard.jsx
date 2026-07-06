@@ -125,24 +125,14 @@ const OrganizerEventCard = ({ event, onDelete, onStatusChange }) => {
 
     if (status === 'closed') {
       return (
-        <>
-          <button 
-            onClick={handleViewReport}
-            disabled={isProcessing}
-            className="flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold text-white bg-transparent border border-white/12 rounded-xl hover:border-white/25 hover:bg-white/5 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-center"
-          >
-            <BarChart2 className="w-4 h-4" strokeWidth={1.5} />
-            View Report
-          </button>
-          <button 
-            onClick={handleDuplicate}
-            disabled={isProcessing}
-            className="flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold text-white bg-transparent border border-white/12 rounded-xl hover:border-white/25 hover:bg-white/5 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-center"
-          >
-            <Copy className="w-4 h-4" strokeWidth={1.5} />
-            Duplicate
-          </button>
-        </>
+        <button 
+          onClick={handleViewReport}
+          disabled={isProcessing}
+          className="flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold text-white bg-transparent border border-white/12 rounded-xl hover:border-white/25 hover:bg-white/5 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-center"
+        >
+          <BarChart2 className="w-4 h-4" strokeWidth={1.5} />
+          View Report
+        </button>
       );
     }
   };
@@ -219,7 +209,10 @@ const OrganizerEventCard = ({ event, onDelete, onStatusChange }) => {
         </div>
 
         {/* Action Buttons */}
-        <div className={`grid gap-3 pt-2 ${event.status === 'draft' ? 'grid-cols-3' : 'grid-cols-2'}`}>
+        <div className={`grid gap-3 pt-2 ${
+          event.status === 'draft' ? 'grid-cols-3' : 
+          event.status === 'closed' ? 'grid-cols-1' : 'grid-cols-2'
+        }`}>
           {renderActionButtons()}
         </div>
       </div>

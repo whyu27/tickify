@@ -1,4 +1,22 @@
-const Hero = () => {
+import { HashLink } from 'react-router-hash-link';
+
+const Hero = ({
+  title = (
+    <>
+      Events Tiketing Platform<br />
+      <span className="text-[#A0A0A0] text-5xl">Powered by Blockchain</span>
+    </>
+  ),
+  subtitle = (
+    <>
+      Buy, manage, and verify event tickets securely using blockchain technology.
+      <br />
+      Designed for organizers and participants in one platform.
+    </>
+  ),
+  exploreTo = "/#events",
+  learnMoreTo = "/#faq"
+}) => {
   return (
     <section id="home" className="relative min-h-[85vh] flex items-center justify-center bg-[#0A0A0A] overflow-hidden">
       {/* Background Glow Effects */}
@@ -17,31 +35,30 @@ const Hero = () => {
 
         {/* Heading */}
         <h1 className="text-6xl md:text-6xl lg:text-7xl font-bold text-white leading-tight mb-6">
-          Events Tiketing Platform<br />
-          <span className="text-[#A0A0A0] text-5xl">Powered by Blockchain</span>
+          {title}
         </h1>
 
         {/* Sub Heading */}
         <p className="text-lg md:text-xl text-[#A0A0A0] max-w-3xl mx-auto mb-10 leading-relaxed">
-          Buy, manage, and verify event tickets securely using blockchain technology.
-          <br />
-          Designed for organizers and participants in one platform.
+          {subtitle}
         </p>
 
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-3">
-          <a
-            href="#events"
+          <HashLink
+            smooth
+            to={exploreTo}
             className="px-4 py-3 text-base font-semibold text-black bg-white rounded-xl hover:bg-[#EAEAEA] transition-all duration-200 hover:scale-105"
           >
             Explore Events
-          </a>
-          <a
-            href="#faq"
+          </HashLink>
+          <HashLink
+            smooth
+            to={learnMoreTo}
             className="px-4 py-3 text-base font-semibold text-white bg-transparent border border-white/12 rounded-xl hover:border-white/25 hover:bg-white/5 transition-all duration-200"
           >
             Learn More
-          </a>
+          </HashLink>
         </div>
       </div>
     </section>

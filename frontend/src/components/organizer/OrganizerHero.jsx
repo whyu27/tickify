@@ -1,3 +1,5 @@
+import { HashLink } from 'react-router-hash-link';
+
 const OrganizerHero = () => {
   return (
     <section className="relative min-h-[85vh] flex items-center justify-center bg-[#0A0A0A] overflow-hidden">
@@ -29,18 +31,19 @@ const OrganizerHero = () => {
 
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-3">
-          <a
-            href="#my-events"
+          <HashLink
+            smooth
+            to="/dashboard/organizer/home#my-events"
             className="px-4 py-3 text-base font-semibold text-black bg-white rounded-xl hover:bg-[#EAEAEA] transition-all duration-200 hover:scale-105"
           >
             View My Events
-          </a>
-          <a
-            href="/dashboard/organizer/events/create"
+          </HashLink>
+          <HashLink
+            to="/dashboard/organizer/events/create"
             className="px-4 py-3 text-base font-semibold text-white bg-transparent border border-white/12 rounded-xl hover:border-white/25 hover:bg-white/5 transition-all duration-200"
           >
             Create Event
-          </a>
+          </HashLink>
         </div>
       </div>
     </section>

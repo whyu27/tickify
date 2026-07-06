@@ -9,7 +9,12 @@ const ParticipantHome = () => {
   return (
     <div className="min-h-screen bg-[#0A0A0A]">
       <ParticipantNavbar />
-      <Hero />
+      <Hero
+        title="Discover Blockchain Events"
+        subtitle="Browse verified blockchain-powered events, purchase NFT tickets securely, and manage all your tickets in one place."
+        exploreTo="/participant/home#events"
+        learnMoreTo="/participant/home#faq"
+      />
       <Statistics />
       <ParticipantEventSection />
       <FAQSection />

@@ -187,7 +187,7 @@ const CreateEventPage = () => {
               {duplicateData ? 'Duplicate Event' : 'Create Event'}
             </h1>
             <p className="max-w-2xl text-base text-[#A0A0A0]">
-              {duplicateData ? 'Create a new event based on an existing one.' : 'Publish a new blockchain event on Tickify.'}
+              {duplicateData ? 'Create a new event based on an existing one.' : 'Create a new blockchain event on Tickify.'}
             </p>
           </div>
 
@@ -401,10 +401,10 @@ const CreateEventPage = () => {
                   {isLoading ? (
                     <span className="flex items-center justify-center gap-2">
                       <span className="inline-block w-4 h-4 border-2 border-black/20 border-t-black rounded-full animate-spin"></span>
-                      Publishing...
+                      Creating...
                     </span>
                   ) : (
-                    'Publish Event'
+                    'Create Event'
                   )}
                 </button>
               </div>
