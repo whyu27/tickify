@@ -1,6 +1,8 @@
 import { createContext, useState, useEffect } from 'react';
 import { ethers } from 'ethers';
 import { Wallet, X } from 'lucide-react';
+import useAuth from '../hooks/useAuth';
+import api from '../api/axios';
 
 const Web3Context = createContext(null);
 
@@ -11,6 +13,7 @@ export const Web3Provider = ({ children }) => {
   const [chainId, setChainId] = useState(null);
   const [connectionStatus, setConnectionStatus] = useState('disconnected');
   const [showInstallModal, setShowInstallModal] = useState(false);
+  const { user, setUser } = useAuth();
 
   const connectWallet = async () => {
     if (typeof window === 'undefined' || !window.ethereum) {
@@ -33,23 +36,37 @@ export const Web3Provider = ({ children }) => {
       });
 
       if (accounts && accounts.length > 0) {
-        const tempProvider = new ethers.BrowserProvider(window.ethereum);
-        const tempSigner = await tempProvider.getSigner();
-        const address = await tempSigner.getAddress();
-        const network = await tempProvider.getNetwork();
+        const address = accounts[0];
 
-        setProvider(tempProvider);
-        setSigner(tempSigner);
-        setWallet(address);
-        setChainId(Number(network.chainId));
-        setConnectionStatus('connected');
+        // Save wallet to backend
+        const response = await api.post('/users/connect-wallet', { walletAddress: address });
+
+        if (response.data && response.data.success) {
+          // Update the user profile in AuthContext
+          setUser(response.data.data);
+
+          const tempProvider = new ethers.BrowserProvider(window.ethereum);
+          const tempSigner = await tempProvider.getSigner();
+          const network = await tempProvider.getNetwork();
+
+          setProvider(tempProvider);
+          setSigner(tempSigner);
+          setWallet(address);
+          setChainId(Number(network.chainId));
+          setConnectionStatus('connected');
+        } else {
+          setConnectionStatus('disconnected');
+        }
       } else {
         setConnectionStatus('disconnected');
       }
     } catch (error) {
       console.error('Error connecting to MetaMask:', error);
+      const errMsg = error.response?.data?.message || 'Error connecting to wallet';
+      alert(errMsg);
+      
       // Reset connection status if not previously connected
-      if (!wallet) {
+      if (!user?.wallet_address) {
         setConnectionStatus('disconnected');
       } else {
         setConnectionStatus('connected');
@@ -77,46 +94,70 @@ export const Web3Provider = ({ children }) => {
       });
 
       if (accounts && accounts.length > 0) {
-        const tempProvider = new ethers.BrowserProvider(window.ethereum);
-        const tempSigner = await tempProvider.getSigner();
-        const address = await tempSigner.getAddress();
-        const network = await tempProvider.getNetwork();
+        const address = accounts[0];
 
-        setProvider(tempProvider);
-        setSigner(tempSigner);
-        setWallet(address);
-        setChainId(Number(network.chainId));
-        setConnectionStatus('connected');
+        // Save new wallet address to backend
+        const response = await api.post('/users/connect-wallet', { walletAddress: address });
+
+        if (response.data && response.data.success) {
+          // Update AuthContext user
+          setUser(response.data.data);
+
+          const tempProvider = new ethers.BrowserProvider(window.ethereum);
+          const tempSigner = await tempProvider.getSigner();
+          const network = await tempProvider.getNetwork();
+
+          setProvider(tempProvider);
+          setSigner(tempSigner);
+          setWallet(address);
+          setChainId(Number(network.chainId));
+          setConnectionStatus('connected');
+        }
+      } else {
+        setConnectionStatus(user?.wallet_address ? 'connected' : 'disconnected');
       }
     } catch (error) {
       console.error('Error switching wallet:', error);
-      // Keep existing connection if it exists
-      if (wallet) {
-        setConnectionStatus('connected');
-      } else {
-        setConnectionStatus('disconnected');
-      }
+      const errMsg = error.response?.data?.message || 'Error switching wallet';
+      alert(errMsg);
+      
+      setConnectionStatus(user?.wallet_address ? 'connected' : 'disconnected');
     }
   };
 
-  const disconnectWallet = () => {
-    setProvider(null);
-    setSigner(null);
-    setWallet(null);
-    setChainId(null);
-    setConnectionStatus('disconnected');
+  const disconnectWallet = async () => {
+    try {
+      const response = await api.post('/users/disconnect-wallet');
+      if (response.data && response.data.success) {
+        setUser(response.data.data);
+
+        setProvider(null);
+        setSigner(null);
+        setWallet(null);
+        setChainId(null);
+        setConnectionStatus('disconnected');
+      }
+    } catch (error) {
+      console.error('Error disconnecting wallet:', error);
+      const errMsg = error.response?.data?.message || 'Error disconnecting wallet';
+      alert(errMsg);
+    }
   };
 
-  // Event Listeners for MetaMask Changes
+  // Event Listeners for MetaMask Changes - Syncs local web3 context but does NOT update database automatically
   useEffect(() => {
     if (typeof window !== 'undefined' && window.ethereum) {
       const handleAccountsChanged = async (accounts) => {
         if (accounts.length === 0) {
-          // If no accounts, clear connection state
-          disconnectWallet();
+          // If no accounts, clear local connection state but keep database wallet
+          setProvider(null);
+          setSigner(null);
+          setWallet(null);
+          setChainId(null);
+          setConnectionStatus('disconnected');
         } else {
           try {
-            // Update provider, signer, and wallet address directly
+            // Update provider, signer, and wallet address directly in local Web3Context
             const tempProvider = new ethers.BrowserProvider(window.ethereum);
             const tempSigner = await tempProvider.getSigner();
             const address = await tempSigner.getAddress();
@@ -127,7 +168,6 @@ export const Web3Provider = ({ children }) => {
             setConnectionStatus('connected');
           } catch (error) {
             console.error('Error handling accountsChanged:', error);
-            disconnectWallet();
           }
         }
       };

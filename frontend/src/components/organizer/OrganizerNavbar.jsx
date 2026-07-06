@@ -8,7 +8,8 @@ const OrganizerNavbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isWalletDropdownOpen, setIsWalletDropdownOpen] = useState(false);
   const { user, logout } = useAuth();
-  const { wallet, connectWallet, disconnectWallet, switchWallet, connectionStatus } = useWeb3();
+  const { connectWallet, disconnectWallet, switchWallet, connectionStatus } = useWeb3();
+  const wallet = user?.wallet_address;
   const location = useLocation();
 
   const navLinks = [

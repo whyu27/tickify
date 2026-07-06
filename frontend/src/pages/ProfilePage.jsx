@@ -1,35 +1,11 @@
-import { useState, useEffect } from 'react';
-import api from '../api/axios';
-import { User, Mail, Shield, Wallet, Calendar, AlertCircle, Edit, Globe } from 'lucide-react';
+import { useState } from 'react';
+import useAuth from '../hooks/useAuth';
+import useWeb3 from '../hooks/useWeb3';
+import { User, Mail, Shield, Wallet, Calendar, Edit, Globe, LogOut } from 'lucide-react';
 
 const ProfilePage = () => {
-  const [profile, setProfile] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [errorMsg, setErrorMsg] = useState('');
-  const [walletConnectMsg, setWalletConnectMsg] = useState('');
-
-  const fetchProfile = async () => {
-    setIsLoading(true);
-    setErrorMsg('');
-    try {
-      const response = await api.get('/auth/profile');
-      if (response.data && response.data.success) {
-        setProfile(response.data.data);
-      } else {
-        setErrorMsg(response.data?.message || 'Gagal mengambil data profil.');
-      }
-    } catch (error) {
-      console.error('Fetch profile error:', error);
-      const msg = error.response?.data?.message || 'Terjadi kesalahan pada server saat memuat profil.';
-      setErrorMsg(msg);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchProfile();
-  }, []);
+  const { user } = useAuth();
+  const { connectWallet, disconnectWallet, switchWallet, connectionStatus } = useWeb3();
 
   const formatDate = (dateStr) => {
     try {
@@ -47,13 +23,6 @@ const ProfilePage = () => {
     }
   };
 
-  const handleConnectWallet = () => {
-    setWalletConnectMsg('Integrasi dompet MetaMask akan segera hadir.');
-    setTimeout(() => {
-      setWalletConnectMsg('');
-    }, 4000);
-  };
-
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       {/* Title */}
@@ -67,7 +36,7 @@ const ProfilePage = () => {
       </div>
 
       {/* Loading State */}
-      {isLoading && (
+      {!user && (
         <div className="min-h-[300px] flex items-center justify-center">
           <div className="text-center space-y-3">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-650 mx-auto"></div>
@@ -76,37 +45,20 @@ const ProfilePage = () => {
         </div>
       )}
 
-      {/* Error State */}
-      {!isLoading && errorMsg && (
-        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-650 dark:text-red-400 p-6 rounded-2xl flex items-start gap-4">
-          <AlertCircle className="w-6 h-6 flex-shrink-0 mt-0.5" />
-          <div className="space-y-2">
-            <h3 className="font-bold">Error Memuat Profil</h3>
-            <p className="text-sm">{errorMsg}</p>
-            <button
-              onClick={fetchProfile}
-              className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-semibold text-xs rounded-xl transition-colors cursor-pointer"
-            >
-              Coba Lagi
-            </button>
-          </div>
-        </div>
-      )}
-
       {/* Profile Details */}
-      {!isLoading && !errorMsg && profile && (
+      {user && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Left Column: Avatar & Basic Info */}
           <div className="bg-white dark:bg-zinc-800 border border-gray-250 dark:border-zinc-700 rounded-3xl p-6 text-center shadow-sm space-y-4">
             <div className="w-24 h-24 bg-gradient-to-br from-purple-500 to-indigo-650 text-white rounded-full flex items-center justify-center font-black text-3xl mx-auto shadow-md">
-              {profile.name ? profile.name.charAt(0).toUpperCase() : 'U'}
+              {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
             </div>
             <div className="space-y-1">
               <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-                {profile.name}
+                {user.name}
               </h2>
               <span className="inline-block px-2.5 py-1 text-xs font-bold uppercase tracking-wider bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-full border border-purple-100 dark:border-purple-900/20">
-                {profile.role}
+                {user.role}
               </span>
             </div>
 
@@ -139,7 +91,7 @@ const ProfilePage = () => {
                   </div>
                   <div className="space-y-0.5">
                     <p className="text-[10px] uppercase font-bold text-gray-400 dark:text-gray-500 tracking-wider">Nama Lengkap</p>
-                    <p className="text-sm font-semibold text-gray-900 dark:text-zinc-200">{profile.name}</p>
+                    <p className="text-sm font-semibold text-gray-900 dark:text-zinc-200">{user.name}</p>
                   </div>
                 </div>
 
@@ -150,7 +102,7 @@ const ProfilePage = () => {
                   </div>
                   <div className="space-y-0.5">
                     <p className="text-[10px] uppercase font-bold text-gray-400 dark:text-gray-500 tracking-wider">Alamat Email</p>
-                    <p className="text-sm font-semibold text-gray-900 dark:text-zinc-200">{profile.email}</p>
+                    <p className="text-sm font-semibold text-gray-900 dark:text-zinc-200">{user.email}</p>
                   </div>
                 </div>
 
@@ -161,7 +113,7 @@ const ProfilePage = () => {
                   </div>
                   <div className="space-y-0.5">
                     <p className="text-[10px] uppercase font-bold text-gray-400 dark:text-gray-500 tracking-wider">Peran (Role)</p>
-                    <p className="text-sm font-semibold text-gray-900 dark:text-zinc-200 capitalize">{profile.role}</p>
+                    <p className="text-sm font-semibold text-gray-900 dark:text-zinc-200 capitalize">{user.role}</p>
                   </div>
                 </div>
 
@@ -172,7 +124,7 @@ const ProfilePage = () => {
                   </div>
                   <div className="space-y-0.5">
                     <p className="text-[10px] uppercase font-bold text-gray-400 dark:text-gray-500 tracking-wider">Bergabung Sejak</p>
-                    <p className="text-sm font-semibold text-gray-900 dark:text-zinc-200">{formatDate(profile.created_at)}</p>
+                    <p className="text-sm font-semibold text-gray-900 dark:text-zinc-200">{formatDate(user.created_at)}</p>
                   </div>
                 </div>
               </div>
@@ -192,26 +144,42 @@ const ProfilePage = () => {
                     <Wallet className="w-5 h-5" />
                   </div>
                   <div className="space-y-1 flex-grow min-w-0">
-                    <p className="text-[10px] uppercase font-bold text-gray-400 dark:text-gray-500 tracking-wider">Alamat Wallet Terhubung</p>
+                    <p className="text-[10px] uppercase font-bold text-gray-400 dark:text-gray-500 tracking-wider">
+                      {user.wallet_address ? 'Wallet Address' : 'Status'}
+                    </p>
                     <p className="text-sm font-mono font-semibold text-gray-900 dark:text-zinc-200 break-all bg-gray-50 dark:bg-zinc-900/30 p-2 rounded-lg border border-gray-100 dark:border-zinc-700/50">
-                      {profile.wallet_address || 'Belum Terhubung'}
+                      {user.wallet_address || 'No wallet connected'}
                     </p>
                   </div>
                 </div>
 
-                <div className="pt-2 flex flex-col gap-3">
-                  <button
-                    onClick={handleConnectWallet}
-                    className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-semibold text-sm rounded-xl shadow-md transition-all duration-200 hover:-translate-y-0.5 cursor-pointer"
-                  >
-                    <Globe className="w-4 h-4" />
-                    <span>Connect Wallet</span>
-                  </button>
-
-                  {walletConnectMsg && (
-                    <div className="p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-250 dark:border-amber-800 text-amber-850 dark:text-amber-400 rounded-xl text-xs">
-                      {walletConnectMsg}
-                    </div>
+                <div className="pt-2 flex flex-col sm:flex-row gap-3">
+                  {user.wallet_address ? (
+                    <>
+                      <button
+                        onClick={switchWallet}
+                        className="flex-1 inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-semibold text-sm rounded-xl shadow-md transition-all duration-200 hover:-translate-y-0.5 cursor-pointer"
+                      >
+                        <Globe className="w-4 h-4" />
+                        <span>Switch Wallet</span>
+                      </button>
+                      <button
+                        onClick={disconnectWallet}
+                        className="flex-1 inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-red-650 hover:bg-red-700 text-white font-semibold text-sm rounded-xl shadow-md transition-all duration-200 hover:-translate-y-0.5 cursor-pointer"
+                      >
+                        <LogOut className="w-4 h-4" />
+                        <span>Disconnect Wallet</span>
+                      </button>
+                    </>
+                  ) : (
+                    <button
+                      onClick={connectWallet}
+                      disabled={connectionStatus === 'connecting'}
+                      className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-semibold text-sm rounded-xl shadow-md transition-all duration-200 hover:-translate-y-0.5 cursor-pointer disabled:opacity-50"
+                    >
+                      <Globe className="w-4 h-4" />
+                      <span>{connectionStatus === 'connecting' ? 'Connecting...' : 'Connect Wallet'}</span>
+                    </button>
                   )}
                 </div>
               </div>

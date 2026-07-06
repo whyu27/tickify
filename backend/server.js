@@ -6,6 +6,7 @@ require('dotenv').config();
 const { testConnection } = require('./config/database');
 const authRoutes = require('./routes/authRoutes');
 const eventRoutes = require('./routes/eventRoutes');
+const userRoutes = require('./routes/userRoutes');
 const subscriptionRoutes = require('./routes/subscriptionRoutes');
 const statisticsRoutes = require('./routes/statisticsRoutes');
 const ticketRoutes = require('./routes/ticketRoutes');
@@ -24,6 +25,7 @@ app.get('/', (req, res) => {
 
 app.use('/api/auth', authRoutes);
 app.use('/api/events', eventRoutes);
+app.use('/api/users', userRoutes);
 app.use('/api/subscription', subscriptionRoutes);
 app.use('/api/statistics', statisticsRoutes);
 app.use('/api/tickets', ticketRoutes);

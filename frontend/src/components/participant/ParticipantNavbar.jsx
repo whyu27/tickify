@@ -5,9 +5,10 @@ import useAuth from '../../hooks/useAuth';
 import useWeb3 from '../../hooks/useWeb3';
 
 const ParticipantNavbar = () => {
-  const { logout } = useAuth();
-  const { wallet, connectWallet, disconnectWallet, switchWallet, connectionStatus } = useWeb3();
+  const { user, logout } = useAuth();
+  const { connectWallet, disconnectWallet, switchWallet, connectionStatus } = useWeb3();
   const [isWalletDropdownOpen, setIsWalletDropdownOpen] = useState(false);
+  const wallet = user?.wallet_address;
 
   return (
     <nav className="sticky top-0 z-50 w-full h-[72px] bg-[#0A0A0A]/80 backdrop-blur-md border-b border-white/8">

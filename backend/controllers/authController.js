@@ -143,7 +143,7 @@ const participantOnly = (req, res) => {
 
 const updateWallet = async (req, res) => {
   try {
-    const { walletAddress } = req.body;
+    const walletAddress = req.body.walletAddress || req.body.wallet_address;
 
     if (!walletAddress) {
       return res.status(400).json({
@@ -159,11 +159,12 @@ const updateWallet = async (req, res) => {
       });
     }
 
-    const result = await updateWalletAddress(req.user.id, walletAddress);
+    await updateWalletAddress(req.user.id, walletAddress);
+    const user = await getUserById(req.user.id);
 
     return res.status(200).json({
       success: true,
-      data: result,
+      data: user,
     });
   } catch (error) {
     if (error.message === 'Wallet already linked to another account') {
@@ -180,4 +181,22 @@ const updateWallet = async (req, res) => {
   }
 };
 
-module.exports = { register, login, getProfile, organizerOnly, participantOnly, updateWallet };
+const disconnectWallet = async (req, res) => {
+  try {
+    await updateWalletAddress(req.user.id, null);
+    const user = await getUserById(req.user.id);
+
+    return res.status(200).json({
+      success: true,
+      data: user,
+    });
+  } catch (error) {
+    console.error('Error disconnecting wallet:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+    });
+  }
+};
+
+module.exports = { register, login, getProfile, organizerOnly, participantOnly, updateWallet, disconnectWallet };
