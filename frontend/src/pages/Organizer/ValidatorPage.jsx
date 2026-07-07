@@ -1,10 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { QrCode, Search, CheckCircle2, XCircle, Clock, AlertCircle, ScanLine, Activity, Ticket, Check } from 'lucide-react';
 import OrganizerNavbar from '../../components/organizer/OrganizerNavbar';
 import useQRScanner from '../../hooks/useQRScanner';
 import api from '../../api/axios';
 
 const ValidatorPage = () => {
+  useEffect(() => {
+    document.title = 'Ticket Validator — Tickify';
+  }, []);
   const [ticketId, setTicketId] = useState('');
   const [verificationData, setVerificationData] = useState(null);
   const [isVerifying, setIsVerifying] = useState(false);

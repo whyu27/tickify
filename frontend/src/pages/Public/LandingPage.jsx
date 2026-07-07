@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import Navbar from '../../components/landing/Navbar';
 import Hero from '../../components/landing/Hero';
 import Statistics from '../../components/landing/Statistics';
@@ -8,6 +9,10 @@ import FAQSection from '../../components/landing/FAQSection';
 import Footer from '../../components/landing/Footer';
 
 const LandingPage = () => {
+  useEffect(() => {
+    document.title = 'Tickify — Blockchain Ticketing Platform';
+  }, []);
+
   return (
     <div className="min-h-screen bg-[#0A0A0A]">
       <Navbar />

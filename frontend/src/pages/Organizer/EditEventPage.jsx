@@ -51,6 +51,10 @@ const EditEventPage = () => {
     }
   };
 
+  useEffect(() => {
+    document.title = 'Edit Event — Tickify';
+  }, []);
+
   // Fetch categories on mount
   useEffect(() => {
     const fetchCategories = async () => {

@@ -40,6 +40,10 @@ const MyTickets = () => {
     fetchTickets();
   }, []);
 
+  useEffect(() => {
+    document.title = 'My Tickets — Tickify';
+  }, []);
+
   // Filter logic
   const filteredTickets = tickets.filter(ticket => {
     if (selectedFilter === 'all') return true;

@@ -65,6 +65,14 @@ const TicketDetailPage = () => {
     fetchTicketDetails();
   }, [ticketId]);
 
+  useEffect(() => {
+    if (ticket) {
+      document.title = `NFT Ticket #${ticket.token_id || ticket.ticket_id_onchain || ''} — Tickify`;
+    } else {
+      document.title = 'NFT Ticket — Tickify';
+    }
+  }, [ticket]);
+
   // Shorten address helper
   const shortenAddress = (address) => {
     if (!address) return '-';

@@ -26,6 +26,10 @@ const CreateEventPage = () => {
   const [categories, setCategories] = useState([]);
   const [categoriesLoading, setCategoriesLoading] = useState(true);
 
+  useEffect(() => {
+    document.title = 'Create Event — Tickify';
+  }, []);
+
   // Load duplicate data if available
   useEffect(() => {
     if (duplicateData) {

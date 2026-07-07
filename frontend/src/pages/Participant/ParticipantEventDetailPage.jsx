@@ -104,6 +104,14 @@ const ParticipantEventDetailPage = () => {
     fetchEventDetail();
   }, [id]);
 
+  useEffect(() => {
+    if (event && event.title) {
+      document.title = `${event.title} — Tickify`;
+    } else {
+      document.title = 'Event Details — Tickify';
+    }
+  }, [event]);
+
   const soldOut = event ? (event.quota - (event.tickets_sold || 0) <= 0) : false;
   const disabled = purchaseLoading || soldOut || (event ? event.status !== 'published' : true);
 

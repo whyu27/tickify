@@ -22,6 +22,10 @@ const OrganizerHome = () => {
     fetchOrganizerData();
   }, []);
 
+  useEffect(() => {
+    document.title = 'My Events — Tickify';
+  }, []);
+
   const fetchOrganizerData = async () => {
     try {
       setLoading(true);

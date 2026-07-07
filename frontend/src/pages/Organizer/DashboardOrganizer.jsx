@@ -47,6 +47,10 @@ const DashboardOrganizer = () => {
     fetchDashboardData();
   }, []);
 
+  useEffect(() => {
+    document.title = 'Organizer Dashboard — Tickify';
+  }, []);
+
   const handleUpgrade = async () => {
     setIsUpgrading(true);
     setUpgradeError('');

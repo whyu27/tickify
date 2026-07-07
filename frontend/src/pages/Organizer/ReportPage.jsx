@@ -34,6 +34,14 @@ const ReportPage = () => {
   const [toast, setToast] = useState({ show: false, message: '' });
 
   useEffect(() => {
+    if (event && event.title) {
+      document.title = `${event.title} Reports — Tickify`;
+    } else {
+      document.title = 'Event Reports — Tickify';
+    }
+  }, [event]);
+
+  useEffect(() => {
     const fetchEventReport = async () => {
       try {
         setLoading(true);

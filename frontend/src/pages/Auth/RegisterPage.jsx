@@ -1,9 +1,12 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import api from '../../api/axios';
 
 const RegisterPage = () => {
+  useEffect(() => {
+    document.title = 'Create Account — Tickify';
+  }, []);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const initialRole = searchParams.get('role') === 'organizer' ? 'organizer' : 'participant';

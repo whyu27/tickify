@@ -47,6 +47,14 @@ const PublicEventDetailPage = () => {
     fetchEventDetail();
   }, [fetchEventDetail]);
 
+  useEffect(() => {
+    if (event && event.title) {
+      document.title = `${event.title} — Tickify`;
+    } else {
+      document.title = 'Event Details — Tickify';
+    }
+  }, [event]);
+
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-white flex flex-col">
       <Navbar />

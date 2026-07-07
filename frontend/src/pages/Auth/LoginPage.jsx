@@ -1,10 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import useAuth from '../../hooks/useAuth';
 import api from '../../api/axios';
 
 const LoginPage = () => {
+  useEffect(() => {
+    document.title = 'Login — Tickify';
+  }, []);
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();

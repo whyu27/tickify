@@ -1,9 +1,12 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import useAuth from '../hooks/useAuth';
 import useWeb3 from '../hooks/useWeb3';
 import { User, Mail, Shield, Wallet, Calendar, Edit, Globe, LogOut } from 'lucide-react';
 
 const ProfilePage = () => {
+  useEffect(() => {
+    document.title = 'Profile — Tickify';
+  }, []);
   const { user } = useAuth();
   const { connectWallet, disconnectWallet, switchWallet, connectionStatus } = useWeb3();
 
