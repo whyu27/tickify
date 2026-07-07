@@ -8,7 +8,7 @@ const FAQItem = ({ question, answer }) => {
     <div className="border border-white/8 rounded-2xl overflow-hidden hover:border-white/15 transition-all duration-300">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full px-6 py-5 flex items-center justify-between text-left bg-[#161616] hover:bg-[#1a1a1a] transition-colors duration-200"
+        className="w-full px-4 py-4 md:px-6 md:py-5 flex items-center justify-between text-left bg-[#161616] hover:bg-[#1a1a1a] transition-colors duration-200"
       >
         <span className="text-base font-semibold text-white pr-4">
           {question}
@@ -18,6 +18,7 @@ const FAQItem = ({ question, answer }) => {
             isOpen ? 'rotate-180' : ''
           }`}
           strokeWidth={1.5}
+          size={20}
         />
       </button>
       
@@ -26,7 +27,7 @@ const FAQItem = ({ question, answer }) => {
           isOpen ? 'max-h-96' : 'max-h-0'
         }`}
       >
-        <div className="px-6 py-5 bg-[#161616] border-t border-white/6">
+        <div className="px-4 py-4 md:px-6 md:py-5 bg-[#161616] border-t border-white/6">
           <p className="text-base text-[#A0A0A0] leading-relaxed">
             {answer}
           </p>

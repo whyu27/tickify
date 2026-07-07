@@ -61,13 +61,13 @@ const EventSection = () => {
         </div>
 
         {/* Filter */}
-        <div className="flex flex-wrap items-center justify-center gap-3 mb-12">
+        <div className="flex overflow-x-auto md:flex-wrap items-center justify-start md:justify-center gap-3 mb-12 pb-3 md:pb-0 scrollbar-none [-ms-overflow-style:none] [scrollbar-width:none] px-4 -mx-4 md:px-0 md:mx-0">
           {allCategories.map((category) => (
             <button
               key={category.id}
               onClick={() => setSelectedCategory(category.slug)}
               disabled={loading}
-              className={`px-6 py-2.5 text-sm font-semibold rounded-full transition-all duration-200 ${
+              className={`px-6 py-2.5 text-sm font-semibold rounded-full transition-all duration-200 flex-shrink-0 ${
                 selectedCategory === category.slug
                   ? 'bg-white text-black'
                   : 'bg-transparent text-[#A0A0A0] border border-white/12 hover:border-white/25 hover:text-white'

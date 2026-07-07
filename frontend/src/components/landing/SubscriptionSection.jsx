@@ -17,11 +17,11 @@ const SubscriptionSection = () => {
         </div>
 
         {/* Plans Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto items-stretch">
           {subscriptionPlans.map((plan) => (
             <div
               key={plan.id}
-              className={`bg-[#161616] rounded-2xl p-8 ${
+              className={`bg-[#161616] rounded-2xl p-8 w-full max-w-md mx-auto md:max-w-none md:mx-0 flex flex-col justify-between ${
                 plan.highlighted
                   ? 'border-2 border-white/25 shadow-xl'
                   : 'border border-white/8'

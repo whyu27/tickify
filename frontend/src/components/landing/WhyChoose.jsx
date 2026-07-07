@@ -9,7 +9,7 @@ const iconMap = {
 
 const WhyChoose = () => {
   return (
-    <section className="py-20 bg-[#0A0A0A]">
+    <section id="features" className="py-20 bg-[#0A0A0A]">
       <div className="max-w-[1280px] mx-auto px-6">
         {/* Header */}
         <div className="text-center mb-12 flex flex-col items-center">
@@ -22,7 +22,7 @@ const WhyChoose = () => {
         </div>
 
         {/* Features Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {features.map((feature) => {
             const Icon = iconMap[feature.icon];
             return (

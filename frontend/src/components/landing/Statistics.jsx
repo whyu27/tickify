@@ -57,6 +57,13 @@ const Statistics = () => {
           value: stats.platformStatus,
           description: 'Running on Sepolia',
           icon: 'shield-check'
+        },
+        {
+          id: 4,
+          label: 'NFT Tickets Minted',
+          value: '100%',
+          description: 'Secured on Ethereum',
+          icon: 'shield-check'
         }
       ]
     : [];
@@ -74,22 +81,22 @@ const Statistics = () => {
             <p className="text-red-500 text-sm">{error}</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {statItems.map((stat) => {
               const Icon = iconMap[stat.icon];
               return (
                 <div
                   key={stat.id}
-                  className="bg-[#161616] border border-white/8 rounded-2xl p-6 hover:border-white/15 transition-all duration-300"
+                  className="bg-[#161616] border border-white/8 rounded-2xl p-6 hover:border-white/15 transition-all duration-300 h-full flex flex-col justify-between"
                 >
                   <div className="flex items-start gap-4">
-                    <div className="p-3 bg-white/5 rounded-xl">
+                    <div className="p-3 bg-white/5 rounded-xl flex-shrink-0">
                       {Icon && <Icon className="w-6 h-6 text-white" strokeWidth={1.5} />}
                     </div>
-                    <div className="flex-1">
-                      <h3 className="text-3xl font-bold text-white mb-1">{stat.value}</h3>
-                      <p className="text-base font-semibold text-white mb-1">{stat.label}</p>
-                      <p className="text-sm text-[#777777]">{stat.description}</p>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-3xl font-bold text-white mb-1 truncate">{stat.value}</h3>
+                      <p className="text-base font-semibold text-white mb-1 truncate">{stat.label}</p>
+                      <p className="text-sm text-[#777777] break-words">{stat.description}</p>
                     </div>
                   </div>
                 </div>
