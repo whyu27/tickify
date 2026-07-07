@@ -1,12 +1,36 @@
 import { useState } from 'react';
-import { Check, Info, Calendar, Shield, CreditCard, Sparkles, Award } from 'lucide-react';
+import { Check, Info, Calendar, Shield, CreditCard, Sparkles, Award, Loader } from 'lucide-react';
+import useAuth from '../../hooks/useAuth';
 
-const OrganizerSubscriptionSection = ({ currentPlan, onUpgrade, events = [] }) => {
+const OrganizerSubscriptionSection = ({ subscription, currentPlan, onUpgrade, events = [] }) => {
   const [showModal, setShowModal] = useState(false);
+  const [isUpgrading, setIsUpgrading] = useState(false);
+  const { user } = useAuth();
 
   const activeEventsCount = events.filter(e => e.status === 'draft' || e.status === 'published').length;
   const remainingQuota = Math.max(0, 2 - activeEventsCount);
   const isPro = currentPlan === 'pro' || currentPlan === 'organizer_pro';
+
+  const formattedEndDate = subscription?.subscription_end_date 
+    ? new Date(subscription.subscription_end_date).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      })
+    : '30 Days from activation';
+
+  const displayWallet = user?.wallet_address 
+    ? `${user.wallet_address.slice(0, 6)}...${user.wallet_address.slice(-4)}`
+    : '0xAcademicDemoAddress...3f8a';
+
+  const handleUpgradeClick = async () => {
+    setIsUpgrading(true);
+    const success = await onUpgrade();
+    setIsUpgrading(false);
+    if (success) {
+      setShowModal(false);
+    }
+  };
 
   const freeFeatures = [
     'Max 2 Active Events',
@@ -64,7 +88,7 @@ const OrganizerSubscriptionSection = ({ currentPlan, onUpgrade, events = [] }) =
                     : 'bg-white/5 border border-white/8 text-[#A0A0A0]'
                 }`}>
                   <span className={`w-1.5 h-1.5 rounded-full ${isPro ? 'bg-[#22C55E] animate-pulse' : 'bg-[#A0A0A0]'}`}></span>
-                  ACTIVE
+                  Active
                 </span>
               </div>
             </div>
@@ -132,21 +156,29 @@ const OrganizerSubscriptionSection = ({ currentPlan, onUpgrade, events = [] }) =
                   </ul>
                 </div>
 
-                {/* Web3 Placeholders */}
+                {/* Web3 Info */}
                 <div className="p-5 bg-white/5 border border-white/5 rounded-xl space-y-4">
                   <div className="flex items-start gap-3">
                     <Calendar className="w-5 h-5 text-[#777777] flex-shrink-0 mt-0.5" strokeWidth={1.5} />
                     <div>
                       <p className="text-xs text-[#777777] uppercase tracking-wider">Expiry Date</p>
-                      <p className="text-sm font-semibold text-[#A0A0A0]">Coming Soon (Sepolia Sync)</p>
+                      <p className="text-sm font-semibold text-[#A0A0A0]">{formattedEndDate}</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3 pt-3 border-t border-white/6">
                     <CreditCard className="w-5 h-5 text-[#777777] flex-shrink-0 mt-0.5" strokeWidth={1.5} />
                     <div>
                       <p className="text-xs text-[#777777] uppercase tracking-wider">Linked Wallet</p>
-                      <p className="text-sm font-semibold text-[#A0A0A0]">Coming Soon (Web3 Sync)</p>
+                      <p className="text-sm font-semibold text-[#A0A0A0]">{displayWallet}</p>
                     </div>
+                  </div>
+                </div>
+
+                {/* Current Plan Badge */}
+                <div className="pt-4">
+                  <div className="w-full flex items-center justify-center gap-2 px-6 py-4 text-base font-bold text-[#22C55E] bg-[#22C55E]/10 border border-[#22C55E]/20 rounded-xl">
+                    <Check className="w-5 h-5 text-[#22C55E]" />
+                    <span>Current Plan</span>
                   </div>
                 </div>
 
@@ -161,25 +193,75 @@ const OrganizerSubscriptionSection = ({ currentPlan, onUpgrade, events = [] }) =
         </div>
       </div>
 
-      {/* Coming Soon Modal */}
+      {/* Confirmation Modal */}
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4 animate-fade-in">
-          <div className="bg-[#161616] border border-white/8 rounded-2xl p-8 max-w-md w-full text-center relative shadow-2xl animate-scale-in">
-            <div className="w-16 h-16 bg-white/5 border border-white/8 rounded-2xl flex items-center justify-center mx-auto mb-6 text-white">
-              <Shield className="w-8 h-8" strokeWidth={1.5} />
-            </div>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-fade-in">
+          <div className="bg-[#161616] border border-white/8 rounded-2xl p-8 max-w-md w-full relative shadow-2xl animate-scale-in flex flex-col space-y-6">
             
-            <h3 className="text-2xl font-bold text-white mb-3">Upgrade Coming Soon</h3>
-            <p className="text-sm text-[#A0A0A0] leading-relaxed mb-8">
-              Organizer Pro subscription contracts are coming soon to Sepolia Testnet! Soon you will be able to lock premium credentials and subscribe directly using MetaMask payments.
-            </p>
+            {/* Header */}
+            <div>
+              <h3 className="text-2xl font-bold text-white mb-2">Upgrade to Organizer Pro</h3>
+              <p className="text-sm text-[#A0A0A0] leading-relaxed">
+                Unlock all premium organizer features.
+              </p>
+            </div>
 
-            <button
-              onClick={() => setShowModal(false)}
-              className="w-full py-3.5 px-6 text-sm font-semibold text-white bg-transparent border border-white/12 rounded-xl hover:border-white/25 hover:bg-white/5 transition-all duration-200"
-            >
-              Close
-            </button>
+            {/* Features list */}
+            <div className="space-y-3 py-2 border-t border-b border-white/6">
+              {[
+                'Unlimited Event Creation',
+                'NFT Ticket Minting',
+                'Advanced Event Reports',
+                'Ticket Validator',
+                'QR Code Verification'
+              ].map((feat, idx) => (
+                <div key={idx} className="flex items-center gap-2.5 text-sm text-[#A0A0A0]">
+                  <Check className="w-4 h-4 text-[#22C55E] flex-shrink-0" strokeWidth={2.5} />
+                  <span>{feat}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Info Box */}
+            <div className="p-4 bg-purple-600/10 border border-purple-500/25 rounded-xl space-y-1">
+              <div className="flex items-center gap-2 text-purple-400 font-bold text-sm">
+                <Info className="w-4.5 h-4.5 flex-shrink-0 text-purple-400" />
+                <span>Academic Version</span>
+              </div>
+              <p className="text-xs text-[#A0A0A0] leading-relaxed">
+                Organizer Pro will be activated instantly for demonstration purposes.
+              </p>
+              <p className="text-xs font-semibold text-purple-300">
+                No payment is required.
+              </p>
+            </div>
+
+            {/* Buttons */}
+            <div className="flex items-center justify-end gap-3 pt-2">
+              <button
+                type="button"
+                disabled={isUpgrading}
+                onClick={() => setShowModal(false)}
+                className="px-5 py-2.5 border border-white/10 rounded-xl text-xs font-bold text-[#A0A0A0] hover:text-white hover:bg-white/5 disabled:opacity-50 transition-all duration-200 cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={isUpgrading}
+                onClick={handleUpgradeClick}
+                className="px-5 py-2.5 bg-white hover:bg-[#EAEAEA] disabled:bg-white/50 text-black rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer min-w-[120px]"
+              >
+                {isUpgrading ? (
+                  <>
+                    <Loader className="w-3.5 h-3.5 animate-spin" />
+                    <span>Upgrading...</span>
+                  </>
+                ) : (
+                  <span>Upgrade to Pro</span>
+                )}
+              </button>
+            </div>
           </div>
         </div>
       )}

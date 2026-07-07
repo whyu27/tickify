@@ -115,14 +115,17 @@ const OrganizerHome = () => {
       
       if (response.data && response.data.success) {
         setSubscription(response.data.data);
-        showToast('Successfully upgraded to Pro Plan!', 'success');
+        showToast('Organizer Pro activated successfully.', 'success');
         fetchOrganizerData();
+        return true;
       } else {
         showToast(response.data?.message || 'Failed to upgrade subscription.', 'error');
+        return false;
       }
     } catch (err) {
       console.error('Upgrade subscription error:', err);
       showToast(err.response?.data?.message || 'Failed to upgrade subscription.', 'error');
+      return false;
     } finally {
       setIsUpgrading(false);
     }
@@ -172,6 +175,7 @@ const OrganizerHome = () => {
 
       {/* Subscription Section */}
       <OrganizerSubscriptionSection 
+        subscription={subscription}
         currentPlan={subscriptionPlan}
         onUpgrade={handleUpgrade}
         events={events}
