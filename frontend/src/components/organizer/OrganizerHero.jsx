@@ -12,7 +12,7 @@ const OrganizerHero = () => {
       {/* Content */}
       <div className="relative z-10 max-w-[1280px] mx-auto px-6 text-center">
         {/* Badge */}
-        <div className="inline-flex items-center gap-2 px-4 py-2 mb-8 bg-white/5 border border-white/8 rounded-full">
+        <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/8 rounded-full">
           <span className="w-2 h-2 bg-[#22C55E] rounded-full animate-pulse"></span>
           <span className="text-sm font-medium text-[#A0A0A0]">Organizer Dashboard</span>
         </div>
@@ -30,7 +30,7 @@ const OrganizerHero = () => {
         </p>
 
         {/* CTA Buttons */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-3">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-7">
           <HashLink
             smooth
             to="/dashboard/organizer/home#my-events"
