@@ -1,10 +1,16 @@
-import { Outlet, Link, useLocation } from 'react-router-dom';
+import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
 import { LayoutDashboard, Calendar, CheckSquare, User, LogOut, Ticket } from 'lucide-react';
 
 const DashboardLayout = () => {
   const { user, logout } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    navigate('/');
+    logout();
+  };
 
   const organizerMenu = [
     { name: 'Dashboard', path: '/dashboard/organizer/home', icon: LayoutDashboard, disabled: false },
@@ -74,7 +80,7 @@ const DashboardLayout = () => {
         {/* Sidebar Footer / Logout */}
         <div className="p-4 border-t border-gray-200 dark:border-zinc-700">
           <button
-            onClick={logout}
+            onClick={handleLogout}
             className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/20 hover:text-red-700 dark:hover:text-red-300 transition-colors"
           >
             <LogOut className="w-5 h-5" />
@@ -106,7 +112,7 @@ const DashboardLayout = () => {
             </div>
             
             <button
-              onClick={logout}
+              onClick={handleLogout}
               className="flex items-center gap-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 border border-gray-200 dark:border-zinc-700 px-3.5 py-1.5 rounded-xl hover:border-red-600 dark:hover:border-red-400 transition-colors bg-transparent"
             >
               <LogOut className="w-4 h-4" />

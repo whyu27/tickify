@@ -1,11 +1,17 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { User, Wallet, LogOut, ChevronDown, RefreshCw } from 'lucide-react';
 import useAuth from '../../hooks/useAuth';
 import useWeb3 from '../../hooks/useWeb3';
 
 const ParticipantNavbar = () => {
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    navigate('/');
+    logout();
+  };
   const { connectWallet, disconnectWallet, switchWallet, connectionStatus } = useWeb3();
   const [isWalletDropdownOpen, setIsWalletDropdownOpen] = useState(false);
   const wallet = (user?.wallet_address && user?.wallet_verified) ? user.wallet_address : null;
@@ -88,7 +94,7 @@ const ParticipantNavbar = () => {
           )}
 
           <button
-            onClick={logout}
+            onClick={handleLogout}
             className="flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-transparent border border-white/12 rounded-xl hover:border-white/25 hover:bg-white/5 transition-all duration-200"
           >
             <LogOut className="w-4 h-4" strokeWidth={1.5} />

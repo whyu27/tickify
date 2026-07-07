@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X, Wallet, LogOut, ChevronDown, RefreshCw } from 'lucide-react';
 import useAuth from '../../hooks/useAuth';
 import useWeb3 from '../../hooks/useWeb3';
@@ -8,6 +8,12 @@ const OrganizerNavbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isWalletDropdownOpen, setIsWalletDropdownOpen] = useState(false);
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    navigate('/');
+    logout();
+  };
   const { connectWallet, disconnectWallet, switchWallet, connectionStatus } = useWeb3();
   const wallet = (user?.wallet_address && user?.wallet_verified) ? user.wallet_address : null;
   const location = useLocation();
@@ -107,7 +113,7 @@ const OrganizerNavbar = () => {
 
             {/* Logout Button */}
             <button
-              onClick={logout}
+              onClick={handleLogout}
               className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-transparent border border-white/12 rounded-xl hover:border-white/25 hover:bg-white/5 transition-all duration-200"
             >
               <LogOut className="w-4 h-4" strokeWidth={1.5} />
@@ -191,7 +197,7 @@ const OrganizerNavbar = () => {
               <button
                 onClick={() => {
                   setIsMobileMenuOpen(false);
-                  logout();
+                  handleLogout();
                 }}
                 className="w-full flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-transparent border border-white/12 rounded-xl hover:border-white/25 hover:bg-white/5 transition-all duration-200"
               >

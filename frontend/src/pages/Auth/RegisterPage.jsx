@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Link, useSearchParams } from 'react-router-dom';
+import { ArrowLeft } from 'lucide-react';
 import api from '../../api/axios';
 
 const RegisterPage = () => {
@@ -89,6 +90,17 @@ const RegisterPage = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#0A0A0A] py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+      {/* Back Button */}
+      <div className="absolute top-6 left-6 z-20">
+        <Link
+          to="/login"
+          className="inline-flex items-center gap-2 text-sm font-medium text-[#A0A0A0] hover:text-white transition-all duration-200 group"
+        >
+          <ArrowLeft className="w-4 h-4 transition-transform duration-200 group-hover:-translate-x-1" />
+          <span>Back to Login</span>
+        </Link>
+      </div>
+
       {/* Background Glow Effects */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-white/5 rounded-full blur-3xl"></div>
