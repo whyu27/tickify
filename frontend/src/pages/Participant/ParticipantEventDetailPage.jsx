@@ -83,20 +83,22 @@ const ParticipantEventDetailPage = () => {
       if (response.data && response.data.success) {
         setSuccessData(response.data.data);
         fetchEventDetail();
+        setShowConfirmModal(false);
       } else {
         setPurchaseError(response.data?.message || 'Failed to purchase ticket.');
+        setShowConfirmModal(false);
       }
     } catch (error) {
       console.error(error);
       const msg = error.response?.data?.message || 'NFT gagal dibuat. Silakan coba beberapa saat lagi.';
       setPurchaseError(msg);
+      setShowConfirmModal(false);
     } finally {
       setPurchaseLoading(false);
     }
   };
 
   const handleConfirmPurchase = () => {
-    setShowConfirmModal(false);
     handleBuyTicket();
   };
 

@@ -11,11 +11,38 @@ const ValidatorPage = () => {
   const [ticketId, setTicketId] = useState('');
   const [verificationData, setVerificationData] = useState(null);
   const [isVerifying, setIsVerifying] = useState(false);
+  const [verifyStep, setVerifyStep] = useState(1);
   const [hasConfirmedCheckIn, setHasConfirmedCheckIn] = useState(false);
   const [recentCheckins, setRecentCheckins] = useState([]);
 
+  // Handle timer triggers for visual verification progress stages
+  useEffect(() => {
+    if (!isVerifying) {
+      setVerifyStep(1);
+      return;
+    }
+
+    // Step 1: Reading Ticket Data (⏳)
+    // Step 2: Verifying NFT Ownership (⏳) after 800ms
+    const timer1 = setTimeout(() => {
+      setVerifyStep(2);
+    }, 800);
+
+    // Step 3: Checking Check-in Status (⏳) after 2500ms
+    const timer2 = setTimeout(() => {
+      setVerifyStep(3);
+    }, 2500);
+
+    return () => {
+      clearTimeout(timer1);
+      clearTimeout(timer2);
+    };
+  }, [isVerifying]);
+
   // Verify ticket via API
   const handleVerifyTicket = async (ticketIdToVerify = null) => {
+    if (isVerifying) return; // Prevent multiple concurrent verification requests
+
     const idToVerify = ticketIdToVerify !== null ? String(ticketIdToVerify).replace('#', '').trim() : ticketId.replace('#', '').trim();
 
     if (!idToVerify) {
@@ -58,6 +85,10 @@ const ValidatorPage = () => {
 
   // Handle QR scan success
   const handleScanSuccess = (decodedText) => {
+    if (isVerifying) {
+      console.log('Verification in progress, ignoring scan request.');
+      return;
+    }
     console.log('QR Code scanned:', decodedText);
     let idToVerify = decodedText;
     try {
@@ -252,8 +283,71 @@ const ValidatorPage = () => {
                 </div>
               </div>
 
-              {/* Verification Result Card */}
-              {verificationData ? (
+              {/* Verification Result Card or Loading State */}
+              {isVerifying ? (
+                <div className="bg-[#121212] border border-white/10 rounded-2xl p-8 flex flex-col items-center justify-center text-center space-y-6 min-h-[300px] backdrop-blur-sm animate-in fade-in slide-in-from-bottom-4 duration-500">
+                  {/* Glowing Spinner */}
+                  <div className="relative w-16 h-16 flex items-center justify-center">
+                    <div className="absolute inset-0 rounded-full border-4 border-white/5 animate-pulse" />
+                    <div className="w-10 h-10 border-4 border-transparent border-t-white border-r-white/20 border-b-white/10 border-l-white/40 rounded-full animate-spin" />
+                  </div>
+
+                  <div className="space-y-2">
+                    <h3 className="text-xl font-bold text-white tracking-tight">Verifying Ticket</h3>
+                    <div className="text-sm text-[#A0A0A0] max-w-sm mx-auto leading-relaxed">
+                      <p>Please wait while we verify the NFT ticket and blockchain information.</p>
+                      <p className="text-[#777777] text-xs font-medium mt-1">This usually takes a few seconds.</p>
+                    </div>
+                  </div>
+
+                  {/* Visual Progress Steps */}
+                  <div className="w-full bg-white/2 border border-white/8 rounded-xl p-5 text-left space-y-3.5 mt-2">
+                    {/* Step 1: Reading Ticket Data */}
+                    <div className={`flex items-center gap-2.5 transition-all duration-300 ${verifyStep >= 1 ? 'opacity-100' : 'opacity-40'}`}>
+                      <span className="text-base flex-shrink-0 w-5 h-5 flex items-center justify-center">
+                        {verifyStep > 1 ? (
+                          <span className="text-emerald-400 font-bold">✓</span>
+                        ) : (
+                          <span className="text-amber-400 animate-pulse">⏳</span>
+                        )}
+                      </span>
+                      <span className={`text-sm ${verifyStep > 1 ? 'text-white/80' : 'text-white font-semibold'}`}>
+                        Reading Ticket Data
+                      </span>
+                    </div>
+
+                    {/* Step 2: Verifying NFT Ownership */}
+                    <div className={`flex items-center gap-2.5 transition-all duration-300 ${verifyStep >= 2 ? 'opacity-100' : 'opacity-45'}`}>
+                      <span className="text-base flex-shrink-0 w-5 h-5 flex items-center justify-center">
+                        {verifyStep > 2 ? (
+                          <span className="text-emerald-400 font-bold">✓</span>
+                        ) : verifyStep === 2 ? (
+                          <span className="text-amber-400 animate-pulse">⏳</span>
+                        ) : (
+                          <span className="text-[#555555]">○</span>
+                        )}
+                      </span>
+                      <span className={`text-sm ${verifyStep > 2 ? 'text-white/80' : verifyStep === 2 ? 'text-white font-semibold' : 'text-white/40'}`}>
+                        Verifying NFT Ownership
+                      </span>
+                    </div>
+
+                    {/* Step 3: Checking Check-in Status */}
+                    <div className={`flex items-center gap-2.5 transition-all duration-300 ${verifyStep >= 3 ? 'opacity-100' : 'opacity-45'}`}>
+                      <span className="text-base flex-shrink-0 w-5 h-5 flex items-center justify-center">
+                        {verifyStep === 3 ? (
+                          <span className="text-amber-400 animate-pulse">⏳</span>
+                        ) : (
+                          <span className="text-[#555555]">○</span>
+                        )}
+                      </span>
+                      <span className={`text-sm ${verifyStep === 3 ? 'text-white font-semibold' : 'text-white/40'}`}>
+                        Checking Check-in Status
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ) : verificationData ? (
                 <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
 
                   {/* VALID TICKET */}
