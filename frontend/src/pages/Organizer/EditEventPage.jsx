@@ -418,16 +418,16 @@ const EditEventPage = () => {
                     
                     {/* Show existing banner if no new file selected */}
                     {existingBannerUrl && !bannerFile && (
-                      <div className="mb-4 rounded-xl overflow-hidden border border-white/8">
+                      <div className="mb-4 rounded-xl overflow-hidden border border-white/8 relative aspect-[16/9] md:aspect-[16/7]">
                         <img
                           src={getImageUrl(existingBannerUrl)}
                           alt="Current Banner"
-                          className="w-full h-64 object-cover"
+                          className="w-full h-full object-cover object-center"
                           onError={(e) => {
                             e.target.style.display = 'none';
                           }}
                         />
-                        <div className="p-3 bg-[#0D0D0D] text-xs text-[#A0A0A0]">
+                        <div className="absolute bottom-0 inset-x-0 p-3 bg-black/60 backdrop-blur-sm text-xs text-[#A0A0A0] border-t border-white/5 select-none">
                           Current banner. Upload a new image to replace it.
                         </div>
                       </div>

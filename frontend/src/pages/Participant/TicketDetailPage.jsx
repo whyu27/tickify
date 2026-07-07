@@ -5,14 +5,14 @@ import Footer from '../../components/landing/Footer';
 import TicketQRModal from '../../components/participant/TicketQRModal';
 import api from '../../api/axios';
 import { getImageUrl } from '../../utils/imageHelper';
-import { 
-  ArrowLeft, 
-  Copy, 
-  ExternalLink, 
-  QrCode, 
-  MapPin, 
-  Calendar, 
-  Wallet, 
+import {
+  ArrowLeft,
+  Copy,
+  ExternalLink,
+  QrCode,
+  MapPin,
+  Calendar,
+  Wallet,
   ShieldCheck,
   Cpu,
   Clock,
@@ -29,7 +29,7 @@ const TicketDetailPage = () => {
   const [ticket, setTicket] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
+
   // Modal & Toast states
   const [isQRModalOpen, setIsQRModalOpen] = useState(false);
   const [toast, setToast] = useState({ show: false, message: '' });
@@ -38,13 +38,13 @@ const TicketDetailPage = () => {
     try {
       setLoading(true);
       setError(null);
-      
+
       // Fetch all participant tickets and filter by the URL's ticketId
       const response = await api.get('/tickets/my-tickets');
       if (response.data && response.data.success) {
         const userTickets = response.data.data || [];
         const foundTicket = userTickets.find(t => String(t.id) === String(ticketId));
-        
+
         if (foundTicket) {
           setTicket(foundTicket);
         } else {
@@ -149,7 +149,7 @@ const TicketDetailPage = () => {
         <div className="flex-1 max-w-[1000px] w-full mx-auto px-6 py-8 animate-pulse space-y-8">
           {/* Back button skeleton */}
           <div className="h-6 bg-white/5 rounded-md w-32" />
-          
+
           {/* Banner skeleton */}
           <div className="h-64 md:h-80 bg-white/5 rounded-3xl" />
 
@@ -245,10 +245,10 @@ const TicketDetailPage = () => {
       <ParticipantNavbar />
 
       <div className="flex-1 max-w-[1000px] w-full mx-auto px-6 py-8 relative z-10">
-        
+
         {/* Back Link */}
-        <Link 
-          to="/participant/tickets" 
+        <Link
+          to="/participant/tickets"
           className="inline-flex items-center gap-2 text-sm text-[#A0A0A0] hover:text-white transition-colors duration-200 mb-8 group"
         >
           <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
@@ -274,7 +274,7 @@ const TicketDetailPage = () => {
                 <div className="w-full h-full bg-gradient-to-br from-[#1F1F1F] to-[#0D0D0D]" />
               )}
               {/* Dark Gradient Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-r from-black via-black/90 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-r from-black via-black/70 to-transparent" />
             </div>
 
             {/* Left Part Content */}
@@ -357,7 +357,7 @@ const TicketDetailPage = () => {
             {/* Stub Content */}
             <div className="flex flex-col items-center w-full text-center space-y-5">
               {/* QR Container */}
-              <button 
+              <button
                 onClick={() => setIsQRModalOpen(true)}
                 className="group/qr relative p-3.5 bg-white rounded-2xl flex justify-center items-center shadow-lg transition-transform duration-300 hover:scale-[1.03] cursor-pointer"
               >
@@ -387,7 +387,7 @@ const TicketDetailPage = () => {
               <div className="w-full border-t border-white/5 my-1" />
 
               {/* Click to expand text */}
-              <button 
+              <button
                 onClick={() => setIsQRModalOpen(true)}
                 className="text-xs text-purple-400 hover:text-purple-300 transition-colors flex items-center gap-1.5 cursor-pointer font-medium"
               >
@@ -400,7 +400,7 @@ const TicketDetailPage = () => {
 
         {/* Details Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-          
+
           {/* Card 1: NFT Credentials */}
           <div className="bg-[#121212]/50 backdrop-blur-md border border-white/8 rounded-2xl p-6 hover:border-white/12 transition-all duration-300 flex flex-col justify-between">
             <div>
@@ -410,18 +410,18 @@ const TicketDetailPage = () => {
                 </div>
                 <h3 className="text-lg font-bold text-white">NFT Credentials</h3>
               </div>
-              
+
               <div className="space-y-4">
                 <div className="flex justify-between items-center py-2 border-b border-white/4">
                   <span className="text-xs text-[#777777] uppercase tracking-wider font-semibold">Token Standard</span>
                   <span className="text-xs font-semibold text-white px-2.5 py-0.5 rounded bg-white/5 border border-white/10 font-mono">ERC-721 (NFT)</span>
                 </div>
-                
+
                 <div className="flex justify-between items-center py-2 border-b border-white/4">
                   <span className="text-xs text-[#777777] uppercase tracking-wider font-semibold">Wallet Owner</span>
                   <div className="flex items-center gap-2">
                     <span className="text-xs font-mono text-white" title={ticket.owner_wallet}>{shortenAddress(ticket.owner_wallet)}</span>
-                    <button 
+                    <button
                       onClick={handleCopyWallet}
                       className="p-1 text-[#777777] hover:text-white transition-colors cursor-pointer"
                     >
@@ -434,7 +434,7 @@ const TicketDetailPage = () => {
                   <span className="text-xs text-[#777777] uppercase tracking-wider font-semibold">Contract Address</span>
                   <div className="flex items-center gap-2">
                     <span className="text-xs font-mono text-white" title={CONTRACT_ADDRESS}>{shortenAddress(CONTRACT_ADDRESS)}</span>
-                    <button 
+                    <button
                       onClick={handleCopyContract}
                       className="p-1 text-[#777777] hover:text-white transition-colors cursor-pointer"
                     >
@@ -484,7 +484,7 @@ const TicketDetailPage = () => {
                   <div className="flex justify-between items-center mb-2">
                     <span className="text-xs text-[#777777] uppercase tracking-wider font-semibold">Transaction Hash</span>
                     {ticket.transaction_hash && (
-                      <button 
+                      <button
                         onClick={handleCopyTxHash}
                         className="p-1 text-[#777777] hover:text-white transition-colors cursor-pointer flex items-center gap-1 text-[10px] font-medium"
                       >

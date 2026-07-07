@@ -100,8 +100,8 @@ const OrganizerEventCard = ({ event, onDelete, onStatusChange }) => {
 
   const handleDuplicate = () => {
     // Navigate to create page with event data
-    navigate('/dashboard/organizer/events/create', { 
-      state: { 
+    navigate('/dashboard/organizer/events/create', {
+      state: {
         duplicateData: {
           title: `${event.title} (Copy)`,
           description: event.description,
@@ -120,7 +120,7 @@ const OrganizerEventCard = ({ event, onDelete, onStatusChange }) => {
     if (status === 'draft') {
       return (
         <>
-          <button 
+          <button
             onClick={handleEdit}
             disabled={isProcessing}
             className="flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold text-white bg-transparent border border-white/12 rounded-xl hover:border-white/25 hover:bg-white/5 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -128,7 +128,7 @@ const OrganizerEventCard = ({ event, onDelete, onStatusChange }) => {
             <Edit className="w-4 h-4" strokeWidth={1.5} />
             Edit
           </button>
-          <button 
+          <button
             onClick={handlePublish}
             disabled={isProcessing}
             className="flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold text-black bg-[#22C55E] rounded-xl hover:bg-[#22C55E]/90 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -136,7 +136,7 @@ const OrganizerEventCard = ({ event, onDelete, onStatusChange }) => {
             <CheckCircle className="w-4 h-4" strokeWidth={1.5} />
             Publish
           </button>
-          <button 
+          <button
             onClick={handleDelete}
             disabled={isProcessing}
             className="flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold text-[#EF4444] bg-transparent border border-[#EF4444]/20 rounded-xl hover:border-[#EF4444]/40 hover:bg-[#EF4444]/5 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -151,7 +151,7 @@ const OrganizerEventCard = ({ event, onDelete, onStatusChange }) => {
     if (status === 'published') {
       return (
         <>
-          <button 
+          <button
             onClick={handleEdit}
             disabled={isProcessing}
             className="flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold text-white bg-transparent border border-white/12 rounded-xl hover:border-white/25 hover:bg-white/5 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -159,7 +159,7 @@ const OrganizerEventCard = ({ event, onDelete, onStatusChange }) => {
             <Edit className="w-4 h-4" strokeWidth={1.5} />
             Edit
           </button>
-          <button 
+          <button
             onClick={handleCloseSales}
             disabled={isProcessing}
             className="flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold text-[#EF4444] bg-transparent border border-[#EF4444]/20 rounded-xl hover:border-[#EF4444]/40 hover:bg-[#EF4444]/5 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -173,7 +173,7 @@ const OrganizerEventCard = ({ event, onDelete, onStatusChange }) => {
 
     if (status === 'closed') {
       return (
-        <button 
+        <button
           onClick={handleViewReport}
           disabled={isProcessing}
           className="flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold text-white bg-transparent border border-white/12 rounded-xl hover:border-white/25 hover:bg-white/5 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-center"
@@ -200,16 +200,15 @@ const OrganizerEventCard = ({ event, onDelete, onStatusChange }) => {
             No Banner
           </div>
         )}
-        
+
         {/* Status Badge */}
         <div className="absolute top-3 right-3">
-          <span className={`px-3 py-1.5 text-xs font-semibold rounded-full ${
-            event.status === 'published' 
-              ? 'bg-[#22C55E] text-black' 
+          <span className={`px-3 py-1.5 text-xs font-semibold rounded-full ${event.status === 'published'
+              ? 'bg-[#22C55E] text-black'
               : event.status === 'closed'
-              ? 'bg-[#EF4444] text-white'
-              : 'bg-[#FACC15] text-black'
-          }`}>
+                ? 'bg-[#EF4444] text-white'
+                : 'bg-[#FACC15] text-black'
+            }`}>
             {event.status ? event.status.charAt(0).toUpperCase() + event.status.slice(1) : 'Draft'}
           </span>
         </div>
@@ -257,10 +256,9 @@ const OrganizerEventCard = ({ event, onDelete, onStatusChange }) => {
         </div>
 
         {/* Action Buttons */}
-        <div className={`grid gap-3 pt-2 ${
-          event.status === 'draft' ? 'grid-cols-3' : 
-          event.status === 'closed' ? 'grid-cols-1' : 'grid-cols-2'
-        }`}>
+        <div className={`grid gap-3 pt-2 ${event.status === 'draft' ? 'grid-cols-3' :
+            event.status === 'closed' ? 'grid-cols-1' : 'grid-cols-2'
+          }`}>
           {renderActionButtons()}
         </div>
       </div>

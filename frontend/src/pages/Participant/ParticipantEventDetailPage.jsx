@@ -77,7 +77,7 @@ const ParticipantEventDetailPage = () => {
 
     try {
       console.log("Sending purchase request...");
-      const response = await api.post('/tickets/purchase', payload);
+      const response = await api.post('/tickets/purchase', payload, { timeout: 60000 });
       console.log("Purchase response:", response.data);
 
       if (response.data && response.data.success) {
