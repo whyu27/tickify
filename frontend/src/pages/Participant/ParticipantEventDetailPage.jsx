@@ -142,12 +142,12 @@ const ParticipantEventDetailPage = () => {
             {/* Layout Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
               {/* Main Content Column */}
-              <div className="lg:col-span-2 space-y-6">
+              <div className="lg:col-span-2 space-y-6 order-2 md:order-1">
                 <EventInfo event={event} />
               </div>
 
               {/* Sidebar Column */}
-              <div className="space-y-6">
+              <div className="space-y-6 order-1 md:order-2">
                 <EventSidebar event={event}>
                   {/* Purchase error display */}
                   {purchaseError && (

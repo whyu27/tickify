@@ -146,7 +146,7 @@ const TicketDetailPage = () => {
     return (
       <div className="min-h-screen bg-[#0A0A0A] flex flex-col">
         <ParticipantNavbar />
-        <div className="flex-1 max-w-[1000px] w-full mx-auto px-6 py-8 animate-pulse space-y-8">
+        <div className="flex-1 max-w-[1000px] w-full mx-auto px-4 sm:px-6 py-8 animate-pulse space-y-8">
           {/* Back button skeleton */}
           <div className="h-6 bg-white/5 rounded-md w-32" />
 
@@ -183,8 +183,8 @@ const TicketDetailPage = () => {
     return (
       <div className="min-h-screen bg-[#0A0A0A] flex flex-col">
         <ParticipantNavbar />
-        <div className="flex-1 flex flex-col items-center justify-center px-6 py-20">
-          <div className="bg-[#161616]/80 backdrop-blur-md border border-white/8 rounded-3xl p-8 max-w-md w-full text-center shadow-2xl flex flex-col items-center">
+        <div className="flex-1 flex flex-col items-center justify-center px-4 sm:px-6 py-20">
+          <div className="bg-[#161616]/80 backdrop-blur-md border border-white/8 rounded-3xl p-6 sm:p-8 max-w-md w-full text-center shadow-2xl flex flex-col items-center">
             <div className="inline-flex items-center justify-center w-16 h-16 bg-white/5 border border-white/8 rounded-2xl mb-6">
               <AlertCircle className="w-8 h-8 text-[#EF4444]" />
             </div>
@@ -211,8 +211,8 @@ const TicketDetailPage = () => {
     return (
       <div className="min-h-screen bg-[#0A0A0A] flex flex-col">
         <ParticipantNavbar />
-        <div className="flex-1 flex flex-col items-center justify-center px-6 py-20">
-          <div className="bg-[#1A1111]/80 backdrop-blur-md border border-red-500/20 rounded-3xl p-8 max-w-md w-full text-center shadow-2xl flex flex-col items-center">
+        <div className="flex-1 flex flex-col items-center justify-center px-4 sm:px-6 py-20">
+          <div className="bg-[#1A1111]/80 backdrop-blur-md border border-red-500/20 rounded-3xl p-6 sm:p-8 max-w-md w-full text-center shadow-2xl flex flex-col items-center">
             <div className="inline-flex items-center justify-center w-16 h-16 bg-red-500/10 border border-red-500/20 rounded-2xl mb-6">
               <AlertCircle className="w-8 h-8 text-[#EF4444]" />
             </div>
@@ -244,7 +244,7 @@ const TicketDetailPage = () => {
 
       <ParticipantNavbar />
 
-      <div className="flex-1 max-w-[1000px] w-full mx-auto px-6 py-8 relative z-10">
+      <div className="flex-1 max-w-[1000px] w-full mx-auto px-4 sm:px-6 py-8 relative z-10">
 
         {/* Back Link */}
         <Link
@@ -261,7 +261,7 @@ const TicketDetailPage = () => {
           <div className="absolute inset-0 bg-gradient-to-tr from-purple-500/5 via-transparent to-indigo-500/5 pointer-events-none" />
 
           {/* Left Part: Event Details (60% width on desktop) */}
-          <div className="relative md:w-3/5 min-h-[260px] md:min-h-[340px] flex flex-col justify-between p-8 z-10">
+          <div className="relative md:w-3/5 min-h-[260px] md:min-h-[340px] flex flex-col justify-between p-6 sm:p-8 z-10">
             {/* Event Banner Background */}
             <div className="absolute inset-0 z-0 overflow-hidden">
               {ticket.event.banner_url ? (
@@ -301,7 +301,7 @@ const TicketDetailPage = () => {
               </div>
 
               {/* Bottom Row: Metadata */}
-              <div className="grid grid-cols-2 gap-4 border-t border-white/10 pt-4 mt-auto">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-t border-white/10 pt-4 mt-auto">
                 <div className="flex items-center gap-2.5">
                   <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center border border-white/8">
                     <Calendar className="w-4 h-4 text-purple-400" />
@@ -345,7 +345,7 @@ const TicketDetailPage = () => {
           </div>
 
           {/* Right Part: QR Stub & Status (40% width on desktop) */}
-          <div className="relative md:w-2/5 p-8 flex flex-col items-center justify-center bg-[#101010]/85 backdrop-blur-sm z-10">
+          <div className="relative md:w-2/5 p-6 sm:p-8 flex flex-col items-center justify-center bg-[#101010]/85 backdrop-blur-sm z-10">
             {/* Status Badge absolute corner */}
             <div className="absolute top-4 right-4">
               <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-full backdrop-blur-md ${statusCfg.classes}`}>

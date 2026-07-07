@@ -58,13 +58,13 @@ const PurchaseConfirmationModal = ({
         </button>
 
         {/* Header */}
-        <div className="p-6 pb-4 shrink-0">
+        <div className="p-5 sm:p-6 pb-4 shrink-0">
           <h3 className="text-xl font-bold text-white tracking-tight">Purchase NFT Ticket</h3>
           <p className="text-sm text-[#A0A0A0] mt-1">Review your purchase before continuing.</p>
         </div>
 
         {/* Scrollable Body */}
-        <div className="overflow-y-auto px-6 pb-2 space-y-4 min-h-0 flex-1">
+        <div className="overflow-y-auto px-5 sm:px-6 pb-2 space-y-4 min-h-0 flex-1">
           {/* Event Banner */}
           {event.banner_url && (
             <div className="aspect-[16/7] w-full rounded-xl overflow-hidden border border-white/10 bg-[#0D0D0D] shrink-0">
@@ -97,13 +97,13 @@ const PurchaseConfirmationModal = ({
             <div className="flex justify-between items-center text-xs pt-3 border-t border-white/5">
               <div className="flex items-center gap-2">
                 <span className="text-[#777777]">Wallet</span>
-                <span className="font-mono text-white bg-white/5 px-2 py-0.5 rounded border border-white/5">
+                <span className="font-mono text-white bg-white/5 px-2 py-0.5 rounded border border-white/5 font-semibold">
                   {formatWallet(walletAddress)}
                 </span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-[#777777]">Network</span>
-                <span className="text-white font-medium flex items-center gap-1.5">
+                <span className="text-white font-medium flex items-center gap-1.5 font-semibold">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                   {network}
                 </span>
@@ -114,25 +114,25 @@ const PurchaseConfirmationModal = ({
           {/* Warning Box */}
           <div className="bg-amber-500/5 border border-amber-500/15 rounded-xl p-3 flex gap-2.5 items-center shrink-0">
             <AlertCircle className="w-4 h-4 text-amber-500 shrink-0" strokeWidth={1.5} />
-            <p className="text-[11px] text-[#A0A0A0] leading-normal">
+            <p className="text-[11px] text-[#A0A0A0] leading-normal font-medium">
               You are about to mint an NFT ticket on Ethereum Sepolia. Once completed, this action cannot be undone.
             </p>
           </div>
         </div>
 
         {/* Fixed Footer */}
-        <div className="p-6 shrink-0 bg-[#0A0A0A] flex gap-3">
+        <div className="p-5 sm:p-6 shrink-0 bg-[#0A0A0A] flex flex-col-reverse sm:flex-row gap-3">
           <button
             onClick={onClose}
             disabled={purchaseLoading}
-            className="flex-1 py-3 px-5 text-sm font-semibold text-[#A0A0A0] bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 hover:text-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+            className="w-full sm:flex-1 py-3 px-5 text-sm font-semibold text-[#A0A0A0] bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 hover:text-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
           >
             Cancel
           </button>
           <button
             onClick={onConfirm}
             disabled={purchaseLoading}
-            className="flex-1 py-3 px-5 text-sm font-semibold text-black bg-white hover:bg-[#EAEAEA] rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer"
+            className="w-full sm:flex-1 py-3 px-5 text-sm font-semibold text-black bg-white hover:bg-[#EAEAEA] rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer"
           >
             {purchaseLoading ? (
               <>

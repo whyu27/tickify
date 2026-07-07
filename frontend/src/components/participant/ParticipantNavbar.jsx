@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { User, Wallet, LogOut, ChevronDown, RefreshCw } from 'lucide-react';
+import { User, Wallet, LogOut, ChevronDown, RefreshCw, Menu, X } from 'lucide-react';
 import useAuth from '../../hooks/useAuth';
 import useWeb3 from '../../hooks/useWeb3';
 
@@ -14,11 +14,12 @@ const ParticipantNavbar = () => {
   };
   const { connectWallet, disconnectWallet, switchWallet, connectionStatus } = useWeb3();
   const [isWalletDropdownOpen, setIsWalletDropdownOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const wallet = (user?.wallet_address && user?.wallet_verified) ? user.wallet_address : null;
 
   return (
-    <nav className="sticky top-0 z-50 w-full h-[72px] bg-[#0A0A0A]/80 backdrop-blur-md border-b border-white/8">
-      <div className="max-w-[1280px] mx-auto px-6 h-full relative flex items-center justify-between">
+    <nav className="sticky top-0 z-50 w-full bg-[#0A0A0A]/80 backdrop-blur-md border-b border-white/8">
+      <div className="max-w-[1280px] mx-auto px-6 h-[72px] relative flex items-center justify-between">
         {/* Logo */}
         <Link to="/participant/home" className="flex items-center gap-2 z-10">
           <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
@@ -37,8 +38,8 @@ const ParticipantNavbar = () => {
           </Link>
         </div>
 
-        {/* Right Actions */}
-        <div className="flex items-center gap-4 z-10">
+        {/* Desktop Actions */}
+        <div className="hidden md:flex items-center gap-4 z-10">
           {/* Web3 Wallet Section */}
           {wallet ? (
             <div className="relative">
@@ -101,7 +102,94 @@ const ParticipantNavbar = () => {
             Logout
           </button>
         </div>
+
+        {/* Mobile Menu Button */}
+        <button
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          className="md:hidden p-2 text-[#A0A0A0] hover:text-white hover:bg-white/5 rounded-lg transition-colors duration-200 z-50 focus:outline-none"
+          aria-label="Toggle Navigation Menu"
+        >
+          {isMobileMenuOpen ? (
+            <X className="w-6 h-6" strokeWidth={1.5} />
+          ) : (
+            <Menu className="w-6 h-6" strokeWidth={1.5} />
+          )}
+        </button>
       </div>
+
+      {/* Mobile Menu Drawer */}
+      {isMobileMenuOpen && (
+        <div className="md:hidden py-4 border-t border-white/8 space-y-4 bg-[#0A0A0A] px-6">
+          <Link
+            to="/participant/home"
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="block py-2 text-sm font-semibold text-[#A0A0A0] hover:text-white transition-colors"
+          >
+            Home
+          </Link>
+          <Link
+            to="/participant/tickets"
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="block py-2 text-sm font-semibold text-[#A0A0A0] hover:text-white transition-colors"
+          >
+            My Tickets
+          </Link>
+
+          <div className="pt-4 border-t border-white/8 space-y-3">
+            {wallet ? (
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 px-3 py-2 text-sm text-white bg-white/5 border border-white/12 rounded-xl">
+                  <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                  <span className="font-mono text-xs truncate flex-1">{wallet}</span>
+                </div>
+                <button
+                  onClick={async () => {
+                    setIsMobileMenuOpen(false);
+                    await switchWallet();
+                  }}
+                  className="w-full flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold text-[#A0A0A0] bg-transparent border border-white/12 rounded-xl hover:text-white hover:border-white/25 transition-all"
+                >
+                  <RefreshCw className="w-4 h-4" strokeWidth={1.5} />
+                  <span>Switch Wallet</span>
+                </button>
+                <button
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    disconnectWallet();
+                  }}
+                  className="w-full flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold text-red-400 bg-transparent border border-red-500/20 rounded-xl hover:text-red-300 hover:border-red-500/40 transition-all font-semibold"
+                >
+                  <LogOut className="w-4 h-4" strokeWidth={1.5} />
+                  <span>Disconnect Wallet</span>
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  connectWallet();
+                }}
+                disabled={connectionStatus === 'connecting'}
+                className="w-full flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-transparent border border-white/12 rounded-xl hover:border-white/25 hover:bg-white/5 transition-all duration-200 disabled:opacity-50"
+              >
+                <Wallet className="w-4 h-4" strokeWidth={1.5} />
+                <span>{connectionStatus === 'connecting' ? 'Connecting...' : 'Connect Wallet'}</span>
+              </button>
+            )}
+
+            <button
+              onClick={() => {
+                setIsMobileMenuOpen(false);
+                handleLogout();
+              }}
+              className="w-full flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-transparent border border-white/12 rounded-xl hover:border-white/25 hover:bg-white/5 transition-all duration-200"
+            >
+              <LogOut className="w-4 h-4" strokeWidth={1.5} />
+              <span>Logout</span>
+            </button>
+          </div>
+        </div>
+      )}
     </nav>
   );
 };
