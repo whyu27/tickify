@@ -1,8 +1,10 @@
 import { useState, useRef } from 'react';
 import { Upload, X, Image as ImageIcon } from 'lucide-react';
+import { useNotification } from '../context/NotificationContext';
 
 const ImageUpload = ({ value, onChange, error }) => {
   const [preview, setPreview] = useState(value || null);
+  const toast = useNotification();
   const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef(null);
 
@@ -12,14 +14,14 @@ const ImageUpload = ({ value, onChange, error }) => {
     // Validate file type
     const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
     if (!allowedTypes.includes(file.type)) {
-      alert('Only JPG, JPEG, PNG, and WEBP files are allowed');
+      toast.warn('Only JPG, JPEG, PNG, and WEBP files are allowed');
       return;
     }
 
     // Validate file size (5MB)
     const maxSize = 5 * 1024 * 1024;
     if (file.size > maxSize) {
-      alert('File size must be less than 5 MB');
+      toast.warn('File size must be less than 5 MB');
       return;
     }
 

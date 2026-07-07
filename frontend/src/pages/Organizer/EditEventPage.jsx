@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import api from '../../api/axios';
+import { useNotification } from '../../context/NotificationContext';
 import { ArrowLeft } from 'lucide-react';
 import OrganizerNavbar from '../../components/organizer/OrganizerNavbar';
 import ImageUpload from '../../components/ImageUpload';
@@ -9,6 +10,7 @@ import { getImageUrl } from '../../utils/imageHelper';
 const EditEventPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const toast = useNotification();
 
   // Form states
   const [formData, setFormData] = useState({
@@ -193,7 +195,7 @@ const EditEventPage = () => {
 
       if (response.data && response.data.success) {
         setSuccessMessage('Event berhasil diperbarui!');
-        alert('Event berhasil diperbarui!');
+        toast.success('Event berhasil diperbarui!');
         navigate('/dashboard/organizer/home');
       } else {
         setBackendError(response.data?.message || 'Gagal memperbarui event.');

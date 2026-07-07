@@ -1,8 +1,16 @@
-import { X, AlertCircle, Loader } from 'lucide-react';
+import { X, AlertCircle } from 'lucide-react';
 import { useEffect } from 'react';
 import { getImageUrl } from '../../utils/imageHelper';
 
-const PurchaseConfirmationModal = ({ isOpen, onClose, onConfirm, event, walletAddress, network = 'Ethereum Sepolia', purchaseLoading = false }) => {
+const PurchaseConfirmationModal = ({ 
+  isOpen, 
+  onClose, 
+  onConfirm, 
+  event, 
+  walletAddress, 
+  network = 'Ethereum Sepolia', 
+  purchaseLoading = false 
+}) => {
   useEffect(() => {
     if (!isOpen) return;
     const handleEsc = (e) => {
@@ -22,7 +30,6 @@ const PurchaseConfirmationModal = ({ isOpen, onClose, onConfirm, event, walletAd
   const formatDate = (dateStr) => {
     if (!dateStr) return '-';
     return new Date(dateStr).toLocaleDateString('en-US', {
-      weekday: 'long',
       year: 'numeric',
       month: 'long',
       day: 'numeric'
@@ -31,15 +38,17 @@ const PurchaseConfirmationModal = ({ isOpen, onClose, onConfirm, event, walletAd
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md p-4 animate-fade-in"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md p-4 animate-fade-in pointer-events-auto"
       onClick={purchaseLoading ? undefined : onClose}
     >
       <div
-        className="relative w-full max-w-lg bg-[#0A0A0A] border border-white/10 rounded-2xl shadow-[0_0_50px_rgba(255,255,255,0.05)] overflow-hidden animate-scale-in"
+        className="relative w-full max-w-xl bg-[#0A0A0A] border border-white/10 rounded-2xl shadow-2xl overflow-hidden animate-scale-in max-h-[90vh] flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
+        {/* Glow effect */}
         <div className="absolute -top-24 -right-24 w-48 h-48 bg-white/5 rounded-full blur-3xl pointer-events-none" />
 
+        {/* Close Button */}
         <button
           onClick={onClose}
           disabled={purchaseLoading}
@@ -48,99 +57,86 @@ const PurchaseConfirmationModal = ({ isOpen, onClose, onConfirm, event, walletAd
           <X className="w-4 h-4" />
         </button>
 
-        <div className="p-6 pb-0">
+        {/* Header */}
+        <div className="p-6 pb-4 shrink-0">
           <h3 className="text-xl font-bold text-white tracking-tight">Purchase NFT Ticket</h3>
-          <p className="text-sm text-[#A0A0A0] mt-1">Please review your purchase before continuing.</p>
+          <p className="text-sm text-[#A0A0A0] mt-1">Review your purchase before continuing.</p>
         </div>
 
-        <div className="p-6 space-y-5 max-h-[65vh] overflow-y-auto">
-          <div className="bg-[#161616] border border-white/8 rounded-xl p-4 space-y-3">
-            <h4 className="text-xs font-semibold text-[#777777] uppercase tracking-wider">Event Summary</h4>
+        {/* Scrollable Body */}
+        <div className="overflow-y-auto px-6 pb-2 space-y-4 min-h-0 flex-1">
+          {/* Event Banner */}
+          {event.banner_url && (
+            <div className="aspect-[16/7] w-full rounded-xl overflow-hidden border border-white/10 bg-[#0D0D0D] shrink-0">
+              <img
+                src={getImageUrl(event.banner_url)}
+                alt={event.title}
+                className="w-full h-full object-cover"
+              />
+            </div>
+          )}
 
-            {event.banner_url && (
-              <div className="relative rounded-lg overflow-hidden h-24">
-                <div
-                  className="absolute inset-0 bg-cover bg-center blur-xl opacity-30 scale-105"
-                  style={{ backgroundImage: `url(${getImageUrl(event.banner_url)})` }}
-                />
-                <img
-                  src={getImageUrl(event.banner_url)}
-                  alt={event.title}
-                  className="w-full h-full object-cover relative z-0"
-                />
+          {/* Compact Summary & Wallet */}
+          <div className="bg-[#161616]/60 border border-white/8 rounded-xl p-4 space-y-3 shrink-0">
+            {/* Event Details */}
+            <div className="flex justify-between items-start gap-4">
+              <div className="min-w-0">
+                <h4 className="font-bold text-white text-base leading-tight truncate">{event.title}</h4>
+                <p className="text-xs text-[#A0A0A0] mt-1 truncate">
+                  {event.organizer_name || event.organizer_username || event.organizer?.name || 'Organizer'} • {formatDate(event.date || event.event_date)}
+                </p>
+                <p className="text-xs text-[#777777] mt-0.5 truncate">{event.location}</p>
               </div>
-            )}
-
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between items-center">
-                <span className="text-[#A0A0A0]">Event Name</span>
-                <span className="text-white font-semibold text-right max-w-[200px] truncate">{event.title}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-[#A0A0A0]">Organizer</span>
-                <span className="text-white font-semibold">{event.organizer_name || event.organizer_username || event.organizer?.name || '-'}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-[#A0A0A0]">Event Date</span>
-                <span className="text-white font-semibold">{formatDate(event.date || event.event_date)}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-[#A0A0A0]">Location</span>
-                <span className="text-white font-semibold text-right max-w-[200px] truncate">{event.location}</span>
-              </div>
-              <div className="flex justify-between items-center pt-2 border-t border-white/5">
-                <span className="text-[#A0A0A0]">Ticket Price</span>
-                <span className="text-white font-bold">{event.price_eth} ETH</span>
+              <div className="text-right shrink-0">
+                <p className="text-[10px] text-[#777777] uppercase tracking-wider">Price</p>
+                <p className="text-lg font-bold text-white">{event.price_eth} ETH</p>
               </div>
             </div>
-          </div>
 
-          <div className="bg-[#161616] border border-white/8 rounded-xl p-4 space-y-3">
-            <h4 className="text-xs font-semibold text-[#777777] uppercase tracking-wider">Blockchain Information</h4>
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between items-center">
-                <span className="text-[#A0A0A0]">Wallet Address</span>
-                <span className="text-white font-mono text-xs bg-white/5 px-2 py-1 rounded-md border border-white/5">
+            {/* Wallet Info */}
+            <div className="flex justify-between items-center text-xs pt-3 border-t border-white/5">
+              <div className="flex items-center gap-2">
+                <span className="text-[#777777]">Wallet</span>
+                <span className="font-mono text-white bg-white/5 px-2 py-0.5 rounded border border-white/5">
                   {formatWallet(walletAddress)}
                 </span>
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-[#A0A0A0]">Network</span>
-                <span className="text-white font-semibold flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500" />
+              <div className="flex items-center gap-2">
+                <span className="text-[#777777]">Network</span>
+                <span className="text-white font-medium flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                   {network}
                 </span>
               </div>
             </div>
           </div>
 
-          <div className="p-3 bg-[#22C55E]/5 border border-[#22C55E]/15 rounded-xl flex items-start gap-3">
-            <AlertCircle className="w-4 h-4 text-[#22C55E] flex-shrink-0 mt-0.5" strokeWidth={2} />
-            <div className="space-y-1 text-xs text-[#A0A0A0]">
-              <p>• NFT Ticket akan langsung di-mint ke wallet Anda.</p>
-              <p>• Tiket akan tersimpan permanen pada blockchain.</p>
-              <p>• Pembelian tidak dapat dibatalkan.</p>
-              <p>• Proses minting membutuhkan beberapa detik.</p>
-            </div>
+          {/* Warning Box */}
+          <div className="bg-amber-500/5 border border-amber-500/15 rounded-xl p-3 flex gap-2.5 items-center shrink-0">
+            <AlertCircle className="w-4 h-4 text-amber-500 shrink-0" strokeWidth={1.5} />
+            <p className="text-[11px] text-[#A0A0A0] leading-normal">
+              You are about to mint an NFT ticket on Ethereum Sepolia. Once completed, this action cannot be undone.
+            </p>
           </div>
         </div>
 
-        <div className="p-6 pt-0 flex gap-3">
+        {/* Fixed Footer */}
+        <div className="p-6 shrink-0 bg-[#0A0A0A] flex gap-3">
           <button
             onClick={onClose}
             disabled={purchaseLoading}
-            className="flex-1 py-3 px-5 text-sm font-semibold text-[#A0A0A0] bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 hover:text-white active:scale-[0.98] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+            className="flex-1 py-3 px-5 text-sm font-semibold text-[#A0A0A0] bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 hover:text-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
           >
             Cancel
           </button>
           <button
             onClick={onConfirm}
             disabled={purchaseLoading}
-            className="flex-1 py-3 px-5 text-sm font-semibold text-black bg-white hover:bg-[#EAEAEA] active:scale-[0.98] rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer"
+            className="flex-1 py-3 px-5 text-sm font-semibold text-black bg-white hover:bg-[#EAEAEA] rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer"
           >
             {purchaseLoading ? (
               <>
-                <Loader className="w-4 h-4 animate-spin" />
+                <div className="w-4 h-4 border-2 border-black/20 border-t-black rounded-full animate-spin"></div>
                 Processing...
               </>
             ) : (

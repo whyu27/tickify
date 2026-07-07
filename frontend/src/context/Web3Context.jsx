@@ -3,6 +3,7 @@ import { ethers } from 'ethers';
 import { Wallet, X } from 'lucide-react';
 import useAuth from '../hooks/useAuth';
 import api from '../api/axios';
+import { useNotification } from './NotificationContext';
 
 const Web3Context = createContext(null);
 
@@ -14,6 +15,7 @@ export const Web3Provider = ({ children }) => {
   const [connectionStatus, setConnectionStatus] = useState('disconnected');
   const [showInstallModal, setShowInstallModal] = useState(false);
   const { user, setUser } = useAuth();
+  const toast = useNotification();
 
   const connectWallet = async () => {
     if (typeof window === 'undefined' || !window.ethereum) {
@@ -81,7 +83,7 @@ export const Web3Provider = ({ children }) => {
     } catch (error) {
       console.error('Error connecting to MetaMask:', error);
       const errMsg = error.response?.data?.message || error.message || 'Error connecting to wallet';
-      alert(errMsg);
+      toast.error(errMsg);
       
       if (!user?.wallet_address || !user?.wallet_verified) {
         setConnectionStatus('disconnected');
@@ -168,7 +170,7 @@ export const Web3Provider = ({ children }) => {
     } catch (error) {
       console.error('Error switching wallet:', error);
       const errMsg = error.response?.data?.message || error.message || 'Error switching wallet';
-      alert(errMsg);
+      toast.error(errMsg);
       
       if (!user?.wallet_address || !user?.wallet_verified) {
         setConnectionStatus('disconnected');
@@ -193,7 +195,7 @@ export const Web3Provider = ({ children }) => {
     } catch (error) {
       console.error('Error disconnecting wallet:', error);
       const errMsg = error.response?.data?.message || 'Error disconnecting wallet';
-      alert(errMsg);
+      toast.error(errMsg);
     }
   };
 

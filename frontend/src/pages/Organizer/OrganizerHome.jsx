@@ -54,12 +54,17 @@ const OrganizerHome = () => {
       if (response.data.success) {
         setEvents(events.filter(event => event.id !== eventId));
         showToast('Event deleted successfully', 'success');
+        return { success: true };
       } else {
-        showToast(response.data.message || 'Failed to delete event.', 'error');
+        const errMsg = response.data.message || 'Failed to delete event.';
+        showToast(errMsg, 'error');
+        return { success: false, message: errMsg };
       }
     } catch (err) {
       console.error('Delete event error:', err);
-      showToast(err.response?.data?.message || 'Failed to delete event.', 'error');
+      const errMsg = err.response?.data?.message || 'Failed to delete event.';
+      showToast(errMsg, 'error');
+      return { success: false, message: errMsg };
     }
   };
 
@@ -82,15 +87,17 @@ const OrganizerHome = () => {
         };
         
         showToast(statusMessages[newStatus] || 'Event status updated', 'success');
-        return true;
+        return { success: true };
       } else {
-        showToast(response.data.message || 'Failed to update event status.', 'error');
-        return false;
+        const errMsg = response.data.message || 'Failed to update event status.';
+        showToast(errMsg, 'error');
+        return { success: false, message: errMsg };
       }
     } catch (err) {
       console.error('Update status error:', err);
-      showToast(err.response?.data?.message || 'Failed to update event status.', 'error');
-      return false;
+      const errMsg = err.response?.data?.message || 'Failed to update event status.';
+      showToast(errMsg, 'error');
+      return { success: false, message: errMsg };
     }
   };
 

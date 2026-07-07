@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import api from '../../api/axios';
+import { useNotification } from '../../context/NotificationContext';
 import { ArrowLeft, Upload, Image as ImageIcon } from 'lucide-react';
 import OrganizerNavbar from '../../components/organizer/OrganizerNavbar';
 import ImageUpload from '../../components/ImageUpload';
@@ -8,6 +9,7 @@ import ImageUpload from '../../components/ImageUpload';
 const CreateEventPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const toast = useNotification();
   const duplicateData = location.state?.duplicateData;
 
   // Form states
@@ -157,7 +159,7 @@ const CreateEventPage = () => {
 
       if (response.data && response.data.success) {
         setSuccessMessage('Event berhasil dibuat!');
-        alert('Event berhasil dibuat!'); // Tampilkan notifikasi sederhana
+        toast.success('Event berhasil dibuat!');
         // Redirect to /dashboard/organizer/home
         navigate('/dashboard/organizer/home');
       } else {

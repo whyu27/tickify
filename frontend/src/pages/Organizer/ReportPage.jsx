@@ -194,10 +194,10 @@ const ReportPage = () => {
                     </span>
                   )}
                   <span className={`inline-flex items-center px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wider rounded-full border ${event.status === 'published'
-                      ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
-                      : event.status === 'closed'
-                        ? 'bg-[#EF4444]/10 border-[#EF4444]/20 text-[#EF4444]'
-                        : 'bg-white/5 border-white/10 text-[#777]'
+                    ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
+                    : event.status === 'closed'
+                      ? 'bg-[#EF4444]/10 border-[#EF4444]/20 text-[#EF4444]'
+                      : 'bg-white/5 border-white/10 text-[#777]'
                     }`}>
                     {event.status === 'published' ? 'Active' : event.status === 'closed' ? 'Closed' : event.status}
                   </span>
@@ -280,7 +280,7 @@ const ReportPage = () => {
           <div className="bg-[#161616]/40 border border-white/8 rounded-xl p-5 space-y-3">
             <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-wider">
               <span className="text-[#555]">Ticket Sales Progress</span>
-              <span className="text-[#c084fc] normal-case font-bold">{progressPercent}%</span>
+              <span className="text-[#FFF] normal-case font-bold">{progressPercent}%</span>
             </div>
             <div className="flex justify-between items-baseline">
               <span className="text-sm font-semibold text-[#A0A0A0]">
@@ -289,7 +289,7 @@ const ReportPage = () => {
             </div>
             <div className="w-full bg-white/5 h-2.5 rounded-full overflow-hidden border border-white/5">
               <div
-                className="bg-[#c084fc] h-full rounded-full transition-all duration-500 ease-out"
+                className="bg-[#FFF] h-full rounded-full transition-all duration-500 ease-out"
                 style={{ width: `${progressPercent}%` }}
               />
             </div>
@@ -331,13 +331,12 @@ const ReportPage = () => {
                         </td>
                         <td className="py-3 text-[#A0A0A0]">{formatMintDate(t.mintDate)}</td>
                         <td className="py-3">
-                          <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold tracking-wider uppercase ${
-                            t.status === 'SUCCESS'
-                              ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400'
-                              : t.status === 'PENDING'
-                                ? 'bg-amber-500/10 border border-amber-500/20 text-amber-400'
-                                : 'bg-[#EF4444]/10 border border-[#EF4444]/20 text-[#EF4444]'
-                          }`}>
+                          <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold tracking-wider uppercase ${t.status === 'SUCCESS'
+                            ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400'
+                            : t.status === 'PENDING'
+                              ? 'bg-amber-500/10 border border-amber-500/20 text-amber-400'
+                              : 'bg-[#EF4444]/10 border border-[#EF4444]/20 text-[#EF4444]'
+                            }`}>
                             {t.status === 'SUCCESS' ? 'Success' : t.status === 'PENDING' ? 'Pending' : 'Failed'}
                           </span>
                         </td>
