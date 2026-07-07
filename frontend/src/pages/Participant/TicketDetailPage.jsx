@@ -17,7 +17,8 @@ import {
   Cpu,
   Clock,
   CircleDollarSign,
-  AlertCircle
+  AlertCircle,
+  Ticket
 } from 'lucide-react';
 
 const CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS || '0x8237B8afe65bCAfEE2509bfEfb48237dafc92d43';
@@ -102,6 +103,11 @@ const TicketDetailPage = () => {
       navigator.clipboard.writeText(ticket.transaction_hash);
       triggerToast('Transaction hash copied.');
     }
+  };
+
+  const handleCopyContract = () => {
+    navigator.clipboard.writeText(CONTRACT_ADDRESS);
+    triggerToast('Contract address copied.');
   };
 
   // Status Style Helper
@@ -230,154 +236,280 @@ const TicketDetailPage = () => {
   const statusCfg = getStatusConfig(ticket?.status);
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A] flex flex-col">
+    <div className="min-h-screen bg-[#0A0A0A] flex flex-col relative overflow-hidden">
+      {/* Background Ambient Glows */}
+      <div className="absolute top-[10%] left-[-15%] w-[350px] h-[350px] bg-purple-600/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute top-[40%] right-[-15%] w-[450px] h-[450px] bg-indigo-600/10 rounded-full blur-[130px] pointer-events-none" />
+      <div className="absolute bottom-[10%] left-[20%] w-[300px] h-[300px] bg-emerald-600/5 rounded-full blur-[100px] pointer-events-none" />
+
       <ParticipantNavbar />
 
-      <div className="flex-1 max-w-[1000px] w-full mx-auto px-6 py-8">
+      <div className="flex-1 max-w-[1000px] w-full mx-auto px-6 py-8 relative z-10">
         
         {/* Back Link */}
         <Link 
           to="/participant/tickets" 
-          className="inline-flex items-center gap-2 text-sm text-[#A0A0A0] hover:text-white transition-colors duration-200 mb-6 group"
+          className="inline-flex items-center gap-2 text-sm text-[#A0A0A0] hover:text-white transition-colors duration-200 mb-8 group"
         >
           <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
           Back to My Tickets
         </Link>
 
-        {/* Hero / Banner Header */}
-        <div className="relative rounded-3xl overflow-hidden bg-[#0D0D0D] border border-white/8 shadow-xl mb-8 group">
-          <div className="h-64 md:h-80 w-full relative">
-            {ticket.event.banner_url ? (
-              <img
-                src={getImageUrl(ticket.event.banner_url)}
-                alt={ticket.event.title}
-                className="w-full h-full object-cover group-hover:scale-102 transition-transform duration-700"
-              />
-            ) : (
-              <div className="w-full h-full bg-gradient-to-br from-[#1F1F1F] to-[#0D0D0D] flex flex-col items-center justify-center text-[#555555] gap-3">
-                <Ticket className="w-16 h-16 stroke-[1.25]" />
-                <span className="text-xs uppercase tracking-widest text-white/20 font-bold">NFT Ticket Banner</span>
+        {/* NFT Ticket Pass Visual */}
+        <div className="relative overflow-hidden bg-gradient-to-br from-[#121212] to-[#080808] border border-white/8 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.6)] flex flex-col md:flex-row mb-10 group transition-all duration-300 hover:border-white/15">
+          {/* Ambient Inner Shadow/Glow */}
+          <div className="absolute inset-0 bg-gradient-to-tr from-purple-500/5 via-transparent to-indigo-500/5 pointer-events-none" />
+
+          {/* Left Part: Event Details (60% width on desktop) */}
+          <div className="relative md:w-3/5 min-h-[260px] md:min-h-[340px] flex flex-col justify-between p-8 z-10">
+            {/* Event Banner Background */}
+            <div className="absolute inset-0 z-0 overflow-hidden">
+              {ticket.event.banner_url ? (
+                <img
+                  src={getImageUrl(ticket.event.banner_url)}
+                  alt={ticket.event.title}
+                  className="w-full h-full object-cover opacity-35 group-hover:scale-[1.03] transition-transform duration-700"
+                />
+              ) : (
+                <div className="w-full h-full bg-gradient-to-br from-[#1F1F1F] to-[#0D0D0D]" />
+              )}
+              {/* Dark Gradient Overlay */}
+              <div className="absolute inset-0 bg-gradient-to-r from-black via-black/90 to-transparent" />
+            </div>
+
+            {/* Left Part Content */}
+            <div className="relative z-10 flex flex-col h-full justify-between gap-6">
+              {/* Top Row: Organizer & Type */}
+              <div className="flex items-center gap-3">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-full bg-white/5 border border-white/8 text-[#A0A0A0]">
+                  <Cpu className="w-3.5 h-3.5 text-purple-400" />
+                  NFT PASS
+                </span>
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-full bg-[#22C55E]/10 border border-[#22C55E]/20 text-[#22C55E]">
+                  Verified Organizer
+                </span>
               </div>
-            )}
-            {/* Gradient Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+
+              {/* Middle Row: Title */}
+              <div>
+                <h1 className="text-2xl md:text-4xl font-black text-white tracking-tight leading-tight mb-2 drop-shadow-md">
+                  {ticket.event.title}
+                </h1>
+                <p className="text-[#A0A0A0] text-xs md:text-sm max-w-md line-clamp-2">
+                  Premium blockchain-verified admission pass.
+                </p>
+              </div>
+
+              {/* Bottom Row: Metadata */}
+              <div className="grid grid-cols-2 gap-4 border-t border-white/10 pt-4 mt-auto">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center border border-white/8">
+                    <Calendar className="w-4 h-4 text-purple-400" />
+                  </div>
+                  <div>
+                    <span className="text-[9px] text-[#777777] uppercase block tracking-wider font-semibold">Event Date</span>
+                    <span className="text-xs text-white font-medium">{formatMintDate(ticket.event.event_date)}</span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center border border-white/8">
+                    <MapPin className="w-4 h-4 text-indigo-400" />
+                  </div>
+                  <div>
+                    <span className="text-[9px] text-[#777777] uppercase block tracking-wider font-semibold">Location</span>
+                    <span className="text-xs text-white font-medium line-clamp-1">{ticket.event.location}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
-          {/* Banner Meta details */}
-          <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8 space-y-4">
-            <h1 className="text-2xl md:text-4xl font-extrabold text-white tracking-tight leading-tight">
-              {ticket.event.title}
-            </h1>
-            <div>
+          {/* Ticket Punch/Stub Divider - Desktop (Vertical) */}
+          <div className="hidden md:flex flex-col justify-between items-center relative w-[1px] py-4 bg-[#101010]/85">
+            {/* Top punch hole */}
+            <div className="absolute top-0 -translate-y-1/2 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-[#0A0A0A] border-b border-white/10 z-20" />
+            {/* Vertical dashed line */}
+            <div className="h-full border-l-2 border-dashed border-white/10" />
+            {/* Bottom punch hole */}
+            <div className="absolute bottom-0 translate-y-1/2 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-[#0A0A0A] border-t border-white/10 z-20" />
+          </div>
+
+          {/* Ticket Punch/Stub Divider - Mobile (Horizontal) */}
+          <div className="flex md:hidden items-center justify-between relative px-4 w-full h-[1px]">
+            {/* Left punch hole */}
+            <div className="absolute left-0 -translate-x-1/2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-[#0A0A0A] border-r border-white/10 z-20" />
+            {/* Horizontal dashed line */}
+            <div className="w-full border-t-2 border-dashed border-white/10" />
+            {/* Right punch hole */}
+            <div className="absolute right-0 translate-x-1/2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-[#0A0A0A] border-l border-white/10 z-20" />
+          </div>
+
+          {/* Right Part: QR Stub & Status (40% width on desktop) */}
+          <div className="relative md:w-2/5 p-8 flex flex-col items-center justify-center bg-[#101010]/85 backdrop-blur-sm z-10">
+            {/* Status Badge absolute corner */}
+            <div className="absolute top-4 right-4">
               <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-full backdrop-blur-md ${statusCfg.classes}`}>
                 <span className={`w-1.5 h-1.5 rounded-full ${statusCfg.dotColor} ${ticket.status === 'active' ? 'animate-pulse' : ''}`} />
                 {statusCfg.label}
               </span>
             </div>
+
+            {/* Stub Content */}
+            <div className="flex flex-col items-center w-full text-center space-y-5">
+              {/* QR Container */}
+              <button 
+                onClick={() => setIsQRModalOpen(true)}
+                className="group/qr relative p-3.5 bg-white rounded-2xl flex justify-center items-center shadow-lg transition-transform duration-300 hover:scale-[1.03] cursor-pointer"
+              >
+                <img
+                  src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(
+                    JSON.stringify({
+                      ticketId: ticket.id,
+                      tokenId: ticket.token_id || ticket.ticket_id_onchain,
+                      eventId: ticket.event.id || ticket.event_id
+                    })
+                  )}`}
+                  alt="Ticket QR Code"
+                  className="w-[120px] h-[120px] object-contain transition-all duration-300"
+                  loading="lazy"
+                />
+                {/* QR Hover overlay indicator */}
+                <div className="absolute inset-0 bg-black/60 rounded-2xl opacity-0 group-hover/qr:opacity-100 flex items-center justify-center transition-all duration-300">
+                  <QrCode className="w-8 h-8 text-white animate-bounce" />
+                </div>
+              </button>
+
+              <div className="space-y-1">
+                <span className="text-[10px] text-[#777777] uppercase block tracking-wider font-semibold">NFT Token ID</span>
+                <span className="text-lg text-white font-mono font-bold tracking-tight">#{ticket.token_id || ticket.ticket_id_onchain || '-'}</span>
+              </div>
+
+              <div className="w-full border-t border-white/5 my-1" />
+
+              {/* Click to expand text */}
+              <button 
+                onClick={() => setIsQRModalOpen(true)}
+                className="text-xs text-purple-400 hover:text-purple-300 transition-colors flex items-center gap-1.5 cursor-pointer font-medium"
+              >
+                <QrCode className="w-3.5 h-3.5" />
+                View & Scan QR Code
+              </button>
+            </div>
           </div>
         </div>
 
         {/* Details Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
           
-          {/* Card 1: NFT Information */}
-          <div className="bg-[#161616]/60 backdrop-blur-md border border-white/8 rounded-2xl p-6 hover:border-white/12 transition-all duration-300 flex flex-col justify-between">
+          {/* Card 1: NFT Credentials */}
+          <div className="bg-[#121212]/50 backdrop-blur-md border border-white/8 rounded-2xl p-6 hover:border-white/12 transition-all duration-300 flex flex-col justify-between">
             <div>
-              <div className="flex items-center gap-2.5 mb-5">
-                <ShieldCheck className="w-5 h-5 text-green-400" />
-                <h3 className="text-lg font-bold text-white">NFT Information</h3>
+              <div className="flex items-center gap-2.5 mb-6">
+                <div className="w-8 h-8 rounded-lg bg-green-500/10 border border-green-500/20 flex items-center justify-center">
+                  <ShieldCheck className="w-4.5 h-4.5 text-green-400" />
+                </div>
+                <h3 className="text-lg font-bold text-white">NFT Credentials</h3>
               </div>
+              
               <div className="space-y-4">
-                <div className="flex justify-between items-center py-1">
-                  <span className="text-sm text-[#777777]">NFT Token ID</span>
-                  <span className="text-sm font-mono text-white font-bold">#{ticket.token_id || ticket.ticket_id_onchain || '-'}</span>
+                <div className="flex justify-between items-center py-2 border-b border-white/4">
+                  <span className="text-xs text-[#777777] uppercase tracking-wider font-semibold">Token Standard</span>
+                  <span className="text-xs font-semibold text-white px-2.5 py-0.5 rounded bg-white/5 border border-white/10 font-mono">ERC-721 (NFT)</span>
                 </div>
-                <div className="flex justify-between items-center py-1">
-                  <span className="text-sm text-[#777777]">Wallet Owner</span>
-                  <span className="text-sm font-mono text-white" title={ticket.owner_wallet}>{shortenAddress(ticket.owner_wallet)}</span>
+                
+                <div className="flex justify-between items-center py-2 border-b border-white/4">
+                  <span className="text-xs text-[#777777] uppercase tracking-wider font-semibold">Wallet Owner</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-mono text-white" title={ticket.owner_wallet}>{shortenAddress(ticket.owner_wallet)}</span>
+                    <button 
+                      onClick={handleCopyWallet}
+                      className="p-1 text-[#777777] hover:text-white transition-colors cursor-pointer"
+                    >
+                      <Copy className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                 </div>
-                <div className="flex justify-between items-center py-1">
-                  <span className="text-sm text-[#777777]">Contract Address</span>
-                  <span className="text-sm font-mono text-white" title={CONTRACT_ADDRESS}>{shortenAddress(CONTRACT_ADDRESS)}</span>
+
+                <div className="flex justify-between items-center py-2 border-b border-white/4">
+                  <span className="text-xs text-[#777777] uppercase tracking-wider font-semibold">Contract Address</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-mono text-white" title={CONTRACT_ADDRESS}>{shortenAddress(CONTRACT_ADDRESS)}</span>
+                    <button 
+                      onClick={handleCopyContract}
+                      className="p-1 text-[#777777] hover:text-white transition-colors cursor-pointer"
+                    >
+                      <Copy className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                 </div>
-                <div className="flex justify-between items-center py-1">
-                  <span className="text-sm text-[#777777]">Network</span>
-                  <span className="text-sm font-semibold text-white flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-indigo-500 animate-ping" />
+
+                <div className="flex justify-between items-center py-2 border-b border-white/4">
+                  <span className="text-xs text-[#777777] uppercase tracking-wider font-semibold">Blockchain Network</span>
+                  <span className="text-xs font-semibold text-white flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse" />
                     Ethereum Sepolia
                   </span>
                 </div>
-                <div className="flex justify-between items-center py-1">
-                  <span className="text-sm text-[#777777]">Mint Date</span>
-                  <span className="text-sm text-white font-medium">{formatMintDate(ticket.created_at)}</span>
+
+                <div className="flex justify-between items-center py-2">
+                  <span className="text-xs text-[#777777] uppercase tracking-wider font-semibold">Mint Date</span>
+                  <span className="text-xs text-white font-medium">{formatMintDate(ticket.created_at)}</span>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Card 2: Event Information */}
-          <div className="bg-[#161616]/60 backdrop-blur-md border border-white/8 rounded-2xl p-6 hover:border-white/12 transition-all duration-300">
-            <div className="flex items-center gap-2.5 mb-5">
-              <Calendar className="w-5 h-5 text-indigo-400" />
-              <h3 className="text-lg font-bold text-white">Event Information</h3>
-            </div>
-            <div className="space-y-4">
-              <div className="flex items-start gap-3 py-1">
-                <Cpu className="w-4 h-4 text-[#777777] mt-1 flex-shrink-0" />
-                <div>
-                  <span className="text-xs text-[#777777] uppercase tracking-wider block">Organizer</span>
-                  <span className="text-sm text-white font-medium">Verified Organizer</span>
+          {/* Card 2: Ledger Transaction Ledger */}
+          <div className="bg-[#121212]/50 backdrop-blur-md border border-white/8 rounded-2xl p-6 hover:border-white/12 transition-all duration-300 flex flex-col justify-between">
+            <div>
+              <div className="flex items-center gap-2.5 mb-6">
+                <div className="w-8 h-8 rounded-lg bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center">
+                  <Cpu className="w-4.5 h-4.5 text-indigo-400" />
                 </div>
+                <h3 className="text-lg font-bold text-white">Ledger & Transaction</h3>
               </div>
-              <div className="flex items-start gap-3 py-1">
-                <MapPin className="w-4 h-4 text-[#777777] mt-1 flex-shrink-0" />
-                <div>
-                  <span className="text-xs text-[#777777] uppercase tracking-wider block">Location</span>
-                  <span className="text-sm text-white font-medium">{ticket.event.location}</span>
-                </div>
-              </div>
-              <div className="flex items-start gap-3 py-1">
-                <Clock className="w-4 h-4 text-[#777777] mt-1 flex-shrink-0" />
-                <div>
-                  <span className="text-xs text-[#777777] uppercase tracking-wider block">Event Date</span>
-                  <span className="text-sm text-white font-medium">{formatMintDate(ticket.event.event_date)}</span>
-                </div>
-              </div>
-              <div className="flex items-start gap-3 py-1">
-                <CircleDollarSign className="w-4 h-4 text-[#777777] mt-1 flex-shrink-0" />
-                <div>
-                  <span className="text-xs text-[#777777] uppercase tracking-wider block">Ticket Price</span>
-                  <span className="text-sm text-white font-mono font-semibold">{ticket.event.price_eth || '0'} ETH</span>
-                </div>
-              </div>
-            </div>
-          </div>
 
-          {/* Card 3: Blockchain Information */}
-          <div className="bg-[#161616]/60 backdrop-blur-md border border-white/8 rounded-2xl p-6 hover:border-white/12 transition-all duration-300 flex flex-col justify-between">
-            <div className="space-y-4">
-              <div className="flex items-center gap-2.5 mb-1">
-                <Cpu className="w-5 h-5 text-indigo-400" />
-                <h3 className="text-lg font-bold text-white">Blockchain Information</h3>
-              </div>
-              <div>
-                <span className="text-xs text-[#777777] uppercase tracking-wider block mb-1.5">Transaction Hash</span>
-                <span className="text-xs text-[#A0A0A0] font-mono break-all bg-black/40 border border-white/5 rounded-xl p-3 block leading-relaxed selection:bg-white/10 selection:text-white">
-                  {ticket.transaction_hash || 'No Transaction Hash Available'}
-                </span>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center py-2 border-b border-white/4">
+                  <span className="text-xs text-[#777777] uppercase tracking-wider font-semibold">Mint Cost</span>
+                  <span className="text-xs font-mono font-bold text-white">{ticket.event.price_eth || '0'} ETH</span>
+                </div>
+
+                <div className="flex justify-between items-center py-2 border-b border-white/4">
+                  <span className="text-xs text-[#777777] uppercase tracking-wider font-semibold">Gas Status</span>
+                  <span className="text-[10px] font-bold text-emerald-400 px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20">Success (Confirmed)</span>
+                </div>
+
+                <div className="flex flex-col py-2">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-xs text-[#777777] uppercase tracking-wider font-semibold">Transaction Hash</span>
+                    {ticket.transaction_hash && (
+                      <button 
+                        onClick={handleCopyTxHash}
+                        className="p-1 text-[#777777] hover:text-white transition-colors cursor-pointer flex items-center gap-1 text-[10px] font-medium"
+                      >
+                        <Copy className="w-3.5 h-3.5" />
+                        Copy Hash
+                      </button>
+                    )}
+                  </div>
+                  <span className="text-[11px] text-[#A0A0A0] font-mono break-all bg-black/40 border border-white/5 rounded-xl p-3 leading-relaxed">
+                    {ticket.transaction_hash || 'No Transaction Hash Available'}
+                  </span>
+                </div>
               </div>
             </div>
-            
-            <div className="pt-4">
+
+            <div className="pt-4 mt-4">
               {ticket.transaction_hash ? (
                 <a
                   href={`https://sepolia.etherscan.io/tx/${ticket.transaction_hash}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full px-4 py-3 text-sm font-semibold text-[#A0A0A0] hover:text-white bg-white/5 border border-white/8 hover:border-white/15 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 active:scale-[0.98]"
+                  className="w-full px-4 py-3 text-sm font-bold text-white bg-white/5 border border-white/10 hover:border-white/20 hover:bg-white/10 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 active:scale-[0.98] cursor-pointer shadow-md"
                 >
                   <ExternalLink className="w-4 h-4" />
-                  View on Etherscan
+                  Explore on Etherscan
                 </a>
               ) : (
                 <button
@@ -385,59 +517,7 @@ const TicketDetailPage = () => {
                   className="w-full px-4 py-3 text-sm font-semibold text-[#555555] bg-white/2 border border-white/5 rounded-xl flex items-center justify-center gap-2 cursor-not-allowed"
                 >
                   <ExternalLink className="w-4 h-4" />
-                  View on Etherscan (Unavailable)
-                </button>
-              )}
-            </div>
-          </div>
-
-          {/* Card 4: Actions */}
-          <div className="bg-[#161616]/60 backdrop-blur-md border border-white/8 rounded-2xl p-6 hover:border-white/12 transition-all duration-300 flex flex-col justify-between">
-            <div className="mb-4">
-              <div className="flex items-center gap-2.5">
-                <Cpu className="w-5 h-5 text-indigo-400" />
-                <h3 className="text-lg font-bold text-white">Actions</h3>
-              </div>
-              <p className="text-sm text-[#777777] mt-2 leading-relaxed">
-                Scan or copy parameters of your digital asset credentials.
-              </p>
-            </div>
-
-            <div className="space-y-3">
-              {/* Show QR */}
-              <button
-                onClick={() => setIsQRModalOpen(true)}
-                className="w-full px-4 py-3.5 text-sm font-bold text-black bg-white rounded-xl hover:bg-[#EAEAEA] transition-all duration-200 flex items-center justify-center gap-2 active:scale-[0.98]"
-              >
-                <QrCode className="w-4 h-4" />
-                Show QR
-              </button>
-
-              {/* Copy Wallet */}
-              <button
-                onClick={handleCopyWallet}
-                className="w-full px-4 py-3.5 text-sm font-semibold text-white bg-transparent border border-white/10 hover:border-white/20 hover:bg-white/5 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 active:scale-[0.98]"
-              >
-                <Copy className="w-4 h-4" />
-                Copy Wallet Address
-              </button>
-
-              {/* Copy Transaction Hash */}
-              {ticket.transaction_hash ? (
-                <button
-                  onClick={handleCopyTxHash}
-                  className="w-full px-4 py-3.5 text-sm font-semibold text-white bg-transparent border border-white/10 hover:border-white/20 hover:bg-white/5 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 active:scale-[0.98]"
-                >
-                  <Copy className="w-4 h-4" />
-                  Copy Transaction Hash
-                </button>
-              ) : (
-                <button
-                  disabled
-                  className="w-full px-4 py-3.5 text-sm font-semibold text-[#555555] bg-transparent border border-white/5 rounded-xl flex items-center justify-center gap-2 cursor-not-allowed"
-                >
-                  <Copy className="w-4 h-4" />
-                  Copy Transaction Hash (Unavailable)
+                  Etherscan Link Unavailable
                 </button>
               )}
             </div>
