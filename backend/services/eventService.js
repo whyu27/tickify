@@ -71,11 +71,13 @@ const getEventById = async (id) => {
   const row = result.rows[0];
   if (!row) return null;
 
-  // Fetch ticket status counts
+  // Fetch ticket status counts and actual database stats
   const ticketsCountRes = await pool.query(
     `SELECT 
-       COUNT(CASE WHEN status = 'used' THEN 1 END)::int AS checked_in,
-       COUNT(CASE WHEN status = 'active' THEN 1 END)::int AS active
+       COUNT(CASE WHEN status = 'used' AND mint_status = 'SUCCESS' THEN 1 END)::int AS checked_in,
+       COUNT(CASE WHEN status = 'active' AND mint_status = 'SUCCESS' THEN 1 END)::int AS active,
+       COUNT(CASE WHEN mint_status = 'SUCCESS' THEN 1 END)::int AS tickets_sold,
+       COUNT(CASE WHEN mint_status = 'SUCCESS' AND token_id IS NOT NULL THEN 1 END)::int AS nft_minted
      FROM tickets
      WHERE event_id = $1`,
     [id]
@@ -83,16 +85,42 @@ const getEventById = async (id) => {
   
   const checkedIn = ticketsCountRes.rows[0]?.checked_in || 0;
   const pending = ticketsCountRes.rows[0]?.active || 0;
+  const ticketsSold = ticketsCountRes.rows[0]?.tickets_sold || 0;
+  const nftMinted = ticketsCountRes.rows[0]?.nft_minted || 0;
+
+  // Fetch recent tickets for the event from the database
+  const recentTicketsRes = await pool.query(
+    `SELECT 
+       token_id,
+       wallet_address,
+       minted_at,
+       created_at,
+       mint_status
+     FROM tickets
+     WHERE event_id = $1
+     ORDER BY created_at DESC`,
+    [id]
+  );
+
+  const recentTickets = recentTicketsRes.rows.map(ticket => ({
+    tokenId: ticket.token_id ? Number(ticket.token_id) : null,
+    wallet: ticket.wallet_address,
+    mintDate: ticket.minted_at || ticket.created_at,
+    status: ticket.mint_status
+  }));
 
   return {
     ...row,
+    tickets_sold: ticketsSold,
+    nft_minted: nftMinted,
     category: row.category_id ? {
       id: row.category_id,
       name: row.category_name,
       slug: row.category_slug
     } : null,
     checked_in_tickets: checkedIn,
-    pending_tickets: pending
+    pending_tickets: pending,
+    recent_tickets: recentTickets
   };
 };
 

@@ -1,25 +1,26 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { 
-  ArrowLeft, 
-  Calendar, 
-  MapPin, 
-  Ticket, 
-  Layers, 
-  Cpu, 
-  CheckSquare, 
-  Copy, 
-  Check, 
-  ExternalLink, 
-  Inbox, 
-  Tag 
+import {
+  ArrowLeft,
+  Calendar,
+  MapPin,
+  Ticket,
+  Layers,
+  Cpu,
+  CheckSquare,
+  Copy,
+  Check,
+  ExternalLink,
+  Inbox,
+  Tag
 } from 'lucide-react';
 import OrganizerNavbar from '../../components/organizer/OrganizerNavbar';
 import Footer from '../../components/landing/Footer';
 import api from '../../api/axios';
 import { getImageUrl } from '../../utils/imageHelper';
 
-const CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS || '0x8237B8afe65bCAfEE2509bfEfb48237dafc92d43';
+const CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS;
+const BLOCKCHAIN_NETWORK = import.meta.env.VITE_BLOCKCHAIN_NETWORK || 'Ethereum Sepolia';
 
 const ReportPage = () => {
   const { eventId } = useParams();
@@ -41,38 +42,7 @@ const ReportPage = () => {
         if (response.data && response.data.success) {
           const eventData = response.data.data;
           setEvent(eventData);
-          
-          // Generate mock tickets if tickets_sold > 0 for premium UI visualization
-          const soldCount = Number(eventData.tickets_sold) || 0;
-          if (soldCount > 0) {
-            const mocks = [];
-            const generateCount = Math.min(soldCount, 5);
-            
-            // Deterministic wallet generation based on index so it doesn't jump around randomly
-            const wallets = [
-              '0x71C765...6097',
-              '0x3Fd89A...28a1',
-              '0x92Ca11...A42d',
-              '0x12Eb92...99bc',
-              '0x5aBcD4...eFd8'
-            ];
-            
-            for (let i = 0; i < generateCount; i++) {
-              // Simulating dates slightly after event creation date
-              const createdDate = new Date(eventData.created_at || Date.now());
-              const mintDate = new Date(createdDate.getTime() + (i + 1) * 45 * 60 * 1000); // 45 mins apart
-              
-              mocks.push({
-                tokenId: 100 + i + 1,
-                wallet: wallets[i % wallets.length],
-                mintDate: mintDate.toISOString(),
-                status: 'SUCCESS'
-              });
-            }
-            setRecentTickets(mocks);
-          } else {
-            setRecentTickets([]);
-          }
+          setRecentTickets(eventData.recent_tickets || []);
         } else {
           setError(response.data?.message || 'Failed to load report data.');
         }
@@ -138,7 +108,7 @@ const ReportPage = () => {
         <OrganizerNavbar />
         <div className="flex-1 flex flex-col items-center justify-center space-y-4 py-20">
           <div className="inline-block w-8 h-8 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
-          <p className="text-[#A0A0A0] text-sm font-medium">Loading performance report...</p>
+          <p className="text-[#A0A0A0] text-sm font-semibold">Loading performance report...</p>
         </div>
         <Footer />
       </div>
@@ -167,7 +137,7 @@ const ReportPage = () => {
   const totalTickets = Number(event.quota) || 0;
   const ticketsSold = Number(event.tickets_sold) || 0;
   const remainingTickets = Math.max(0, totalTickets - ticketsSold);
-  const progressPercent = totalTickets > 0 ? Math.round((ticketsSold / totalTickets) * 100) : 0;
+  const progressPercent = totalTickets > 0 ? parseFloat(((ticketsSold / totalTickets) * 100).toFixed(2)) : 0;
 
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-white flex flex-col justify-between">
@@ -175,7 +145,7 @@ const ReportPage = () => {
 
       <main className="flex-grow flex justify-center py-8 md:py-12">
         <div className="max-w-5xl w-full mx-auto px-6 space-y-8">
-          
+
           {/* Toast Notification */}
           {toast.show && (
             <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-white text-black px-4 py-2.5 rounded-xl text-xs font-semibold shadow-xl border border-white/10 animate-fade-in flex items-center gap-2">
@@ -188,7 +158,7 @@ const ReportPage = () => {
           <div>
             <Link
               to="/dashboard/organizer/home"
-              className="inline-flex items-center gap-2 text-xs font-semibold text-[#A0A0A0] hover:text-white transition-colors duration-200 group"
+              className="inline-flex items-center gap-2 text-sm font-semibold text-[#A0A0A0] hover:text-white transition-colors duration-200 group"
             >
               <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform duration-200" />
               Back to My Events
@@ -211,34 +181,33 @@ const ReportPage = () => {
                 </div>
               )}
             </div>
-            
+
             {/* Event Info Details */}
             <div className="flex flex-col justify-between flex-grow py-1 space-y-4">
               <div className="space-y-3">
                 {/* Badges */}
                 <div className="flex flex-wrap items-center gap-2">
                   {event.category_name && (
-                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-white/5 border border-white/8 text-[#A0A0A0] rounded-full">
+                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wider bg-white/5 border border-white/8 text-[#A0A0A0] rounded-full">
                       <Tag className="w-2.5 h-2.5" />
                       {event.category_name}
                     </span>
                   )}
-                  <span className={`inline-flex items-center px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-full border ${
-                    event.status === 'published' 
-                      ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' 
+                  <span className={`inline-flex items-center px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wider rounded-full border ${event.status === 'published'
+                      ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
                       : event.status === 'closed'
-                      ? 'bg-[#EF4444]/10 border-[#EF4444]/20 text-[#EF4444]'
-                      : 'bg-white/5 border-white/10 text-[#777]'
-                  }`}>
+                        ? 'bg-[#EF4444]/10 border-[#EF4444]/20 text-[#EF4444]'
+                        : 'bg-white/5 border-white/10 text-[#777]'
+                    }`}>
                     {event.status === 'published' ? 'Active' : event.status === 'closed' ? 'Closed' : event.status}
                   </span>
                 </div>
 
                 {/* Title */}
-                <h1 className="text-xl md:text-2xl font-extrabold text-white leading-tight m-0">
+                <h1 className="text-3xl md:text-4xl font-bold text-white leading-tight m-0">
                   {event.title}
                 </h1>
-                
+
                 {/* Date & Location */}
                 <div className="space-y-2 text-xs text-[#A0A0A0] font-medium pt-1">
                   <div className="flex items-center gap-2">
@@ -253,9 +222,9 @@ const ReportPage = () => {
               </div>
 
               {/* Organizer Row */}
-              <div className="pt-3 border-t border-white/5 flex items-center justify-between text-[10px] text-[#555] font-bold uppercase tracking-wider">
+              <div className="pt-3 border-t border-white/5 flex items-center justify-between text-xs text-[#555] font-semibold uppercase tracking-wider">
                 <span>Organizer</span>
-                <span className="text-[#A0A0A0] font-semibold tracking-normal normal-case">{event.organizer_name || 'Tickify Organizer'}</span>
+                <span className="text-xs font-semibold text-[#A0A0A0] tracking-normal normal-case">{event.organizer_name || 'Tickify Organizer'}</span>
               </div>
             </div>
           </div>
@@ -269,7 +238,7 @@ const ReportPage = () => {
               </div>
               <div>
                 <div className="text-2xl font-bold text-white tracking-tight">{ticketsSold}</div>
-                <div className="text-[10px] font-semibold text-[#555] uppercase tracking-wider mt-1">Tickets Sold</div>
+                <div className="text-xs font-semibold text-[#555] uppercase tracking-wider mt-1">Tickets Sold</div>
               </div>
             </div>
 
@@ -280,7 +249,7 @@ const ReportPage = () => {
               </div>
               <div>
                 <div className="text-2xl font-bold text-white tracking-tight">{remainingTickets}</div>
-                <div className="text-[10px] font-semibold text-[#555] uppercase tracking-wider mt-1">Remaining Tickets</div>
+                <div className="text-xs font-semibold text-[#555] uppercase tracking-wider mt-1">Remaining Tickets</div>
               </div>
             </div>
 
@@ -290,8 +259,8 @@ const ReportPage = () => {
                 <Cpu className="w-4 h-4 text-[#A0A0A0]" strokeWidth={2} />
               </div>
               <div>
-                <div className="text-2xl font-bold text-white tracking-tight">{ticketsSold}</div>
-                <div className="text-[10px] font-semibold text-[#555] uppercase tracking-wider mt-1">NFT Minted</div>
+                <div className="text-2xl font-bold text-white tracking-tight">{event.nft_minted || 0}</div>
+                <div className="text-xs font-semibold text-[#555] uppercase tracking-wider mt-1">NFT Minted</div>
               </div>
             </div>
 
@@ -302,7 +271,7 @@ const ReportPage = () => {
               </div>
               <div>
                 <div className="text-2xl font-bold text-white tracking-tight">{event.checked_in_tickets || 0}</div>
-                <div className="text-[10px] font-semibold text-[#555] uppercase tracking-wider mt-1">Check-ins</div>
+                <div className="text-xs font-semibold text-[#555] uppercase tracking-wider mt-1">Check-ins</div>
               </div>
             </div>
           </div>
@@ -319,8 +288,8 @@ const ReportPage = () => {
               </span>
             </div>
             <div className="w-full bg-white/5 h-2.5 rounded-full overflow-hidden border border-white/5">
-              <div 
-                className="bg-[#c084fc] h-full rounded-full transition-all duration-500 ease-out" 
+              <div
+                className="bg-[#c084fc] h-full rounded-full transition-all duration-500 ease-out"
                 style={{ width: `${progressPercent}%` }}
               />
             </div>
@@ -329,7 +298,7 @@ const ReportPage = () => {
           {/* Section 4: Recent NFT Tickets */}
           <div className="bg-[#161616]/40 border border-white/8 rounded-xl p-5 space-y-4">
             <h3 className="text-xs font-semibold text-[#555] uppercase tracking-wider">Recent NFT Tickets</h3>
-            
+
             {recentTickets.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-10 space-y-3">
                 <div className="w-10 h-10 bg-white/2 rounded-full flex items-center justify-center border border-white/5">
@@ -337,14 +306,14 @@ const ReportPage = () => {
                 </div>
                 <div className="text-center">
                   <p className="text-xs font-semibold text-[#A0A0A0]">No tickets minted yet</p>
-                  <p className="text-[10px] text-[#555] mt-0.5">Tickets will appear here as soon as users purchase them.</p>
+                  <p className="text-xs font-normal text-[#555] mt-0.5">Tickets will appear here as soon as users purchase them.</p>
                 </div>
               </div>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs border-collapse">
                   <thead>
-                    <tr className="border-b border-white/5 text-[#555] uppercase tracking-wider font-bold text-[10px]">
+                    <tr className="border-b border-white/5 text-xs text-[#555] uppercase tracking-wider font-semibold">
                       <th className="pb-3 font-semibold">Token ID</th>
                       <th className="pb-3 font-semibold">Wallet</th>
                       <th className="pb-3 font-semibold">Mint Date</th>
@@ -352,14 +321,24 @@ const ReportPage = () => {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-white/5">
-                    {recentTickets.map((t) => (
-                      <tr key={t.tokenId} className="hover:bg-white/2 transition-colors duration-150">
-                        <td className="py-3 font-mono font-bold text-white">#{t.tokenId}</td>
-                        <td className="py-3 font-mono text-[#A0A0A0]">{t.wallet}</td>
+                    {recentTickets.map((t, index) => (
+                      <tr key={t.tokenId || index} className="hover:bg-white/2 transition-colors duration-150">
+                        <td className="py-3 font-mono font-bold text-white">
+                          {t.tokenId !== null && t.tokenId !== undefined ? `#${t.tokenId}` : '-'}
+                        </td>
+                        <td className="py-3 font-mono text-[#A0A0A0]" title={t.wallet}>
+                          {shortenAddress(t.wallet)}
+                        </td>
                         <td className="py-3 text-[#A0A0A0]">{formatMintDate(t.mintDate)}</td>
                         <td className="py-3">
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-bold tracking-wider bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 uppercase">
-                            Success
+                          <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold tracking-wider uppercase ${
+                            t.status === 'SUCCESS'
+                              ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400'
+                              : t.status === 'PENDING'
+                                ? 'bg-amber-500/10 border border-amber-500/20 text-amber-400'
+                                : 'bg-[#EF4444]/10 border border-[#EF4444]/20 text-[#EF4444]'
+                          }`}>
+                            {t.status === 'SUCCESS' ? 'Success' : t.status === 'PENDING' ? 'Pending' : 'Failed'}
                           </span>
                         </td>
                       </tr>
@@ -373,29 +352,29 @@ const ReportPage = () => {
           {/* Section 5: Blockchain Information */}
           <div className="bg-[#161616]/40 border border-white/8 rounded-xl p-5 space-y-4">
             <h3 className="text-xs font-semibold text-[#555] uppercase tracking-wider">Blockchain Information</h3>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-1">
               {/* Network */}
               <div className="space-y-1">
-                <span className="text-[10px] font-bold text-[#555] uppercase tracking-wider">Network</span>
+                <span className="text-xs font-semibold text-[#555] uppercase tracking-wider">Network</span>
                 <div className="text-xs font-semibold text-white flex items-center gap-1.5">
                   <div className="w-1.5 h-1.5 rounded-full bg-[#c084fc] animate-pulse"></div>
-                  Sepolia Testnet
+                  {BLOCKCHAIN_NETWORK}
                 </div>
               </div>
-              
+
               {/* Total NFT Minted */}
               <div className="space-y-1">
-                <span className="text-[10px] font-bold text-[#555] uppercase tracking-wider">Total NFT Minted</span>
-                <div className="text-xs font-semibold text-white">{ticketsSold} NFTs</div>
+                <span className="text-xs font-semibold text-[#555] uppercase tracking-wider">Total NFT Minted</span>
+                <div className="text-xs font-semibold text-white">{event.nft_minted || 0} NFTs</div>
               </div>
 
               {/* Smart Contract Address */}
               <div className="space-y-1">
-                <span className="text-[10px] font-bold text-[#555] uppercase tracking-wider">Contract Address</span>
+                <span className="text-xs font-semibold text-[#555] uppercase tracking-wider">Contract Address</span>
                 <div className="flex items-center gap-2">
                   <span className="text-xs font-mono text-[#A0A0A0]">{shortenAddress(CONTRACT_ADDRESS)}</span>
-                  <button 
+                  <button
                     onClick={handleCopyContract}
                     className="p-1 hover:bg-white/5 rounded-lg border border-transparent hover:border-white/8 text-[#555] hover:text-white transition-all duration-150 cursor-pointer"
                     title="Copy Smart Contract Address"
@@ -405,13 +384,13 @@ const ReportPage = () => {
                 </div>
               </div>
             </div>
-            
+
             <div className="pt-2 border-t border-white/5 flex justify-end">
               <a
-                href={`https://sepolia.etherscan.io/address/${CONTRACT_ADDRESS}`}
+                href={CONTRACT_ADDRESS ? `https://sepolia.etherscan.io/address/${CONTRACT_ADDRESS}` : '#'}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-white bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 hover:border-white/15 transition-all duration-150 active:scale-[0.98] cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-white bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 hover:border-white/15 transition-all duration-150 active:scale-[0.98] cursor-pointer"
               >
                 View on Etherscan
                 <ExternalLink className="w-3 h-3" />

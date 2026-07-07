@@ -235,7 +235,7 @@ const ValidatorPage = () => {
                   <button
                     onClick={() => handleVerifyTicket()}
                     disabled={!ticketId.trim() || isVerifying || isScanning}
-                    className="w-full py-3.5 text-sm font-semibold text-white bg-white/10 border border-white/10 rounded-xl hover:bg-white/20 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    className="w-full py-3.5 text-sm font-semibold text-black bg-white border border-white/10 rounded-xl hover:bg-white/80 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   >
                     {isVerifying ? (
                       <>
