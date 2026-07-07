@@ -18,7 +18,7 @@ const OrganizerHero = () => {
         </div>
 
         {/* Heading */}
-        <h1 className="text-6xl md:text-6xl lg:text-7xl font-bold text-white leading-tight mb-6">
+        <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight mb-6">
           Manage Your Blockchain Events
         </h1>
 

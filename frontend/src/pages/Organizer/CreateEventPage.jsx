@@ -185,7 +185,7 @@ const CreateEventPage = () => {
 
           {/* Page Header */}
           <div className="flex flex-col items-center text-center mb-12">
-            <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4">
               {duplicateData ? 'Duplicate Event' : 'Create Event'}
             </h1>
             <p className="max-w-2xl text-base text-[#A0A0A0]">
@@ -194,7 +194,7 @@ const CreateEventPage = () => {
           </div>
 
           {/* Form Card */}
-          <div className="max-w-4xl mx-auto bg-[#161616] border border-white/8 rounded-2xl p-8 md:p-12">
+          <div className="max-w-4xl mx-auto bg-[#161616] border border-white/8 rounded-2xl p-5 sm:p-8 md:p-12">
             {/* Alerts */}
             {backendError && (
               <div className="mb-8 p-4 bg-[#EF4444]/10 border border-[#EF4444]/20 text-[#EF4444] rounded-xl text-sm font-medium">
@@ -278,7 +278,7 @@ const CreateEventPage = () => {
               </div>
 
               {/* Location & Date Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Location */}
                 <div>
                   <label htmlFor="location" className="block text-sm font-semibold text-white mb-2">
@@ -322,7 +322,7 @@ const CreateEventPage = () => {
               </div>
 
               {/* Price & Quota Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Ticket Price */}
                 <div>
                   <label htmlFor="priceEth" className="block text-sm font-semibold text-white mb-2">

@@ -16,7 +16,7 @@ const MyEventsSection = ({ events, onDeleteEvent, onStatusChange, loading, error
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 mb-12">
           <div className="text-center md:text-left">
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4">
               My Events
             </h2>
             <p className="text-lg text-[#A0A0A0] max-w-2xl">

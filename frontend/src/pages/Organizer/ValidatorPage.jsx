@@ -125,7 +125,7 @@ const ValidatorPage = () => {
         <div className="max-w-6xl mx-auto px-6">
           {/* Hero Section / Header */}
           <div className="flex flex-col items-center text-center mb-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 tracking-tight">
               Ticket Validator
             </h1>
             <p className="max-w-xl text-[#A0A0A0] text-lg">
@@ -283,7 +283,7 @@ const ValidatorPage = () => {
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-x-6 gap-y-6 mb-8 p-6 bg-black/40 rounded-xl border border-white/5">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4 mb-8 p-6 bg-black/40 rounded-xl border border-white/5">
                         <div>
                           <span className="text-xs text-[#777777] uppercase tracking-wider block mb-1">Token ID</span>
                           <div className="flex items-center gap-2">
@@ -355,7 +355,7 @@ const ValidatorPage = () => {
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-x-6 gap-y-6 p-6 bg-black/40 rounded-xl border border-white/5">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4 p-6 bg-black/40 rounded-xl border border-white/5">
                         <div>
                           <span className="text-xs text-[#777777] uppercase tracking-wider block mb-1">Token ID</span>
                           <div className="flex items-center gap-2">

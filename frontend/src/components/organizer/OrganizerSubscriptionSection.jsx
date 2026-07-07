@@ -51,7 +51,7 @@ const OrganizerSubscriptionSection = ({ subscription, currentPlan, onUpgrade, ev
       <div className="max-w-[1280px] mx-auto px-6">
         {/* Header */}
         <div className="text-center mb-12 flex flex-col items-center">
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 tracking-tight">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4 tracking-tight">
             My Subscription
           </h2>
           <p className="text-lg text-[#A0A0A0] max-w-2xl mx-auto">
@@ -61,7 +61,7 @@ const OrganizerSubscriptionSection = ({ subscription, currentPlan, onUpgrade, ev
 
         {/* Personalized Card Container */}
         <div className="max-w-2xl mx-auto">
-          <div className="bg-[#161616] border border-white/8 rounded-2xl p-8 md:p-10 relative overflow-hidden group hover:border-white/12 transition-all duration-300 shadow-2xl">
+          <div className="bg-[#161616] border border-white/8 rounded-2xl p-5 sm:p-8 md:p-10 relative overflow-hidden group hover:border-white/12 transition-all duration-300 shadow-2xl">
             {/* Top gradient blur for premium look */}
             <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
 
@@ -196,7 +196,7 @@ const OrganizerSubscriptionSection = ({ subscription, currentPlan, onUpgrade, ev
       {/* Confirmation Modal */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-fade-in">
-          <div className="bg-[#161616] border border-white/8 rounded-2xl p-8 max-w-md w-full relative shadow-2xl animate-scale-in flex flex-col space-y-6">
+          <div className="bg-[#161616] border border-white/8 rounded-2xl p-5 sm:p-8 max-w-md w-full relative shadow-2xl animate-scale-in flex flex-col space-y-6">
             
             {/* Header */}
             <div>

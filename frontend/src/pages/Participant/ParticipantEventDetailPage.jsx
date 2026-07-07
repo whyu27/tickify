@@ -18,7 +18,7 @@ const ParticipantEventDetailPage = () => {
   const { id } = useParams();
   const { user } = useAuth();
   const { connectWallet, connectionStatus } = useWeb3();
-  
+
   const [event, setEvent] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState('');

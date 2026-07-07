@@ -2,14 +2,14 @@ import { X, AlertCircle } from 'lucide-react';
 import { useEffect } from 'react';
 import { getImageUrl } from '../../utils/imageHelper';
 
-const PurchaseConfirmationModal = ({ 
-  isOpen, 
-  onClose, 
-  onConfirm, 
-  event, 
-  walletAddress, 
-  network = 'Ethereum Sepolia', 
-  purchaseLoading = false 
+const PurchaseConfirmationModal = ({
+  isOpen,
+  onClose,
+  onConfirm,
+  event,
+  walletAddress,
+  network = 'Ethereum Sepolia',
+  purchaseLoading = false
 }) => {
   useEffect(() => {
     if (!isOpen) return;

@@ -123,7 +123,7 @@ const OrganizerEventCard = ({ event, onDelete, onStatusChange }) => {
           <button
             onClick={handleEdit}
             disabled={isProcessing}
-            className="flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold text-white bg-transparent border border-white/12 rounded-xl hover:border-white/25 hover:bg-white/5 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center justify-center gap-1.5 px-2.5 py-2.5 lg:px-4 lg:py-3 text-xs lg:text-sm font-semibold text-white bg-transparent border border-white/12 rounded-xl hover:border-white/25 hover:bg-white/5 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Edit className="w-4 h-4" strokeWidth={1.5} />
             Edit
@@ -131,7 +131,7 @@ const OrganizerEventCard = ({ event, onDelete, onStatusChange }) => {
           <button
             onClick={handlePublish}
             disabled={isProcessing}
-            className="flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold text-black bg-[#22C55E] rounded-xl hover:bg-[#22C55E]/90 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center justify-center gap-1.5 px-2.5 py-2.5 lg:px-4 lg:py-3 text-xs lg:text-sm font-semibold text-black bg-[#22C55E] rounded-xl hover:bg-[#22C55E]/90 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <CheckCircle className="w-4 h-4" strokeWidth={1.5} />
             Publish
@@ -139,7 +139,7 @@ const OrganizerEventCard = ({ event, onDelete, onStatusChange }) => {
           <button
             onClick={handleDelete}
             disabled={isProcessing}
-            className="flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold text-[#EF4444] bg-transparent border border-[#EF4444]/20 rounded-xl hover:border-[#EF4444]/40 hover:bg-[#EF4444]/5 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center justify-center gap-1.5 px-2.5 py-2.5 lg:px-4 lg:py-3 text-xs lg:text-sm font-semibold text-[#EF4444] bg-transparent border border-[#EF4444]/20 rounded-xl hover:border-[#EF4444]/40 hover:bg-[#EF4444]/5 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Trash2 className="w-4 h-4" strokeWidth={1.5} />
             Delete
@@ -154,7 +154,7 @@ const OrganizerEventCard = ({ event, onDelete, onStatusChange }) => {
           <button
             onClick={handleEdit}
             disabled={isProcessing}
-            className="flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold text-white bg-transparent border border-white/12 rounded-xl hover:border-white/25 hover:bg-white/5 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center justify-center gap-1.5 px-2.5 py-2.5 lg:px-4 lg:py-3 text-xs lg:text-sm font-semibold text-white bg-transparent border border-white/12 rounded-xl hover:border-white/25 hover:bg-white/5 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Edit className="w-4 h-4" strokeWidth={1.5} />
             Edit
@@ -162,7 +162,7 @@ const OrganizerEventCard = ({ event, onDelete, onStatusChange }) => {
           <button
             onClick={handleCloseSales}
             disabled={isProcessing}
-            className="flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold text-[#EF4444] bg-transparent border border-[#EF4444]/20 rounded-xl hover:border-[#EF4444]/40 hover:bg-[#EF4444]/5 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center justify-center gap-1.5 px-2.5 py-2.5 lg:px-4 lg:py-3 text-xs lg:text-sm font-semibold text-[#EF4444] bg-transparent border border-[#EF4444]/20 rounded-xl hover:border-[#EF4444]/40 hover:bg-[#EF4444]/5 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <XCircle className="w-4 h-4" strokeWidth={1.5} />
             Close Sales
@@ -176,7 +176,7 @@ const OrganizerEventCard = ({ event, onDelete, onStatusChange }) => {
         <button
           onClick={handleViewReport}
           disabled={isProcessing}
-          className="flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold text-white bg-transparent border border-white/12 rounded-xl hover:border-white/25 hover:bg-white/5 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-center"
+          className="flex items-center justify-center gap-1.5 px-2.5 py-2.5 lg:px-4 lg:py-3 text-xs lg:text-sm font-semibold text-white bg-transparent border border-white/12 rounded-xl hover:border-white/25 hover:bg-white/5 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-center"
         >
           <BarChart2 className="w-4 h-4" strokeWidth={1.5} />
           View Report

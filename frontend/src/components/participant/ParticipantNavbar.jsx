@@ -53,8 +53,8 @@ const ParticipantNavbar = () => {
 
               {isWalletDropdownOpen && (
                 <>
-                  <div 
-                    className="fixed inset-0 z-10" 
+                  <div
+                    className="fixed inset-0 z-10"
                     onClick={() => setIsWalletDropdownOpen(false)}
                   />
                   <div className="absolute right-0 mt-2 w-48 bg-[#0D0D0D] border border-white/10 rounded-xl p-1.5 shadow-2xl z-20 animate-in fade-in slide-in-from-top-2 duration-150">

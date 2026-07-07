@@ -18,7 +18,7 @@ const ParticipantEventSection = () => {
           api.get('/events'),
           api.get('/categories')
         ]);
-        
+
         if (eventsRes.data.success) {
           setEvents(eventsRes.data.data || []);
         } else {
@@ -67,11 +67,10 @@ const ParticipantEventSection = () => {
               key={category.id}
               onClick={() => setSelectedCategory(category.slug)}
               disabled={loading}
-              className={`px-6 py-2.5 text-sm font-semibold rounded-full transition-all duration-200 ${
-                selectedCategory === category.slug
+              className={`px-6 py-2.5 text-sm font-semibold rounded-full transition-all duration-200 ${selectedCategory === category.slug
                   ? 'bg-white text-black'
                   : 'bg-transparent text-[#A0A0A0] border border-white/12 hover:border-white/25 hover:text-white'
-              } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
               {category.name}
             </button>
@@ -90,8 +89,8 @@ const ParticipantEventSection = () => {
         {error && !loading && (
           <div className="text-center py-16">
             <p className="text-red-500 text-lg mb-4">{error}</p>
-            <button 
-              onClick={() => window.location.reload()} 
+            <button
+              onClick={() => window.location.reload()}
               className="px-6 py-2.5 text-sm font-semibold bg-white text-black rounded-full hover:bg-[#EAEAEA] transition-all duration-200"
             >
               Retry
@@ -103,8 +102,8 @@ const ParticipantEventSection = () => {
         {!loading && !error && filteredEvents.length === 0 && (
           <div className="text-center py-16">
             <p className="text-[#777777] text-lg">
-              {selectedCategory === 'all' 
-                ? 'No events available at the moment.' 
+              {selectedCategory === 'all'
+                ? 'No events available at the moment.'
                 : 'No events found in this category.'}
             </p>
           </div>

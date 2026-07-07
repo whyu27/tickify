@@ -13,7 +13,7 @@ const MyTickets = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedFilter, setSelectedFilter] = useState('all');
-  
+
   // Modal State
   const [isQRModalOpen, setIsQRModalOpen] = useState(false);
   const [selectedTicket, setSelectedTicket] = useState(null);

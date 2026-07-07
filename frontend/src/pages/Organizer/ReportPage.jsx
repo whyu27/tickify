@@ -230,7 +230,7 @@ const ReportPage = () => {
           </div>
 
           {/* Section 2: Overview Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Card 1: Tickets Sold */}
             <div className="bg-[#161616]/40 border border-white/8 rounded-xl p-5 flex flex-col justify-between min-h-[110px] hover:border-white/15 transition-all duration-200">
               <div className="flex items-center justify-between mb-2">
@@ -311,7 +311,7 @@ const ReportPage = () => {
               </div>
             ) : (
               <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs border-collapse">
+                <table className="w-full min-w-[600px] text-left text-xs border-collapse">
                   <thead>
                     <tr className="border-b border-white/5 text-xs text-[#555] uppercase tracking-wider font-semibold">
                       <th className="pb-3 font-semibold">Token ID</th>
