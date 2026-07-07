@@ -12,6 +12,7 @@ import EventBanner from '../../components/event/EventBanner';
 import EventInfo from '../../components/event/EventInfo';
 import EventSidebar from '../../components/event/EventSidebar';
 import { EventLoading, EventError, EventNotFound } from '../../components/event/EventStates';
+import PurchaseConfirmationModal from '../../components/participant/PurchaseConfirmationModal';
 
 const ParticipantEventDetailPage = () => {
   const { id } = useParams();
@@ -24,6 +25,7 @@ const ParticipantEventDetailPage = () => {
   const [purchaseLoading, setPurchaseLoading] = useState(false);
   const [successData, setSuccessData] = useState(null);
   const [purchaseError, setPurchaseError] = useState('');
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   const fetchEventDetail = async () => {
     setIsLoading(true);
@@ -91,6 +93,11 @@ const ParticipantEventDetailPage = () => {
     } finally {
       setPurchaseLoading(false);
     }
+  };
+
+  const handleConfirmPurchase = () => {
+    setShowConfirmModal(false);
+    handleBuyTicket();
   };
 
   useEffect(() => {
@@ -186,7 +193,7 @@ const ParticipantEventDetailPage = () => {
 
                       {/* Buy Button */}
                       <button
-                        onClick={handleBuyTicket}
+                        onClick={() => setShowConfirmModal(true)}
                         disabled={disabled}
                         className="w-full text-center block py-3.5 px-6 bg-white hover:bg-[#EAEAEA] text-black font-semibold rounded-xl transition-all duration-200 shadow-md hover:scale-[1.01] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                       >
@@ -204,6 +211,16 @@ const ParticipantEventDetailPage = () => {
           </div>
         )}
       </main>
+
+      {/* Purchase Confirmation Modal */}
+      <PurchaseConfirmationModal
+        isOpen={showConfirmModal}
+        onClose={() => setShowConfirmModal(false)}
+        onConfirm={handleConfirmPurchase}
+        event={event}
+        walletAddress={user?.wallet_address}
+        purchaseLoading={purchaseLoading}
+      />
 
       {/* Success Modal */}
       {successData && (
