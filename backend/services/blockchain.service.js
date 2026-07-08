@@ -1,9 +1,7 @@
 const { ethers } = require('ethers');
-const path = require('path');
 
-// Load contract ABI from Hardhat artifact
-const contractArtifactPath = path.join(__dirname, '../../blockchain/artifacts/contracts/TickifyTicket.sol/TickifyTicket.json');
-const contractArtifact = require(contractArtifactPath);
+// Load contract ABI
+const contractArtifact = require('../contracts/TickifyTicket.json');
 const abi = contractArtifact.abi;
 
 /**
