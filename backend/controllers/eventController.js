@@ -38,7 +38,7 @@ const create = async (req, res) => {
     }
 
     // Get banner path from uploaded file
-    const bannerUrl = req.file ? `/uploads/events/${req.file.filename}` : null;
+    const bannerUrl = req.file ? req.file.path : null;
 
     const event = await createEvent(req.user.id, {
       title: title.trim(),
@@ -157,7 +157,7 @@ const updateEventHandler = async (req, res) => {
     }
 
     // Get banner path from uploaded file, or keep existing if no new file
-    const bannerUrl = req.file ? `/uploads/events/${req.file.filename}` : undefined;
+    const bannerUrl = req.file ? req.file.path : undefined;
 
     const eventData = {
       title: title.trim(),
