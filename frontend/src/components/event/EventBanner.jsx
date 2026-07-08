@@ -17,9 +17,9 @@ const EventBanner = ({ event }) => {
           style={{ backgroundImage: `url(${getImageUrl(event.banner_url)})` }}
         />
       )}
-      
-      {/* Smooth bottom-up gradient overlay blending with #0A0A0A background */}
-      <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A] via-[#0A0A0A]/30 to-transparent z-10 pointer-events-none" />
+
+      {/* Smooth bottom-up dark gradient overlay to ensure text readability */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/100 via-black/70 to-transparent z-10 pointer-events-none" />
 
       {showImage ? (
         <img
@@ -33,11 +33,11 @@ const EventBanner = ({ event }) => {
           {/* Ambient glow effects */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-indigo-500/10 rounded-full blur-[100px] pointer-events-none" />
           <div className="absolute top-1/4 left-1/3 w-[200px] h-[200px] bg-emerald-500/5 rounded-full blur-[80px] pointer-events-none" />
-          
+
           <div className="p-4 rounded-full bg-white/5 border border-white/10 relative z-10 shadow-lg">
             <Calendar className="w-10 h-10 text-white/40 stroke-[1.2]" />
           </div>
-          
+
           <div className="flex flex-col items-center gap-1 relative z-10 text-center px-4">
             <span className="font-semibold text-sm tracking-wider uppercase text-white/50">No Banner Available</span>
             <span className="text-xs text-[#777777]">Please check back later or contact the organizer</span>
@@ -45,15 +45,31 @@ const EventBanner = ({ event }) => {
         </div>
       )}
 
+      {/* Content overlay bottom left */}
+      <div className="absolute bottom-4 left-4 md:bottom-6 md:left-6 lg:bottom-8 lg:left-8 z-20 flex flex-col gap-1 md:gap-1.5 lg:gap-2 max-w-[85%] md:max-w-[75%] pointer-events-none">
+        {event.category_name && (
+          <span className="text-[10px] md:text-xs font-bold uppercase tracking-wider text-white/70 select-none">
+            {event.category_name}
+          </span>
+        )}
+        <h2 className="text-lg md:text-xl lg:text-3xl xl:text-4xl font-extrabold text-white leading-tight tracking-tight drop-shadow-md">
+          {event.title}
+        </h2>
+        {event.location && (
+          <span className="text-xs md:text-sm lg:text-base font-normal text-white/80 drop-shadow-sm select-none">
+            {event.location}
+          </span>
+        )}
+      </div>
+
       {/* Status Badge overlay */}
       <div className="absolute top-6 right-6 z-20">
-        <span className={`px-4 py-1.5 text-xs font-bold rounded-full uppercase tracking-wider backdrop-blur-md shadow-lg ${
-          event.status === 'published'
-            ? 'bg-[#22C55E]/10 border border-[#22C55E]/30 text-[#22C55E]'
-            : event.status === 'closed'
-              ? 'bg-[#EF4444]/10 border border-[#EF4444]/30 text-[#EF4444]'
-              : 'bg-[#FACC15]/10 border border-[#FACC15]/30 text-[#FACC15]'
-        }`}>
+        <span className={`px-4 py-1.5 text-xs font-bold rounded-full uppercase tracking-wider backdrop-blur-md shadow-lg ${event.status === 'published'
+          ? 'bg-[#22C55E]/10 border border-[#22C55E]/30 text-[#22C55E]'
+          : event.status === 'closed'
+            ? 'bg-[#EF4444]/10 border border-[#EF4444]/30 text-[#EF4444]'
+            : 'bg-[#FACC15]/10 border border-[#FACC15]/30 text-[#FACC15]'
+          }`}>
           {event.status === 'published' ? 'Live' : event.status}
         </span>
       </div>
