@@ -12,11 +12,8 @@ import {
   QrCode,
   MapPin,
   Calendar,
-  Wallet,
   ShieldCheck,
   Cpu,
-  Clock,
-  CircleDollarSign,
   AlertCircle,
   Ticket
 } from 'lucide-react';

@@ -1,10 +1,6 @@
 const {
-  verifyTicket,
   checkInTicket,
   getParticipantTickets,
-  createPendingTicket,
-  updateTicketSuccess,
-  updateTicketFailed,
   verifyTicketAndCheckIn
 } = require('../services/ticketService');
 const { getUserById } = require('../services/authService');

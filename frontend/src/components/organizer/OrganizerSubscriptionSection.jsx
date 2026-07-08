@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Check, Info, Calendar, Shield, CreditCard, Sparkles, Award, Loader } from 'lucide-react';
+import { Check, Info, Calendar, CreditCard, Sparkles, Award, Loader } from 'lucide-react';
 import useAuth from '../../hooks/useAuth';
 
 const OrganizerSubscriptionSection = ({ subscription, currentPlan, onUpgrade, events = [] }) => {

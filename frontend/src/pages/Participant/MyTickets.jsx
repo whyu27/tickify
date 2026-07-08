@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import ParticipantNavbar from '../../components/participant/ParticipantNavbar';
 import Footer from '../../components/landing/Footer';
-import { Ticket, Calendar, MapPin, QrCode, Eye, Wallet, X, AlertCircle } from 'lucide-react';
+import { Ticket, Calendar, MapPin, QrCode, Eye, Wallet, AlertCircle } from 'lucide-react';
 import api from '../../api/axios';
 import { Link } from 'react-router-dom';
 import { HashLink } from 'react-router-hash-link';

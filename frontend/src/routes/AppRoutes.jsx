@@ -3,7 +3,6 @@ import ProtectedRoute from './ProtectedRoute';
 import LoginPage from '../pages/Auth/LoginPage';
 import RegisterPage from '../pages/Auth/RegisterPage';
 import DashboardLayout from '../layouts/DashboardLayout';
-import DashboardOrganizer from '../pages/Organizer/DashboardOrganizer';
 import OrganizerHome from '../pages/Organizer/OrganizerHome';
 import CreateEventPage from '../pages/Organizer/CreateEventPage';
 import EditEventPage from '../pages/Organizer/EditEventPage';

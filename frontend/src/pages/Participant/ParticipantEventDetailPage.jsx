@@ -47,8 +47,6 @@ const ParticipantEventDetailPage = () => {
   };
 
   const handleBuyTicket = async () => {
-    console.log("CURRENT USER:", user);
-    console.log("Buy Ticket clicked");
     setPurchaseError('');
     setSuccessData(null);
 
@@ -73,12 +71,9 @@ const ParticipantEventDetailPage = () => {
     setPurchaseLoading(true);
 
     const payload = { eventId: event.id };
-    console.log("Purchase request:", payload);
 
     try {
-      console.log("Sending purchase request...");
       const response = await api.post('/tickets/purchase', payload, { timeout: 60000 });
-      console.log("Purchase response:", response.data);
 
       if (response.data && response.data.success) {
         setSuccessData(response.data.data);

@@ -201,18 +201,6 @@ const deleteEvent = async (eventId, organizerId) => {
   await pool.query('DELETE FROM events WHERE id = $1', [eventId]);
 };
 
-const countActiveEvents = async (organizerId) => {
-  const result = await pool.query(
-    `SELECT COUNT(*)::int AS count
-     FROM events
-     WHERE organizer_id = $1
-       AND status IN ('draft', 'published')`,
-    [organizerId]
-  );
-
-  return result.rows[0].count;
-};
-
 const updateEventStatus = async (eventId, organizerId, status) => {
   const validStatuses = ['draft', 'published', 'closed'];
   if (!validStatuses.includes(status)) {
@@ -242,4 +230,4 @@ const updateEventStatus = async (eventId, organizerId, status) => {
   return getEventById(eventId);
 };
 
-module.exports = { createEvent, getOrganizerEvents, getAllEvents, getEventById, updateEvent, deleteEvent, countActiveEvents, updateEventStatus };
+module.exports = { createEvent, getOrganizerEvents, getAllEvents, getEventById, updateEvent, deleteEvent, updateEventStatus };

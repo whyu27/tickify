@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { User, Wallet, LogOut, ChevronDown, RefreshCw, Menu, X } from 'lucide-react';
+import { Wallet, LogOut, ChevronDown, RefreshCw, Menu, X } from 'lucide-react';
 import useAuth from '../../hooks/useAuth';
 import useWeb3 from '../../hooks/useWeb3';
 

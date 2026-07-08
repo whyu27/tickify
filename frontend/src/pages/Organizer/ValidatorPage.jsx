@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { QrCode, Search, CheckCircle2, XCircle, Clock, AlertCircle, ScanLine, Activity, Ticket, Check } from 'lucide-react';
+import { QrCode, Search, CheckCircle2, XCircle, Clock, AlertCircle, ScanLine, Ticket, Check } from 'lucide-react';
 import OrganizerNavbar from '../../components/organizer/OrganizerNavbar';
 import useQRScanner from '../../hooks/useQRScanner';
 import api from '../../api/axios';
@@ -86,10 +86,8 @@ const ValidatorPage = () => {
   // Handle QR scan success
   const handleScanSuccess = (decodedText) => {
     if (isVerifying) {
-      console.log('Verification in progress, ignoring scan request.');
       return;
     }
-    console.log('QR Code scanned:', decodedText);
     let idToVerify = decodedText;
     try {
       const parsed = JSON.parse(decodedText);

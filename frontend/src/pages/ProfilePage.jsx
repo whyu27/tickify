@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import useAuth from '../hooks/useAuth';
 import useWeb3 from '../hooks/useWeb3';
 import { User, Mail, Shield, Wallet, Calendar, Edit, Globe, LogOut } from 'lucide-react';

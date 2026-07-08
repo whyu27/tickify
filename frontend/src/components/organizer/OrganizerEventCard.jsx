@@ -1,4 +1,4 @@
-import { Calendar, MapPin, Ticket, Edit, Trash2, Eye, CheckCircle, XCircle, Copy, BarChart2, AlertTriangle, AlertCircle } from 'lucide-react';
+import { Calendar, MapPin, Ticket, Edit, Trash2, CheckCircle, XCircle, BarChart2, AlertTriangle, AlertCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { getImageUrl } from '../../utils/imageHelper';
 import { useState } from 'react';

@@ -23,7 +23,6 @@ const PublicEventDetailPage = () => {
   };
 
   const fetchEventDetail = useCallback(async () => {
-    await Promise.resolve();
     setIsLoading(true);
     setErrorMsg('');
     try {

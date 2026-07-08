@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import api from '../../api/axios';
 import { useNotification } from '../../context/NotificationContext';
-import { ArrowLeft } from 'lucide-react';
 import OrganizerNavbar from '../../components/organizer/OrganizerNavbar';
 import ImageUpload from '../../components/ImageUpload';
 import { getImageUrl } from '../../utils/imageHelper';
