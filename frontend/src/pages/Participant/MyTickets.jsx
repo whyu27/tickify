@@ -229,7 +229,7 @@ const MyTickets = () => {
             </p>
             <HashLink
               to="/participant/home#events"
-              className="px-8 py-3.5 text-sm font-bold text-black bg-white rounded-xl hover:bg-[#EAEAEA] active:scale-[0.98] transition-all duration-200 shadow-lg shadow-white/5"
+              className="px-8 py-3 mt-3.5 text-sm font-bold text-black bg-white rounded-xl hover:bg-[#EAEAEA] active:scale-[0.98] transition-all duration-200 shadow-lg shadow-white/5"
             >
               Explore Events
             </HashLink>
