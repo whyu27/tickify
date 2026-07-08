@@ -1,6 +1,5 @@
 const express = require('express');
 const cors = require('cors');
-const path = require('path');
 require('dotenv').config();
 
 const { testConnection } = require('./config/database');
@@ -15,7 +14,16 @@ const categoryRoutes = require('./routes/categoryRoutes');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-app.use(cors());
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173",
+      process.env.FRONTEND_URL,
+    ],
+    credentials: true,
+  })
+);
+
 app.use(express.json());
 
 app.get('/', (req, res) => {
