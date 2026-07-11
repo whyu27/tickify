@@ -25,11 +25,11 @@ const Navbar = () => {
           <HashLink smooth to="/#events" className="text-[#A0A0A0] hover:text-white transition-colors duration-200 text-sm font-medium">
             Events
           </HashLink>
-          <HashLink smooth to="/#faq" className="text-[#A0A0A0] hover:text-white transition-colors duration-200 text-sm font-medium">
-            FAQ
-          </HashLink>
           <HashLink smooth to="/#pricing" className="text-[#A0A0A0] hover:text-white transition-colors duration-200 text-sm font-medium">
             Pricing
+          </HashLink>
+          <HashLink smooth to="/#faq" className="text-[#A0A0A0] hover:text-white transition-colors duration-200 text-sm font-medium">
+            FAQ
           </HashLink>
         </div>
 
@@ -82,15 +82,7 @@ const Navbar = () => {
           >
             Events
           </HashLink>
-          <HashLink
-            smooth
-            to="/#faq"
-            onClick={() => setIsOpen(false)}
-            className="text-[#A0A0A0] hover:text-white transition-colors duration-200 text-base font-semibold"
-          >
-            FAQ
-          </HashLink>
-          <HashLink
+           <HashLink
             smooth
             to="/#pricing"
             onClick={() => setIsOpen(false)}
@@ -98,6 +90,14 @@ const Navbar = () => {
           >
             Pricing
           </HashLink>
+          <HashLink
+            smooth
+            to="/#faq"
+            onClick={() => setIsOpen(false)}
+            className="text-[#A0A0A0] hover:text-white transition-colors duration-200 text-base font-semibold"
+          >
+            FAQ
+          </HashLink>       
 
           <div className="h-px bg-white/8 my-1"></div>
 
