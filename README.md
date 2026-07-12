@@ -287,46 +287,6 @@ Deploy
 npx hardhat run scripts/deploy.js --network sepolia
 ```
 
----
-
-# 📸 Screenshots
-
-## Landing Page
-
-> _Coming Soon_
-
----
-
-## Organizer Dashboard
-
-> _Coming Soon_
-
----
-
-## Event Detail
-
-> _Coming Soon_
-
----
-
-## Purchase Ticket
-
-> _Coming Soon_
-
----
-
-## NFT Ticket
-
-> _Coming Soon_
-
----
-
-## QR Validation
-
-> _Coming Soon_
-
----
-
 # 🔄 Workflow
 
 ```text
